@@ -11,10 +11,10 @@ export class SportsService {
   private httpClient = inject(HttpClient);
 
   getAllSports(): Observable<Sport[]> {
-    return this.httpClient.get<Sport[]>(`${environment.apiUrl}/sport/all`);
+    return this.httpClient.get<Sport[]>(`${environment.apiUrl}/Sport/all`);
   }
 
   getSportById(id: number): Observable<Sport> {
-    return this.httpClient.get<Sport>(`${environment.apiUrl}/sport/${id}`);
+    return this.httpClient.get<Sport>(`${environment.apiUrl}/Sport/${id}`);
   }
 }

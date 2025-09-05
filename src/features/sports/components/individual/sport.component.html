@@ -1,5 +1,9 @@
-<div class="p-8 flex flex-col items-center justify-center gap-4">
-  <h1 class="text-2xl font-bold">Deporte Individual</h1>
-  <p>{{ sport.name }}</p>
-  <p>{{ sport.description }}</p>
-</div>
+@if(!sport) {
+  <app-not-found></app-not-found>
+} @else {
+  <div class="p-8 flex flex-col items-center justify-center gap-6">
+    <h1 class="text-3xl font-bold">Deporte Individual</h1>
+    <p>{{ sport.name }}</p>
+    <p>{{ sport.description }}</p>
+  </div>
+}

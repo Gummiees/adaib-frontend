@@ -1,6 +1,7 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
-import { firstValueFrom, map, take } from 'rxjs';
+import { catchError, firstValueFrom, map, of, throwError } from 'rxjs';
 import { Sport } from '../models/sport';
 import { SportsService } from './sports.service';
 
@@ -26,7 +27,13 @@ export class SportDetailsResolverService
     return firstValueFrom(
       this.sportsService.getSportById(parsedId).pipe(
         map((sport) => sport),
-        take(1),
+        catchError((error) => {
+          if (error.status === HttpStatusCode.NotFound) {
+            return of(null);
+          } else {
+            return throwError(() => error);
+          }
+        }),
       ),
     );
   }

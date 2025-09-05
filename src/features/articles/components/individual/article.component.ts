@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,6 +8,7 @@ import {
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { articles } from '@features/articles/content/articles';
+import { NotFoundComponent } from '@features/not-found/not-found.component';
 
 @Component({
   selector: 'app-article',
@@ -17,7 +17,7 @@ import { articles } from '@features/articles/content/articles';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [NotFoundComponent],
 })
 export class ArticleComponent {
   private sanitizer = inject(DomSanitizer);

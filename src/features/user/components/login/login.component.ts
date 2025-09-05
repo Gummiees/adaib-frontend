@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { userEvent } from '@features/user/store/user-events';
 import { Dispatcher } from '@ngrx/signals/events';
@@ -8,7 +7,7 @@ import { Dispatcher } from '@ngrx/signals/events';
   templateUrl: './login.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
 })
 export class LoginComponent {
   private dispatcher = inject(Dispatcher);

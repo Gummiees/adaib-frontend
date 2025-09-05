@@ -1,6 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { CardGroupComponent } from '@shared/components/card-group/card-group.component';
 import { articles } from '../../content/articles';
 
 @Component({
@@ -8,8 +7,16 @@ import { articles } from '../../content/articles';
   templateUrl: './articles.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink],
+  imports: [CardGroupComponent],
 })
 export class ArticlesComponent {
   public articles = articles;
+  public cards = this.articles.map((article) => ({
+    id: article.id,
+    title: article.title,
+    subtitle: article.subtitle,
+    url: 'noticias',
+    imageUrl: article.imageUrl,
+    imgAlt: article.imgAlt,
+  }));
 }
