@@ -7,7 +7,4 @@ import { NavbarComponent } from '@features/navbar/navbar.component';
   imports: [RouterOutlet, NavbarComponent],
   templateUrl: './app.html',
 })
-export class App {
-  // test comment
-  unused_variable = 'this should cause a linting error';
-}
+export class App {}
