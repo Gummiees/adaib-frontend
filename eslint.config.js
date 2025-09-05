@@ -23,6 +23,15 @@ module.exports = tseslint.config(
     processor: angular.processInlineTemplates,
     rules: {
       "@typescript-eslint/consistent-type-definitions": "off",
+      "no-unused-vars": "off", // Disable base rule as it can report incorrect errors
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
       "@angular-eslint/directive-selector": [
         "error",
         {
