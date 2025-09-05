@@ -2,11 +2,10 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-landing',
-  templateUrl: './landing.component.html',
-  styleUrl: './landing.component.scss',
+  selector: 'app-footer',
+  templateUrl: './footer.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
 })
-export class LandingComponent {}
+export class FooterComponent {}
