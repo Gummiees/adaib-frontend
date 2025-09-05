@@ -1,15 +1,10 @@
 import { Component } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
 import { RouterOutlet } from '@angular/router';
-import { SnackbarComponent } from '@shared/components/snackbar/snackbar.component';
+import { NavbarComponent } from '@features/navbar/navbar.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SnackbarComponent, MatButtonModule],
+  imports: [RouterOutlet, NavbarComponent],
   templateUrl: './app.html',
 })
-export class App {
-  public throwTestError(): void {
-    throw new Error('Sentry Test Error');
-  }
-}
+export class App {}

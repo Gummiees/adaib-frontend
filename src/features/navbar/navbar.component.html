@@ -1,0 +1,59 @@
+<nav role="navigation" class="bg-gray-800">
+  <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div class="relative h-16 flex items-center justify-center sm:justify-between">
+      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+        <!-- Mobile menu button -->
+        <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset" aria-controls="mobile-menu" aria-expanded="false"  (click)="toggleMenu()">
+          <span class="absolute -inset-0.5"></span>
+          <span class="sr-only">Open main menu</span>
+          <svg [ngClass]="isMenuOpen() ? 'hidden' : 'block'" class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+          <svg [ngClass]="isMenuOpen() ? 'block' : 'hidden'" class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="self-center flex items-center justify-center">
+        <a routerLink="/inicio" class="text-white text-xl font-bold">Basket web</a>
+      </div>
+      <div class="hidden sm:block sm:ml-6 flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+        <div class="flex space-x-4">
+          <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Inicio</a>
+          <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Noticias</a>
+          <a routerLink="/deportes" routerLinkActive #sportsRla="routerLinkActive" [ngClass]="sportsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="sportsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Deportes</a>
+        </div>
+      </div>
+      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+        @if(user) {
+        <!-- Profile dropdown -->
+        <div class="relative ml-3">
+          <div>
+            <button type="button" class="relative flex rounded-full bg-white cursor-pointer text-sm focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800" id="user-menu-button" aria-expanded="false" aria-haspopup="true" (click)="toggleUserMenu()">
+              <span class="absolute -inset-1.5"></span>
+              <span class="sr-only">Open user menu</span>
+              <span class="material-symbols-outlined text-2xl text-gray-600">account_circle</span>
+            </button>
+          </div>
+
+          <!-- Dropdown menu -->
+          <div [ngClass]="userMenuOpen() ? ['ease-out', 'duration-100', 'opacity-100', 'scale-100', 'pointer-events-auto'] : ['ease-in', 'duration-75', 'opacity-0', 'scale-95', 'pointer-events-none']" class="absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-hidden transform transition" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+            <div class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-200" role="menuitem" tabindex="-1" id="user-menu-item-2" (click)="onLogout()" (keydown.enter)="onLogout()" (keydown.space)="onLogout()">Sign out</div>
+          </div>
+        </div>
+        } @else {
+          <button type="button" matButton="filled" class="relative flex rounded-full bg-white cursor-pointer text-sm focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800" id="user-menu-button" aria-expanded="false" aria-haspopup="true" (click)="onLoginClick()">Login</button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div [ngClass]="isMenuOpen() ? ['h-auto', 'pointer-events-auto'] : ['h-0', 'pointer-events-none']" class="sm:hidden overflow-hidden" id="mobile-menu">
+    <div class="p-3 flex flex-col gap-y-4">
+        <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Inicio</a>
+        <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Noticias</a>
+        <a routerLink="/deportes" routerLinkActive #sportsRla="routerLinkActive" [ngClass]="sportsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="sportsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Deportes</a>
+    </div>
+  </div>
+</nav>
