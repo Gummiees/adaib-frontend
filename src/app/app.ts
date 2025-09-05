@@ -9,4 +9,5 @@ import { NavbarComponent } from '@features/navbar/navbar.component';
 })
 export class App {
   // test comment
+  unused_variable = 'this should cause a linting error';
 }
