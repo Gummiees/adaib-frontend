@@ -1,0 +1,6 @@
+<div class="p-8 flex flex-col items-center justify-center gap-4">
+  <h1 class="text-2xl font-bold">{{article?.title}}</h1>
+  <img class="rounded-md" [src]="article?.imageUrl" [alt]="article?.imgAlt" />
+  <p class="text-lg">{{article?.subtitle}}</p>
+  <div class="max-w-4xl article-content" [innerHTML]="safeContent"></div>
+</div>

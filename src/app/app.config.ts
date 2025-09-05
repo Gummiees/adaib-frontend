@@ -8,11 +8,12 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 
-import { Router } from '@angular/router';
+import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
 import { environment } from '@environments/environment';
 import { provideStore } from '@ngrx/store';
 import * as Sentry from '@sentry/angular';
 import { httpErrorInterceptor } from '@shared/interceptors/http-error.interceptor';
+import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,6 +21,10 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([httpErrorInterceptor])),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideStore(),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+    ),
     environment.providers,
     {
       provide: ErrorHandler,
