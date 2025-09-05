@@ -1,4 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import { environment } from '@environments/environment';
 import * as Sentry from '@sentry/angular';
 import { inject } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
@@ -13,6 +14,12 @@ Sentry.init({
     Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
   ],
   enableLogs: true,
+  beforeSendLog: (logEvent) => {
+    if (!environment.isProduction) {
+      return null;
+    }
+    return logEvent;
+  },
 });
 
 inject();
