@@ -13,7 +13,8 @@
     "test": "npm run lint && jest",
     "test:coverage": "jest --coverage",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org basket-web --project basket-project ./dist && sentry-cli sourcemaps upload --org basket-web --project basket-project ./dist",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint:staged": "ng lint asociacion-deportes"
   },
   "engines": {
     "node": ">= 22.12.0"
@@ -30,7 +31,7 @@
   },
   "lint-staged": {
     "*.{ts,html}": [
-      "ng lint --fix"
+      "node lint-staged.js"
     ],
     "*.scss": [
       "stylelint --fix"
