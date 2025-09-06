@@ -1,0 +1,27 @@
+<div class="relative">
+  @if(competitionWithLoading$ | async; as competitionWithLoading) {
+    @if(competitionWithLoading.isLoading) {
+      <app-full-spinner></app-full-spinner>
+    } @else if(competitionWithLoading.competition) {
+      <div class="p-8 flex flex-col items-center justify-center gap-6">
+        <h1 class="text-4xl font-bold">Competición</h1>
+        <p>{{ competitionWithLoading.competition.name }}</p>
+        @if(competitionWithLoading.competition.imageUrl) {
+          <img [src]="competitionWithLoading.competition.imageUrl" [alt]="'Imagen para la competición ' + competitionWithLoading.competition.name" />
+        }
+        @if(competitionWithLoading.competition.description) {
+          <p>{{ competitionWithLoading.competition.description }}</p>
+        }
+        <p>Estado: {{ competitionWithLoading.competition.status }}</p>
+        @if(competitionWithLoading.competition.startDate) {
+          <p>Inicio: {{ competitionWithLoading.competition.startDate | date: 'dd/MM/yyyy' }}</p>
+        }
+        @if(competitionWithLoading.competition.endDate) {
+          <p>Fin: {{ competitionWithLoading.competition.endDate | date: 'dd/MM/yyyy' }}</p>
+        }
+      </div>
+    } @else {
+      <app-not-found title="Competición no encontrada" subtitle="Lo sentimos, no se ha encontrado la competición." buttonText="Ir a la página de competiciones" buttonLink="/competiciones"></app-not-found>
+    }
+  }
+</div>

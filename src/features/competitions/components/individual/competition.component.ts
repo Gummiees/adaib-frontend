@@ -6,44 +6,44 @@ import { ActivatedRoute } from '@angular/router';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { catchError, map, Observable, of, startWith, throwError } from 'rxjs';
-import { Sport } from '../../models/sport';
-import { SportsService } from '../../services/sports.service';
+import { Competition } from '../../models/competition';
+import { CompetitionsService } from '../services/competitions.service';
 
 @Component({
-  selector: 'app-sport',
-  templateUrl: './sport.component.html',
+  selector: 'app-competition',
+  templateUrl: './competition.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NotFoundComponent, FullSpinnerComponent, CommonModule],
+  imports: [CommonModule, NotFoundComponent, FullSpinnerComponent],
 })
-export class SportComponent {
+export class CompetitionComponent {
   private activatedRoute = inject(ActivatedRoute);
-  private sportsService = inject(SportsService);
+  private competitionService = inject(CompetitionsService);
 
-  public sportWithLoading$ = this.getSport();
+  public competitionWithLoading$ = this.getCompetition();
 
-  private getSport(): Observable<{
-    sport: Sport | null;
+  private getCompetition(): Observable<{
+    competition: Competition | null;
     isLoading: boolean;
   }> {
     const id = this.activatedRoute.snapshot.params['id'];
 
     if (!id) {
-      return of({ sport: null, isLoading: false });
+      return of({ competition: null, isLoading: false });
     }
 
     const parsedId = Number(id);
     if (isNaN(parsedId)) {
-      return of({ sport: null, isLoading: false });
+      return of({ competition: null, isLoading: false });
     }
 
-    return this.sportsService.getSportById(parsedId).pipe(
+    return this.competitionService.getCompetitionById(parsedId).pipe(
       takeUntilDestroyed(),
-      map((sport) => ({ sport, isLoading: false })),
-      startWith({ sport: null, isLoading: true }),
+      map((competition) => ({ competition, isLoading: false })),
+      startWith({ competition: null, isLoading: true }),
       catchError((error) => {
         if (error.status === HttpStatusCode.NotFound) {
-          return of({ sport: null, isLoading: false });
+          return of({ competition: null, isLoading: false });
         }
         return throwError(() => error);
       }),

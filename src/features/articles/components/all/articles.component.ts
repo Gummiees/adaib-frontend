@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CardGroupComponent } from '@shared/components/card-group/card-group.component';
+import { Card } from '@shared/components/card/card';
 import { articles } from '../../content/articles';
 
 @Component({
@@ -11,12 +12,11 @@ import { articles } from '../../content/articles';
 })
 export class ArticlesComponent {
   public articles = articles;
-  public cards = this.articles.map((article) => ({
+  public cards: Card[] = this.articles.map((article) => ({
     id: article.id,
     title: article.title,
     subtitle: article.subtitle,
-    url: 'noticias',
     imageUrl: article.imageUrl,
-    imgAlt: article.imgAlt,
+    imageAlt: 'Imagen para la noticia ' + article.title,
   }));
 }

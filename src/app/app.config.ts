@@ -3,6 +3,7 @@ import {
   ApplicationConfig,
   ErrorHandler,
   inject,
+  LOCALE_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
@@ -17,6 +18,7 @@ import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: LOCALE_ID, useValue: 'es-ES' },
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptors([httpErrorInterceptor])),
     provideZoneChangeDetection({ eventCoalescing: true }),

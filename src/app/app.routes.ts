@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LandingComponent } from '@features/landing/landing.component';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
-import { SportDetailsResolverService } from '@features/sports/services/sport-resolver.service';
+import { SportsService } from '@features/sports/services/sports.service';
 
 export const routes: Routes = [
   { path: 'inicio', component: LandingComponent },
@@ -29,20 +29,9 @@ export const routes: Routes = [
   },
   {
     path: 'deportes',
-    loadComponent: () =>
-      import('@features/sports/components/all/sports.component').then(
-        (m) => m.SportsComponent,
-      ),
-  },
-  {
-    path: 'deportes/:id',
-    loadComponent: () =>
-      import('@features/sports/components/individual/sport.component').then(
-        (m) => m.SportComponent,
-      ),
-    resolve: {
-      sport: SportDetailsResolverService,
-    },
+    loadChildren: () =>
+      import('@features/sports/sports.routes').then((m) => m.sportsRoutes),
+    providers: [SportsService],
   },
   { path: '**', component: NotFoundComponent },
 ];

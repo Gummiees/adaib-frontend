@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 
@@ -9,4 +9,11 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [MatButtonModule, RouterModule],
 })
-export class NotFoundComponent {}
+export class NotFoundComponent {
+  public title = input<string>('Página no encontrada');
+  public subtitle = input<string>(
+    'Lo sentimos, no encontramos la página que estás buscando.',
+  );
+  public buttonText = input<string>('Ir a la página de inicio');
+  public buttonLink = input<string>('/');
+}

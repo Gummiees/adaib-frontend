@@ -1,8 +1,7 @@
 export interface Card {
-  id: string;
+  id: number;
   title: string;
-  subtitle: string;
-  url: string;
+  subtitle?: string | null;
   imageUrl?: string | null;
-  imgAlt?: string | null;
+  imageAlt?: string | null;
 }

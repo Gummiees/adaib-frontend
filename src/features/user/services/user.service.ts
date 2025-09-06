@@ -12,7 +12,13 @@ export class UserService {
 
   login(userRequest: UserRequest): Observable<User> {
     // FIXME: use real values
-    return of({ id: '1', email: 'test@test.com' }).pipe(delay(1000));
+    return of({
+      id: 1,
+      email: 'test@test.com',
+      authToken: 'test',
+      refreshToken: 'test',
+      expiresAt: new Date(),
+    }).pipe(delay(1000));
     return this.httpClient.post<User>(
       `${environment.apiUrl}/user/login`,
       userRequest,

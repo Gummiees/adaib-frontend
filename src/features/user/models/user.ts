@@ -1,6 +1,9 @@
 export interface User {
-  id: string;
+  id: number;
   email: string;
+  authToken: string;
+  refreshToken: string;
+  expiresAt: Date;
 }
 
 export interface UserRequest {

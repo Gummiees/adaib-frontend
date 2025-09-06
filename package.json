@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --configuration development",
     "build": "ng build && npm run sentry:sourcemaps",
     "watch": "ng build --watch --configuration development",
     "stylelint": "stylelint \"src/**/*.scss\"",

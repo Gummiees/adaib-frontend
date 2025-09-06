@@ -2,7 +2,7 @@ import { Article } from '../models/article';
 
 export const articles: Article[] = [
   {
-    id: '1',
+    id: 1,
     title: '🏀 Nueva Temporada de Baloncesto Comienza',
     subtitle:
       'La liga local arranca con grandes expectativas y equipos renovados',
@@ -27,11 +27,10 @@ export const articles: Article[] = [
     `,
     imageUrl:
       'https://i.postimg.cc/HLMkxKYd/9-Tzi8yw-Rz924-XE3u-Ha-D6-DZ3-Ef-Idb-Oi-Ylv-IROR5vlq-Ue-Rrex-Toc-ZGob-KRJ9od-gnk3-B-Ce-KTm-TAs-Ijj6-Q0-Ya-YTHEBe5u-X-28-Sva-P.webp',
-    imgAlt: 'Equipos de baloncesto en acción',
   },
 
   {
-    id: '2',
+    id: 2,
     title: '🏆 Torneo de Verano: ¡Inscripciones Abiertas!',
     subtitle: 'El torneo más esperado del año ya tiene fecha y lugar definidos',
     content: `
@@ -68,11 +67,10 @@ export const articles: Article[] = [
     `,
     imageUrl:
       'https://i.postimg.cc/90mmLQGQ/4-K1-JIJO-250905-Manly-Warriors-008-jpg.webp',
-    imgAlt: 'Jugadores de baloncesto en competencia',
   },
 
   {
-    id: '3',
+    id: 3,
     title: '🏃‍♂️ Nuevas Instalaciones Deportivas Inauguradas',
     subtitle:
       'Modernas canchas y equipamiento de última generación para todos los deportistas',
@@ -127,11 +125,10 @@ export const articles: Article[] = [
     `,
     imageUrl:
       'https://i.postimg.cc/jqcdLybw/uleb-statement-on-recent-discussions-regarding-the-future-of-european-basketball.jpg',
-    imgAlt: 'Nuevas instalaciones deportivas modernas',
   },
 
   {
-    id: '4',
+    id: 4,
     title: '👨‍🏫 Nuevo Programa de Entrenamiento Personalizado',
     subtitle:
       'Sistema de coaching individual para maximizar el rendimiento deportivo',
@@ -185,6 +182,5 @@ export const articles: Article[] = [
     `,
     imageUrl:
       'https://i.postimg.cc/HLMkxKYd/9-Tzi8yw-Rz924-XE3u-Ha-D6-DZ3-Ef-Idb-Oi-Ylv-IROR5vlq-Ue-Rrex-Toc-ZGob-KRJ9od-gnk3-B-Ce-KTm-TAs-Ijj6-Q0-Ya-YTHEBe5u-X-28-Sva-P.webp',
-    imgAlt: 'Entrenador personal trabajando con deportista',
   },
 ];

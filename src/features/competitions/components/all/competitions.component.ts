@@ -2,15 +2,15 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
-import { SportsService } from '@features/sports/services/sports.service';
 import { Card } from '@shared/components/card/card';
 import { CardComponent } from '@shared/components/card/card.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { Observable, map } from 'rxjs';
+import { CompetitionsService } from '../services/competitions.service';
 
 @Component({
-  selector: 'app-sports',
-  templateUrl: './sports.component.html',
+  selector: 'app-competitions',
+  templateUrl: './competitions.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -20,19 +20,19 @@ import { Observable, map } from 'rxjs';
     NotFoundComponent,
   ],
 })
-export class SportsComponent {
-  public sportsService = inject(SportsService);
+export class CompetitionsComponent {
+  public competitionsService = inject(CompetitionsService);
 
-  public sportCards$: Observable<Card[] | null> = this.sportsService
-    .getAllSports()
+  public competitionCards$: Observable<Card[] | null> = this.competitionsService
+    .getAllCompetitions()
     .pipe(
       takeUntilDestroyed(),
       map(
-        (sports) =>
-          sports?.map((sport) => ({
-            id: sport.id,
-            title: sport.name,
-            subtitle: sport.description,
+        (competitions) =>
+          competitions?.map((competition) => ({
+            id: competition.id,
+            title: competition.name,
+            subtitle: competition.description,
           })) ?? [],
       ),
     );

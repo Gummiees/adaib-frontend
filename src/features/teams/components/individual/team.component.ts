@@ -6,44 +6,44 @@ import { ActivatedRoute } from '@angular/router';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { catchError, map, Observable, of, startWith, throwError } from 'rxjs';
-import { Sport } from '../../models/sport';
-import { SportsService } from '../../services/sports.service';
+import { Team } from '../../models/team';
+import { TeamsService } from '../../services/teams.service';
 
 @Component({
-  selector: 'app-sport',
-  templateUrl: './sport.component.html',
+  selector: 'app-team',
+  templateUrl: './team.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NotFoundComponent, FullSpinnerComponent, CommonModule],
+  imports: [NotFoundComponent, CommonModule, FullSpinnerComponent],
 })
-export class SportComponent {
+export class TeamComponent {
   private activatedRoute = inject(ActivatedRoute);
-  private sportsService = inject(SportsService);
+  private teamsService = inject(TeamsService);
 
-  public sportWithLoading$ = this.getSport();
+  public teamWithLoading$ = this.getTeam();
 
-  private getSport(): Observable<{
-    sport: Sport | null;
+  private getTeam(): Observable<{
+    team: Team | null;
     isLoading: boolean;
   }> {
     const id = this.activatedRoute.snapshot.params['id'];
 
     if (!id) {
-      return of({ sport: null, isLoading: false });
+      return of({ team: null, isLoading: false });
     }
 
     const parsedId = Number(id);
     if (isNaN(parsedId)) {
-      return of({ sport: null, isLoading: false });
+      return of({ team: null, isLoading: false });
     }
 
-    return this.sportsService.getSportById(parsedId).pipe(
+    return this.teamsService.getTeamById(parsedId).pipe(
       takeUntilDestroyed(),
-      map((sport) => ({ sport, isLoading: false })),
-      startWith({ sport: null, isLoading: true }),
+      map((team) => ({ team, isLoading: false })),
+      startWith({ team: null, isLoading: true }),
       catchError((error) => {
         if (error.status === HttpStatusCode.NotFound) {
-          return of({ sport: null, isLoading: false });
+          return of({ team: null, isLoading: false });
         }
         return throwError(() => error);
       }),
