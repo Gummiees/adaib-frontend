@@ -7,5 +7,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
+  host: {
+    class: 'landing-page',
+  },
 })
 export class LandingComponent {}
