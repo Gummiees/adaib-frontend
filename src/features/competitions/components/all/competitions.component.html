@@ -1,7 +1,17 @@
 <div class="relative">
-  @if(!allCompetitions()) {
+  @if(failedToLoadCompetitions()) {
+    <div class="grid h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
+      <div class="flex flex-col items-center justify-center gap-y-6 text-center">
+        <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl">Hubo un error</h1>
+        <p class="text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">Lo sentimos, hubo un error al cargar las competiciones. Inténtelo más tarde.</p>
+        <div class="flex items-center justify-center gap-x-6">
+          <button (click)="reloadCompetitions()" matButton="filled" ariaLabel="Volver a cargar">Volver a cargar</button>
+        </div>
+      </div>
+    </div>
+  } @else if(isLoading()) {
     <app-full-spinner></app-full-spinner>
-  } @else if(allCompetitions()!.length > 0) {
+  } @else if(allCompetitions() && allCompetitions()!.length > 0) {
     <div class="p-4 sm:p-8 flex flex-col items-center justify-center gap-6">
       <h1 class="text-4xl font-bold">Competiciones</h1>
       <div class="w-full flex flex-col items-center gap-2">

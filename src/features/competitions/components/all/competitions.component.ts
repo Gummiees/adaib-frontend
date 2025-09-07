@@ -7,11 +7,12 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
-import { catchError, of } from 'rxjs';
+import { BehaviorSubject, catchError, of, switchMap, tap } from 'rxjs';
 import { CompetitionStatus } from '../../models/competition';
 import { CompetitionsService } from '../services/competitions.service';
 import { CompetitionCardComponent } from './competition-card/competition-card.component';
@@ -28,15 +29,32 @@ import { CompetitionCardComponent } from './competition-card/competition-card.co
     CompetitionCardComponent,
     MatSelectModule,
     MatFormFieldModule,
+    MatButtonModule,
   ],
 })
 export class CompetitionsComponent {
   public competitionsService = inject(CompetitionsService);
 
+  private reloadTrigger = new BehaviorSubject<void>(undefined);
+  public failedToLoadCompetitions = signal(false);
+  public isLoading = signal(false);
   public allCompetitions = toSignal(
-    this.competitionsService.getAllCompetitions().pipe(
+    this.reloadTrigger.pipe(
       takeUntilDestroyed(),
-      catchError(() => of([])),
+      switchMap(() => {
+        this.isLoading.set(true);
+        this.failedToLoadCompetitions.set(false);
+        return this.competitionsService.getAllCompetitions().pipe(
+          tap(() => {
+            this.isLoading.set(false);
+          }),
+          catchError(() => {
+            this.failedToLoadCompetitions.set(true);
+            this.isLoading.set(false);
+            return of([]);
+          }),
+        );
+      }),
     ),
     { initialValue: null },
   );
@@ -89,5 +107,11 @@ export class CompetitionsComponent {
 
   public onSeasonFilterChange(season: number | null): void {
     this.seasonFilter.set(season);
+  }
+
+  public reloadCompetitions(): void {
+    this.failedToLoadCompetitions.set(false);
+    this.isLoading.set(true);
+    this.reloadTrigger.next();
   }
 }

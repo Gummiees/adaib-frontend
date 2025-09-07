@@ -9,23 +9,32 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 
-import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
+import {
+  provideRouter,
+  Router,
+  withInMemoryScrolling,
+  withRouterConfig,
+} from '@angular/router';
 import { environment } from '@environments/environment';
 import { provideStore } from '@ngrx/store';
 import * as Sentry from '@sentry/angular';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
+import { retryInterceptor } from '@shared/interceptors/retry.interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: LOCALE_ID, useValue: 'es-ES' },
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptors([credentialsInterceptor])),
+    provideHttpClient(
+      withInterceptors([retryInterceptor, credentialsInterceptor]),
+    ),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideStore(),
     provideRouter(
       routes,
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+      withRouterConfig({ onSameUrlNavigation: 'reload' }),
     ),
     environment.providers,
     {
