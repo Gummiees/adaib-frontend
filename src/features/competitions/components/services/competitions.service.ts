@@ -1,12 +1,7 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpStatusCode,
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { delay, Observable, of, throwError } from 'rxjs';
-import { fakeCompetitions } from '../../../../fakes/fakes';
+import { Observable } from 'rxjs';
 import { Competition, DetailedCompetition } from '../../models/competition';
 
 @Injectable()
@@ -14,30 +9,12 @@ export class CompetitionsService {
   private http = inject(HttpClient);
 
   getAllCompetitions(): Observable<Competition[]> {
-    // FIXME: use real values
-    // return of(fakeCompetitions).pipe(delay(1000));
-
     return this.http.get<Competition[]>(
       `${environment.apiUrl}/Competition/all`,
     );
   }
 
   getCompetitionById(id: number): Observable<DetailedCompetition> {
-    // FIXME: use real values
-    const competition = fakeCompetitions.find(
-      (competition) => competition.id === id,
-    );
-    if (!competition) {
-      return throwError(
-        () =>
-          new HttpErrorResponse({
-            status: HttpStatusCode.NotFound,
-            error: 'Competition not found',
-          }),
-      ).pipe(delay(1000));
-    }
-    return of(competition).pipe(delay(1000));
-
     return this.http.get<DetailedCompetition>(
       `${environment.apiUrl}/Competition/${id}`,
     );

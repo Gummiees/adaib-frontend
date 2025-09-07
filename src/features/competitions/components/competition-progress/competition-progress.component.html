@@ -1,0 +1,16 @@
+<p class="text-base text-gray-600 line-clamp-2">
+  @switch (status()) {
+    @case ('NotStarted') {
+      <span class="text-gray-500">No iniciada</span>
+    }
+    @case ('Ongoing') {
+      <span class="text-green-500">En juego</span>
+    }
+    @case ('Finished') {
+      <span class="text-red-500">Finalizada</span>
+    }
+  }
+</p>
+<div class="w-full hidden sm:block">
+  <mat-progress-bar mode="determinate" [value]="progress()" [class]="statusClass()"></mat-progress-bar>
+</div>

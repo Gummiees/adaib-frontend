@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { CompetitionCardComponent } from '../competition-card/competition-card.component';
@@ -16,6 +18,8 @@ import { CompetitionsService } from '../services/competitions.service';
     CommonModule,
     NotFoundComponent,
     CompetitionCardComponent,
+    MatSelectModule,
+    MatFormFieldModule,
   ],
 })
 export class CompetitionsComponent {

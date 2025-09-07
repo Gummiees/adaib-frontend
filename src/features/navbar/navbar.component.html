@@ -51,9 +51,9 @@
   <!-- Mobile menu -->
   <div [ngClass]="isMenuOpen() ? ['h-auto', 'pointer-events-auto'] : ['h-0', 'pointer-events-none']" class="sm:hidden overflow-hidden" id="mobile-menu">
     <div class="p-3 flex flex-col gap-y-4">
-        <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Inicio</a>
-        <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Noticias</a>
-        <a routerLink="/competiciones" routerLinkActive #competitionsRla="routerLinkActive" [ngClass]="competitionsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="competitionsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Competiciones</a>
+        <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="block rounded-md px-3 py-3 text-base text-md font-medium" (click)="closeMenus()">Inicio</a>
+        <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-3 text-base text-md font-medium" (click)="closeMenus()">Noticias</a>
+        <a routerLink="/competiciones" routerLinkActive #competitionsRla="routerLinkActive" [ngClass]="competitionsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="competitionsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-3 text-base text-md font-medium" (click)="closeMenus()">Competiciones</a>
     </div>
   </div>
 </nav>
