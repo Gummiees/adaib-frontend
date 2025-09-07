@@ -36,3 +36,16 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+// Hide the Material Design form field subscript wrapper globally
+// This removes the unnecessary bottom space from mat-select and other form fields
+.mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+// Alternative approach: Set height to 0 if you want to keep the element but make it invisible
+// .mat-mdc-form-field-subscript-wrapper {
+//   height: 0 !important;
+//   min-height: 0 !important;
+//   overflow: hidden !important;
+// }

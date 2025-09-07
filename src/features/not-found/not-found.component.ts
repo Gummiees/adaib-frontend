@@ -16,4 +16,5 @@ export class NotFoundComponent {
   );
   public buttonText = input<string>('Ir a la página de inicio');
   public buttonLink = input<string>('/');
+  public hideButton = input<boolean>(false);
 }
