@@ -12,7 +12,7 @@ import { articles } from '../../content/articles';
 })
 export class ArticlesComponent {
   public articles = articles;
-  public cards: Card[] = this.articles.map((article) => ({
+  public cards: Card[] = this.articles.map<Card>((article) => ({
     id: article.id,
     title: article.title,
     subtitle: article.subtitle,

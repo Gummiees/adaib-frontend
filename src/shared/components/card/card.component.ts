@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Card } from './card';
 
@@ -12,4 +17,11 @@ import { Card } from './card';
 })
 export class CardComponent {
   card = input.required<Card>();
+
+  routerLink = computed(() => {
+    if (this.card().link) {
+      return [this.card().link, this.card().id];
+    }
+    return [this.card().id];
+  });
 }

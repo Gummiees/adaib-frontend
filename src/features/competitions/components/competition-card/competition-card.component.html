@@ -1,0 +1,37 @@
+<a class="p-2 relative flex flex-col cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200 transition-all duration-300 ease-in-out"
+[routerLink]="['/competiciones', competition().id]" aria-label="Ir a la competición" tabindex="0">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      @if (competition().imageUrl) {
+        <div class="aspect-[1/1] overflow-hidden rounded-t-md">
+          <img
+            [src]="competition().imageUrl"
+            [alt]="'Imagen para la competición ' + competition().name"
+            class="w-[32px] object-cover">
+        </div>
+      }
+      <div class="flex flex-col gap-y-1">
+        <h2 class="text-xl font-semibold text-gray-900 line-clamp-2">{{ competition().name }}</h2>
+        <p class="text-base text-gray-600 line-clamp-2">{{ competition().sportName }}</p>
+      </div>
+    </div>
+    <div class="flex flex-col gap-y-1 sm:min-w-32 sm:mr-10">
+      <p class="text-base text-gray-600 line-clamp-2">
+        @switch (competition().status) {
+          @case ('NotStarted') {
+            <span class="text-gray-500">No iniciada</span>
+          }
+          @case ('Ongoing') {
+            <span class="text-green-500">En juego</span>
+          }
+          @case ('Finished') {
+            <span class="text-red-500">Finalizada</span>
+          }
+        }
+      </p>
+      <div class="w-full hidden sm:block">
+        <mat-progress-bar mode="determinate" [value]="progress()" [class]="statusClass()"></mat-progress-bar>
+      </div>
+    </div>
+  </div>
+</a>

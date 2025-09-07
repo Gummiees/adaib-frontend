@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
+import { CompetitionsService } from '@features/competitions/components/services/competitions.service';
 import { LandingComponent } from '@features/landing/landing.component';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
-import { SportsService } from '@features/sports/services/sports.service';
 
 export const routes: Routes = [
   { path: 'inicio', component: LandingComponent },
@@ -28,10 +28,12 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'deportes',
+    path: 'competiciones',
     loadChildren: () =>
-      import('@features/sports/sports.routes').then((m) => m.sportsRoutes),
-    providers: [SportsService],
+      import('@features/competitions/competitions.routes').then(
+        (m) => m.competitionsRoutes,
+      ),
+    providers: [CompetitionsService],
   },
   { path: '**', component: NotFoundComponent },
 ];

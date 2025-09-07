@@ -21,7 +21,7 @@
         <div class="flex space-x-4">
           <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Inicio</a>
           <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Noticias</a>
-          <a routerLink="/deportes" routerLinkActive #sportsRla="routerLinkActive" [ngClass]="sportsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="sportsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Deportes</a>
+          <a routerLink="/competiciones" routerLinkActive #competitionsRla="routerLinkActive" [ngClass]="competitionsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="competitionsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Competiciones</a>
         </div>
       </div>
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -53,7 +53,7 @@
     <div class="p-3 flex flex-col gap-y-4">
         <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Inicio</a>
         <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Noticias</a>
-        <a routerLink="/deportes" routerLinkActive #sportsRla="routerLinkActive" [ngClass]="sportsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="sportsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Deportes</a>
+        <a routerLink="/competiciones" routerLinkActive #competitionsRla="routerLinkActive" [ngClass]="competitionsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="competitionsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-2 text-base text-sm font-medium" (click)="closeMenus()">Competiciones</a>
     </div>
   </div>
 </nav>

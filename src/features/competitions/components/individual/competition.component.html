@@ -19,6 +19,9 @@
         @if(competitionWithLoading.competition.endDate) {
           <p>Fin: {{ competitionWithLoading.competition.endDate | date: 'dd/MM/yyyy' }}</p>
         }
+        <p>Activo: {{ competitionWithLoading.competition.active }}</p>
+        <app-teams [teams]="competitionWithLoading.competition.teams"></app-teams>
+
       </div>
     } @else {
       <app-not-found title="Competición no encontrada" subtitle="Lo sentimos, no se ha encontrado la competición." buttonText="Ir a la página de competiciones" buttonLink="/competiciones"></app-not-found>

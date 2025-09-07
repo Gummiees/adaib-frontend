@@ -4,4 +4,5 @@ export interface Card {
   subtitle?: string | null;
   imageUrl?: string | null;
   imageAlt?: string | null;
+  link?: string | null;
 }

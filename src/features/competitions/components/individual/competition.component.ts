@@ -4,9 +4,10 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
+import { TeamsComponent } from '@features/teams/components/all/teams.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { catchError, map, Observable, of, startWith, throwError } from 'rxjs';
-import { Competition } from '../../models/competition';
+import { DetailedCompetition } from '../../models/competition';
 import { CompetitionsService } from '../services/competitions.service';
 
 @Component({
@@ -14,7 +15,12 @@ import { CompetitionsService } from '../services/competitions.service';
   templateUrl: './competition.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NotFoundComponent, FullSpinnerComponent],
+  imports: [
+    CommonModule,
+    NotFoundComponent,
+    FullSpinnerComponent,
+    TeamsComponent,
+  ],
 })
 export class CompetitionComponent {
   private activatedRoute = inject(ActivatedRoute);
@@ -23,7 +29,7 @@ export class CompetitionComponent {
   public competitionWithLoading$ = this.getCompetition();
 
   private getCompetition(): Observable<{
-    competition: Competition | null;
+    competition: DetailedCompetition | null;
     isLoading: boolean;
   }> {
     const id = this.activatedRoute.snapshot.params['id'];

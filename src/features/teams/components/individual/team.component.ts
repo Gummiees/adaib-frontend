@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { catchError, map, Observable, of, startWith, throwError } from 'rxjs';
-import { Team } from '../../models/team';
+import { DetailedTeam } from '../../models/team';
 import { TeamsService } from '../../services/teams.service';
 
 @Component({
@@ -23,7 +23,7 @@ export class TeamComponent {
   public teamWithLoading$ = this.getTeam();
 
   private getTeam(): Observable<{
-    team: Team | null;
+    team: DetailedTeam | null;
     isLoading: boolean;
   }> {
     const id = this.activatedRoute.snapshot.params['id'];

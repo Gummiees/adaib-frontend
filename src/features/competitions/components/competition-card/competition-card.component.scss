@@ -1,0 +1,24 @@
+@use '@angular/material' as mat;
+
+// Customize progress bar colors to match the status text colors
+mat-progress-bar {
+  // Default colors
+  --mat-progress-bar-active-indicator-color: #6b7280; // gray-500
+  --mat-progress-bar-track-color: #e5e7eb; // gray-200
+
+  // Override colors based on competition status
+  &.status-not-started {
+    --mat-progress-bar-active-indicator-color: #6b7280; // gray-500
+    --mat-progress-bar-track-color: #e5e7eb; // gray-200
+  }
+
+  &.status-ongoing {
+    --mat-progress-bar-active-indicator-color: #10b981; // green-500
+    --mat-progress-bar-track-color: #e5e7eb; // gray-200
+  }
+
+  &.status-finished {
+    --mat-progress-bar-active-indicator-color: #ef4444; // red-500
+    --mat-progress-bar-track-color: #e5e7eb; // gray-200
+  }
+}
