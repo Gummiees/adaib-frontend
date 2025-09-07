@@ -13,14 +13,14 @@ import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
 import { environment } from '@environments/environment';
 import { provideStore } from '@ngrx/store';
 import * as Sentry from '@sentry/angular';
-import { httpErrorInterceptor } from '@shared/interceptors/http-error.interceptor';
+import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: LOCALE_ID, useValue: 'es-ES' },
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptors([httpErrorInterceptor])),
+    provideHttpClient(withInterceptors([credentialsInterceptor])),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideStore(),
     provideRouter(
