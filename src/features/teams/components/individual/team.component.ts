@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { HttpStatusCode } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
-import { catchError, map, Observable, of, startWith, throwError } from 'rxjs';
+import { catchError, map, Observable, of, startWith } from 'rxjs';
 import { DetailedTeam } from '../../models/team';
 import { TeamsService } from '../../services/teams.service';
 
@@ -41,12 +40,7 @@ export class TeamComponent {
       takeUntilDestroyed(),
       map((team) => ({ team, isLoading: false })),
       startWith({ team: null, isLoading: true }),
-      catchError((error) => {
-        if (error.status === HttpStatusCode.NotFound) {
-          return of({ team: null, isLoading: false });
-        }
-        return throwError(() => error);
-      }),
+      catchError(() => of({ team: null, isLoading: false })),
     );
   }
 }

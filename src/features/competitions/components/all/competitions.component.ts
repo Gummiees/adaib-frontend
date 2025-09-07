@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
+import { catchError, of } from 'rxjs';
 import { CompetitionStatus } from '../../models/competition';
 import { CompetitionsService } from '../services/competitions.service';
 import { CompetitionCardComponent } from './competition-card/competition-card.component';
@@ -33,7 +34,10 @@ export class CompetitionsComponent {
   public competitionsService = inject(CompetitionsService);
 
   public allCompetitions = toSignal(
-    this.competitionsService.getAllCompetitions().pipe(takeUntilDestroyed()),
+    this.competitionsService.getAllCompetitions().pipe(
+      takeUntilDestroyed(),
+      catchError(() => of([])),
+    ),
     { initialValue: null },
   );
 

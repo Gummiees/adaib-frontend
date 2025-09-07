@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { HttpStatusCode } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { TeamsComponent } from '@features/teams/components/all/teams.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
-import { catchError, map, Observable, of, startWith, throwError } from 'rxjs';
+import { catchError, map, Observable, of, startWith } from 'rxjs';
 import { DetailedCompetition } from '../../models/competition';
 import { CompetitionsService } from '../services/competitions.service';
 
@@ -47,12 +46,7 @@ export class CompetitionComponent {
       takeUntilDestroyed(),
       map((competition) => ({ competition, isLoading: false })),
       startWith({ competition: null, isLoading: true }),
-      catchError((error) => {
-        if (error.status === HttpStatusCode.NotFound) {
-          return of({ competition: null, isLoading: false });
-        }
-        return throwError(() => error);
-      }),
+      catchError(() => of({ competition: null, isLoading: false })),
     );
   }
 }
