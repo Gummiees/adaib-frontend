@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { delay, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Competition, DetailedCompetition } from '../../models/competition';
 
 @Injectable()
@@ -11,10 +11,7 @@ export class CompetitionsService {
   getAllCompetitions(): Observable<Competition[]> {
     return this.http
       .get<Competition[]>(`${environment.apiUrl}/Competition/all`)
-      .pipe(
-        map((competitions) => this.parseCompetitionDates(competitions)),
-        delay(1000),
-      );
+      .pipe(map((competitions) => this.parseCompetitionDates(competitions)));
   }
 
   getCompetitionById(id: number): Observable<DetailedCompetition> {

@@ -5,7 +5,7 @@ import {
   input,
 } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { CompetitionStatus } from '../../models/competition';
+import { CompetitionStatus } from '../../../models/competition';
 
 @Component({
   selector: 'app-competition-progress',

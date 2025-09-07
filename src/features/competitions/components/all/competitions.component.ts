@@ -12,8 +12,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { CompetitionStatus } from '../../models/competition';
-import { CompetitionCardComponent } from '../competition-card/competition-card.component';
 import { CompetitionsService } from '../services/competitions.service';
+import { CompetitionCardComponent } from './competition-card/competition-card.component';
 
 @Component({
   selector: 'app-competitions',
