@@ -13,7 +13,7 @@ yarn.lock
 # Environment files
 /.env
 
-src/environments/environment.*.ts
+src/environments/
 
 # Angular CLI and build artefacts
 /.angular-cli.json
