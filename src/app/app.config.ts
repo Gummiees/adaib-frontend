@@ -15,7 +15,6 @@ import {
   withInMemoryScrolling,
   withRouterConfig,
 } from '@angular/router';
-import { environment } from '@environments/environment';
 import { provideStore } from '@ngrx/store';
 import * as Sentry from '@sentry/angular';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
@@ -36,7 +35,6 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
       withRouterConfig({ onSameUrlNavigation: 'reload' }),
     ),
-    environment.providers,
     {
       provide: ErrorHandler,
       useValue: Sentry.createErrorHandler(),
