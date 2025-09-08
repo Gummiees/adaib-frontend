@@ -20,18 +20,18 @@ export class CompetitionProgressComponent {
   startDate = input<Date | null>();
   endDate = input<Date | null>();
   progress = computed(() => {
-    const startDate = this.startDate();
-    const endDate = this.endDate();
-    if (!startDate || !endDate) {
-      return 1;
-    }
-
     switch (this.status()) {
       case 'NotStarted':
         return 1;
       case 'Finished':
         return 100;
       case 'Ongoing': {
+        const startDate = this.startDate();
+        const endDate = this.endDate();
+        if (!startDate || !endDate) {
+          return 1;
+        }
+
         const progress = this.getProgress(startDate, endDate);
         return Math.max(0, Math.min(100, progress));
       }
