@@ -1,27 +1,15 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TeamsComponent } from '@features/competition/components/tabs/teams/teams.component';
+import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
-import { DetailedCompetition } from '@shared/models/competition';
-import {
-  BehaviorSubject,
-  catchError,
-  map,
-  Observable,
-  of,
-  switchMap,
-  tap,
-} from 'rxjs';
-import { CompetitionService } from '../services/competition.service';
+import { map } from 'rxjs';
+import { competitionEvent } from '../store/competition-events';
+import { CompetitionStore } from '../store/competition-store';
 import { ResultsComponent } from './tabs/results/results.component';
 
 @Component({
@@ -39,33 +27,14 @@ import { ResultsComponent } from './tabs/results/results.component';
   ],
 })
 export class CompetitionComponent {
+  public competitionStore = inject(CompetitionStore);
   private activatedRoute = inject(ActivatedRoute);
-  private competitionService = inject(CompetitionService);
   private router = inject(Router);
+  private dispatcher = inject(Dispatcher);
 
-  private reloadTrigger = new BehaviorSubject<void>(undefined);
-  public failedToLoadCompetition = signal(false);
-  public isLoading = signal(false);
-  public competition = toSignal(
-    this.reloadTrigger.pipe(
-      takeUntilDestroyed(),
-      switchMap(() => {
-        this.isLoading.set(true);
-        this.failedToLoadCompetition.set(false);
-        return this.getCompetition().pipe(
-          tap(() => {
-            this.isLoading.set(false);
-          }),
-          catchError(() => {
-            this.failedToLoadCompetition.set(true);
-            this.isLoading.set(false);
-            return of(null);
-          }),
-        );
-      }),
-    ),
-    { initialValue: null },
-  );
+  constructor() {
+    this.getCompetition();
+  }
 
   // Get the current tab from query parameters
   public currentTab = toSignal(
@@ -93,9 +62,7 @@ export class CompetitionComponent {
   };
 
   public reloadCompetition(): void {
-    this.failedToLoadCompetition.set(false);
-    this.isLoading.set(true);
-    this.reloadTrigger.next();
+    this.getCompetition();
   }
 
   public onTabChange(index: number): void {
@@ -122,18 +89,22 @@ export class CompetitionComponent {
     this.router.navigate([baseUrl], { queryParams });
   }
 
-  private getCompetition(): Observable<DetailedCompetition | null> {
+  private getCompetition(): void {
     const id = this.activatedRoute.snapshot.params['id'];
 
     if (!id) {
-      return of(null);
+      return;
     }
 
     const parsedId = Number(id);
     if (isNaN(parsedId)) {
-      return of(null);
+      return;
     }
 
-    return this.competitionService.getCompetitionById(parsedId);
+    if (this.competitionStore.competition()?.id === parsedId) {
+      return;
+    }
+
+    this.dispatcher.dispatch(competitionEvent.getCompetition(parsedId));
   }
 }

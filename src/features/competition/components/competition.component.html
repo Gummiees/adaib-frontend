@@ -1,37 +1,37 @@
 <div class="relative">
-  @if(failedToLoadCompetition()) {
+  @if(competitionStore.error()) {
     <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al cargar la competición. Inténtelo más tarde." buttonText="Volver a cargar" (buttonClicked)="reloadCompetition()"></app-not-found>
-  } @else if(isLoading()) {
+  } @else if(competitionStore.isLoading()) {
     <app-full-spinner></app-full-spinner>
-  } @else if(competition()) {
+  } @else if(competitionStore.competition()) {
     <div class="pt-6 pb-4 flex flex-col items-center justify-center gap-6">
-      <h1 class="text-4xl font-bold text-center">{{ competition()!.name }}</h1>
+      <h1 class="text-4xl font-bold text-center">{{ competitionStore.competition()!.name }}</h1>
       <mat-tab-group class="w-full" [selectedIndex]="currentTab()" (selectedTabChange)="onTabChange($event.index)">
         <mat-tab label="Resumen">
-          @if(competition()!.imageUrl) {
-            <img [src]="competition()!.imageUrl" [alt]="'Imagen para la competición ' + competition()!.name" />
+          @if(competitionStore.competition()!.imageUrl) {
+            <img [src]="competitionStore.competition()!.imageUrl" [alt]="'Imagen para la competición ' + competitionStore.competition()!.name" />
           }
-          @if(competition()!.description) {
-            <p>{{ competition()!.description }}</p>
+          @if(competitionStore.competition()!.description) {
+            <p>{{ competitionStore.competition()!.description }}</p>
           }
-          <p>Estado: {{ competition()!.status }}</p>
-          @if(competition()!.startDate) {
-            <p>Inicio: {{ competition()!.startDate | date: 'dd/MM/yyyy' }}</p>
+          <p>Estado: {{ competitionStore.competition()!.status }}</p>
+          @if(competitionStore.competition()!.startDate) {
+            <p>Inicio: {{ competitionStore.competition()!.startDate | date: 'dd/MM/yyyy' }}</p>
           }
-          @if(competition()!.endDate) {
-            <p>Fin: {{ competition()!.endDate | date: 'dd/MM/yyyy' }}</p>
+          @if(competitionStore.competition()!.endDate) {
+            <p>Fin: {{ competitionStore.competition()!.endDate | date: 'dd/MM/yyyy' }}</p>
           }
-          <p>Activo: {{ competition()!.active }}</p>
+          <p>Activo: {{ competitionStore.competition()!.active }}</p>
         </mat-tab>
         <mat-tab label="Clasificación">
 
         </mat-tab>
         <mat-tab label="Resultados">
-          <app-results [competition]="competition()!"></app-results>
+          <app-results [competition]="competitionStore.competition()!"></app-results>
         </mat-tab>
         <mat-tab label="Equipos">
           <ng-template matTabContent>
-            <app-teams [teams]="competition()!.teams"></app-teams>
+            <app-teams [teams]="competitionStore.competition()!.teams"></app-teams>
           </ng-template>
         </mat-tab>
       </mat-tab-group>
