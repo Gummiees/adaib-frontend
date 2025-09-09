@@ -1,16 +1,14 @@
-<div class="relative bg-white shadow-sm">
-  @if(articleWithLoading$ | async; as articleWithLoading) {
-    @if(articleWithLoading.isLoading) {
-      <app-full-spinner></app-full-spinner>
-    } @else if(articleWithLoading.article) {
-      <div class="p-4 sm:p-8 flex flex-col items-center justify-center gap-4">
-        <h1 class="text-3xl font-bold">{{ articleWithLoading.article.title }}</h1>
-        <img class="rounded-md" [src]="articleWithLoading.article.imageUrl" [alt]="'Imagen para la noticia ' + articleWithLoading.article.title" />
-        <p class="text-lg">{{ articleWithLoading.article.subtitle }}</p>
-        <div class="max-w-4xl article-content" [innerHTML]="articleWithLoading.safeContent"></div>
-      </div>
-    } @else {
-      <app-not-found title="Noticia no encontrada" subtitle="Lo sentimos, no se ha encontrado la noticia." buttonText="Ir a la página de noticias" buttonLink="/noticias"></app-not-found>
-    }
+@if(articleWithLoading$ | async; as articleWithLoading) {
+  @if(articleWithLoading.isLoading) {
+    <app-full-spinner></app-full-spinner>
+  } @else if(articleWithLoading.article) {
+    <div class="p-4 sm:p-8 flex flex-col items-center justify-center gap-4">
+      <h1 class="text-3xl font-bold text-center">{{ articleWithLoading.article.title }}</h1>
+      <img class="rounded-md" [src]="articleWithLoading.article.imageUrl" [alt]="'Imagen para la noticia ' + articleWithLoading.article.title" />
+      <p class="text-lg">{{ articleWithLoading.article.subtitle }}</p>
+      <div class="max-w-4xl article-content" [innerHTML]="articleWithLoading.safeContent"></div>
+    </div>
+  } @else {
+    <app-not-found title="Noticia no encontrada" subtitle="Lo sentimos, no se ha encontrado la noticia." buttonText="Ir a la página de noticias" (buttonClicked)="onNotFoundButtonClick()"></app-not-found>
   }
-</div>
+}

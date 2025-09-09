@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
-import { CompetitionsService } from '@features/competitions/components/services/competitions.service';
+import { CompetitionService } from '@features/competition/services/competition.service';
+import { CompetitionsService } from '@features/competitions/services/competitions.service';
 import { LandingComponent } from '@features/landing/landing.component';
-import { NotFoundComponent } from '@features/not-found/not-found.component';
+import { TeamService } from '@features/team/services/team.service';
+import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 
 export const routes: Routes = [
   { path: 'inicio', component: LandingComponent },
@@ -29,11 +31,27 @@ export const routes: Routes = [
   },
   {
     path: 'competiciones',
-    loadChildren: () =>
-      import('@features/competitions/competitions.routes').then(
-        (m) => m.competitionsRoutes,
+    loadComponent: () =>
+      import('@features/competitions/components/competitions.component').then(
+        (m) => m.CompetitionsComponent,
       ),
     providers: [CompetitionsService],
+  },
+  {
+    path: 'competiciones/:id',
+    loadComponent: () =>
+      import('@features/competition/components/competition.component').then(
+        (m) => m.CompetitionComponent,
+      ),
+    providers: [CompetitionService],
+  },
+  {
+    path: 'competiciones/:id/equipos/:teamId',
+    loadComponent: () =>
+      import('@features/team/components/team.component').then(
+        (m) => m.TeamComponent,
+      ),
+    providers: [TeamService],
   },
   { path: '**', component: NotFoundComponent },
 ];

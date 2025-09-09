@@ -1,0 +1,46 @@
+<div class="relative">
+  @if(failedToLoadCompetitions()) {
+    <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al cargar las competiciones. Inténtelo más tarde." buttonText="Volver a cargar" (buttonClicked)="reloadCompetitions()"></app-not-found>
+  } @else if(isLoading()) {
+    <app-full-spinner></app-full-spinner>
+  } @else if(allCompetitions() && allCompetitions()!.length > 0) {
+    <div class="pt-6 pb-4 flex flex-col items-center justify-center gap-6">
+      <h1 class="text-4xl font-bold text-center">Competiciones</h1>
+      <div class="w-full flex flex-col items-center gap-2">
+        <div class="flex flex-col sm:flex-row gap-1 w-full sm:w-auto">
+          <mat-form-field>
+            <mat-label>Estado</mat-label>
+            <mat-select [value]="statusFilter()" (selectionChange)="onStatusFilterChange($event.value)">
+              <mat-option value="all">Todas</mat-option>
+              <mat-option value="NotStarted">No iniciadas</mat-option>
+              <mat-option value="Ongoing">En juego</mat-option>
+              <mat-option value="Finished">Finalizadas</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Temporada</mat-label>
+            <mat-select [value]="seasonFilter()" (selectionChange)="onSeasonFilterChange($event.value)">
+              <mat-option [value]="null">Cualquier temporada</mat-option>
+              @for (season of seasons(); track season.value) {
+                <mat-option [value]="season.value">{{ season.display }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        @if(filteredCompetitions()! && filteredCompetitions()!.length > 0) {
+        <div class="flex flex-col w-full shadow-sm bg-white rounded-lg border-t border-gray-200">
+          @for (card of filteredCompetitions()!; track card.id) {
+            <div class="border-b border-gray-200">
+              <app-competition-card class="w-full" [competition]="card"></app-competition-card>
+            </div>
+          }
+        </div>
+        } @else {
+          <app-not-found title="No hay competiciones " subtitle="No hay competiciones con ese filtro." [hideButton]="true"></app-not-found>
+        }
+      </div>
+    </div>
+  } @else {
+    <app-not-found title="No hay competiciones" subtitle="Lo sentimos, no hay competiciones disponibles en este momento." buttonText="Ir a la página de inicio" (buttonClicked)="onNotFoundButtonClick()"></app-not-found>
+  }
+</div>

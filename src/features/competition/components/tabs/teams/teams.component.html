@@ -1,0 +1,13 @@
+
+<div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
+  <h2 class="text-4xl font-bold text-center">Equipos</h2>
+  @if(teams().length > 0) {
+    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (team of teams(); track team.id) {
+        <app-team-card [team]="team"></app-team-card>
+      }
+    </div>
+  } @else {
+    <app-not-found title="No hay equipos" subtitle="No hay equipos para esta competición." [hideButton]="true"></app-not-found>
+  }
+</div>

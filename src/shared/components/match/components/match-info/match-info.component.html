@@ -1,0 +1,16 @@
+
+@if(!match().date) {
+  <p class="text-md text-gray-500">N/D</p>
+} @else {
+  <div class="flex items-center gap-2">
+    @if(match().date) {
+    <p class="text-md text-gray-500">{{ match().date | date: 'dd/MM/yyyy' }}</p>
+    }
+    @if(match().date && match().location) {
+      <p class="text-md text-gray-500">-</p>
+    }
+    @if(match().location) {
+      <p class="text-md text-gray-500">{{ match().location }}</p>
+    }
+  </div>
+}

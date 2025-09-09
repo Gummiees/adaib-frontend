@@ -1,16 +1,17 @@
-import { Classification } from '@features/competitions/models/classification';
-import { DetailedCompetition } from '@features/competitions/models/competition';
-import { Group } from '@features/competitions/models/group';
-import { Phase } from '@features/competitions/models/phase';
-import { DetailedTeam } from '@features/teams/models/team';
-import { Match } from '@shared/models/match';
+import { Classification } from '@shared/models/classification';
+import { DetailedApiCompetition } from '@shared/models/competition';
+import { ApiGroup } from '@shared/models/group';
+import { ApiMatch } from '@shared/models/match';
+import { ApiPhase } from '@shared/models/phase';
+import { DetailedTeam } from '@shared/models/team';
 
 let _fakeTeams: DetailedTeam[] = [
   {
     id: 1,
     name: 'Equipo 1',
     description: 'Descripción 1',
-    imageUrl: 'https://via.placeholder.com/150',
+    imageUrl:
+      'https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/142px-FC_Barcelona_%28crest%29.svg.png',
     active: true,
     location: 'Sa Pobla',
     phaseName: 'Semifinales',
@@ -21,7 +22,8 @@ let _fakeTeams: DetailedTeam[] = [
     id: 2,
     name: 'Equipo 2',
     description: 'Descripción 2',
-    imageUrl: 'https://via.placeholder.com/150',
+    imageUrl:
+      'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
     active: true,
     location: 'Palma',
     phaseName: 'Finales',
@@ -30,7 +32,7 @@ let _fakeTeams: DetailedTeam[] = [
   },
 ];
 
-export const fakeMatches: Match[] = [
+export const fakeMatches: ApiMatch[] = [
   {
     id: 1,
     round: 1,
@@ -41,6 +43,20 @@ export const fakeMatches: Match[] = [
   {
     id: 2,
     round: 1,
+    homeTeamId: _fakeTeams[0].id,
+    awayTeamId: _fakeTeams[1].id,
+    status: 'NotStarted',
+    date: new Date(),
+  },
+  {
+    id: 3,
+    round: 1,
+    homeTeamId: _fakeTeams[0].id,
+    status: 'Rest',
+  },
+  {
+    id: 4,
+    round: 1,
     homeTeamId: _fakeTeams[1].id,
     awayTeamId: _fakeTeams[0].id,
     status: 'Ongoing',
@@ -50,21 +66,42 @@ export const fakeMatches: Match[] = [
     location: 'Sa Pobla',
   },
   {
-    id: 3,
+    id: 5,
     round: 1,
     homeTeamId: _fakeTeams[0].id,
     awayTeamId: _fakeTeams[1].id,
     status: 'Finished',
     homeTeamScore: 1,
     awayTeamScore: 0,
-    date: new Date(new Date().setDate(new Date().getDate() + 1)),
+    date: new Date(new Date().setDate(new Date().getDate() - 1)),
+    location: 'Sa Pobla',
+  },
+  {
+    id: 6,
+    round: 1,
+    homeTeamId: _fakeTeams[0].id,
+    awayTeamId: _fakeTeams[1].id,
+    status: 'Cancelled',
+    location: 'Sa Pobla',
+  },
+  {
+    id: 7,
+    round: 1,
+    homeTeamId: _fakeTeams[0].id,
+    awayTeamId: _fakeTeams[1].id,
+    status: 'Postponed',
+    date: new Date(new Date().setDate(new Date().getDate() + 3)),
     location: 'Sa Pobla',
   },
 ];
 
 _fakeTeams = _fakeTeams.map((team) => ({
   ...team,
-  matches: fakeMatches,
+  matches: fakeMatches.map((match) => ({
+    ...match,
+    homeTeam: _fakeTeams.find((team) => team.id === match.homeTeamId)!,
+    awayTeam: _fakeTeams.find((team) => team.id === match.awayTeamId)!,
+  })),
 }));
 
 export const fakeTeams = _fakeTeams;
@@ -82,7 +119,7 @@ export const fakeClassification: Classification[] = [
   },
 ];
 
-export const fakeGroups: Group[] = [
+export const fakeGroups: ApiGroup[] = [
   {
     id: 1,
     name: 'Grupo 1',
@@ -99,22 +136,35 @@ export const fakeGroups: Group[] = [
     classification: fakeClassification,
     actualRound: 2,
   },
+  {
+    id: 3,
+    name: 'Grupo 3',
+    teamIds: _fakeTeams.map((team) => team.id),
+    matches: [],
+    classification: fakeClassification,
+    actualRound: 3,
+  },
 ];
 
-export const faksePhases: Phase[] = [
+export const faksePhases: ApiPhase[] = [
+  {
+    id: 2,
+    name: 'Finales',
+    groups: fakeGroups,
+  },
   {
     id: 1,
     name: 'Semifinales',
     groups: fakeGroups,
   },
   {
-    id: 2,
-    name: 'Finales',
-    groups: fakeGroups,
+    id: 1,
+    name: 'Fase de grupos',
+    groups: [],
   },
 ];
 
-export const fakeCompetitions: DetailedCompetition[] = [
+export const fakeCompetitions: DetailedApiCompetition[] = [
   {
     id: 1,
     name: 'La Liga',

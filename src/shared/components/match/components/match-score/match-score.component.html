@@ -1,0 +1,33 @@
+
+@if(!match().awayTeam) {
+  <p class="text-md uppercase font-semibold">Descansa</p>
+} @else {
+  @switch (match().status) {
+    @case ('Finished') {
+      <div class="flex items-center gap-2">
+        <p class="text-xl font-semibold">{{ match().homeTeamScore || 0 }}</p>
+        <p class="text-xl font-semibold">-</p>
+        <p class="text-xl font-semibold">{{ match().awayTeamScore || 0 }}</p>
+      </div>
+    }
+    @case ('Ongoing') {
+      <div class="flex items-center gap-2">
+        <p class="text-xl font-semibold">{{ match().homeTeamScore || 0 }}</p>
+        <p class="text-xl font-semibold">-</p>
+        <p class="text-xl font-semibold">{{ match().awayTeamScore || 0 }}</p>
+      </div>
+    }
+    @case ('NotStarted') {
+      <p class="text-md uppercase font-semibold">Pendiente</p>
+    }
+    @case ('Rest') {
+      <p class="text-md uppercase font-semibold">Descansa</p>
+    }
+    @case ('Cancelled') {
+      <p class="text-md uppercase font-semibold">Cancelado</p>
+    }
+    @case ('Postponed') {
+      <p class="text-md uppercase font-semibold">Postpuesto</p>
+    }
+  }
+}

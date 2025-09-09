@@ -1,0 +1,25 @@
+<a class="py-2 px-4 relative flex flex-col cursor-pointer hover:bg-gray-100 active:bg-gray-200 focus:bg-gray-200 transition-all duration-300 ease-in-out"
+[routerLink]="['/competiciones', competition().id]" aria-label="Ir a la competición" tabindex="0">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      @if (competition().imageUrl) {
+        <div class="aspect-[1/1] overflow-hidden rounded-t-md">
+          <img
+            [src]="competition().imageUrl"
+            [alt]="'Imagen para la competición ' + competition().name"
+            class="w-[32px] object-scale-down">
+        </div>
+      } @else {
+        <mat-icon class="!w-[28px] !h-[28px] !text-[28px] border-[2px] box-content rounded-full flex items-center justify-center" aria-hidden="false" aria-label="Icono de la competición" fontIcon="emoji_events"></mat-icon>
+      }
+      <div class="flex flex-col gap-y-1">
+        <h2 class="text-xl font-semibold text-gray-900 line-clamp-2">{{ competition().name }}</h2>
+        <p class="text-base text-gray-600 line-clamp-2">{{ competition().sportName }}</p>
+        <app-competition-progress class="sm:hidden" [status]="competition().status" [startDate]="competition().startDate" [endDate]="competition().endDate"></app-competition-progress>
+      </div>
+    </div>
+    <div class="hidden sm:flex flex-col gap-y-1 sm:min-w-32 sm:mr-10">
+      <app-competition-progress [status]="competition().status" [startDate]="competition().startDate" [endDate]="competition().endDate"></app-competition-progress>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,30 @@
+
+<div class="relative">
+  @if(teamWithLoading$ | async; as teamWithLoading) {
+    @if(teamWithLoading.isLoading) {
+      <app-full-spinner></app-full-spinner>
+    } @else if(teamWithLoading.team) {
+      <div class="p-8 flex flex-col items-center justify-center gap-6">
+        <h1 class="text-4xl font-bold text-center">Equipo</h1>
+        <p>{{ teamWithLoading.team.name }}</p>
+        @if(teamWithLoading.team.shortName) {
+          <p>Short Name: {{ teamWithLoading.team.shortName }}</p>
+        }
+        @if(teamWithLoading.team.imageUrl) {
+          <img [src]="teamWithLoading.team.imageUrl" [alt]="'Imagen para el equipo ' + teamWithLoading.team.name" />
+        }
+        @if(teamWithLoading.team.description) {
+          <p>{{ teamWithLoading.team.description }}</p>
+        }
+        @if(teamWithLoading.team.location) {
+          <p>Location: {{ teamWithLoading.team.location }}</p>
+        }
+        <p>Fase: {{ teamWithLoading.team.phaseName }}</p>
+        <p>Grupo: {{ teamWithLoading.team.groupName }}</p>
+        <p>Activo: {{ teamWithLoading.team.active }}</p>
+      </div>
+    } @else {
+      <app-not-found title="Equipo no encontrado" subtitle="Lo sentimos, no se ha encontrado el equipo." buttonText="Ir a la página de equipos" (buttonClicked)="onNotFoundButtonClick()"></app-not-found>
+    }
+  }
+</div>

@@ -8,10 +8,10 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { articles } from '@features/articles/content/articles';
-import { NotFoundComponent } from '@features/not-found/not-found.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
+import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { map, Observable, of, startWith } from 'rxjs';
 import { Article } from '../../models/article';
 
@@ -27,7 +27,7 @@ import { Article } from '../../models/article';
 export class ArticleComponent {
   private activatedRoute = inject(ActivatedRoute);
   private sanitizer = inject(DomSanitizer);
-
+  private router = inject(Router);
   public articleWithLoading$ = this.getArticle();
 
   constructor() {
@@ -36,6 +36,10 @@ export class ArticleComponent {
       next: (result) => console.log('Article observable emitted:', result),
       error: (error) => console.log('Article observable error:', error),
     });
+  }
+
+  public onNotFoundButtonClick(): void {
+    this.router.navigate(['/noticias']);
   }
 
   private getArticle(): Observable<{
