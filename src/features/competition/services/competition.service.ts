@@ -8,6 +8,7 @@ import {
 import { ApiGroup, Group } from '@shared/models/group';
 import { ApiMatch, Match } from '@shared/models/match';
 import { ApiPhase, Phase } from '@shared/models/phase';
+import { Round } from '@shared/models/round';
 import { Team } from '@shared/models/team';
 import { map, Observable } from 'rxjs';
 
@@ -35,21 +36,33 @@ export class CompetitionService {
   private parsePhases(phases: ApiPhase[], teams: Team[]): Phase[] {
     return phases.map((phase) => ({
       ...phase,
-      groups: this.parseGroups(phase.groups, teams),
+      groups: this.parseGroups(phase.groups, teams, phase.rounds),
     }));
   }
 
-  private parseGroups(groups: ApiGroup[], teams: Team[]): Group[] {
+  private parseGroups(
+    groups: ApiGroup[],
+    teams: Team[],
+    rounds: Round[],
+  ): Group[] {
     return groups.map((group) => ({
       ...group,
-      matches: this.parseMatches(group.matches, teams),
+      matches: this.parseMatches(group.matches, teams, rounds),
     }));
   }
 
-  private parseMatches(matches: ApiMatch[], teams: Team[]): Match[] {
+  private parseMatches(
+    matches: ApiMatch[],
+    teams: Team[],
+    rounds: Round[],
+  ): Match[] {
     return matches.map<Match>((match) => {
       const homeTeam = teams.find((team) => team.id === match.homeTeamId);
       const awayTeam = teams.find((team) => team.id === match.awayTeamId);
+      const round = rounds.find((round) => round.id === match.roundId);
+      if (!round) {
+        throw new Error('Round not found');
+      }
       if (!homeTeam) {
         throw new Error('Home team not found');
       }
@@ -57,6 +70,7 @@ export class CompetitionService {
         ...match,
         homeTeam: homeTeam,
         awayTeam: awayTeam,
+        round: round,
       };
     });
   }
