@@ -61,17 +61,22 @@ export class CompetitionProgressComponent {
   private getProgress(startDate: Date, endDate: Date): number {
     const now = new Date();
 
-    if (startDate > endDate || startDate > now) {
+    if (startDate > now) {
       return 1;
     }
 
-    if (endDate < now) {
-      return 1;
+    if (startDate > endDate || endDate < now) {
+      return 100;
     }
 
     const start = new Date(startDate);
     const end = new Date(endDate);
     const totalDuration = end.getTime() - start.getTime();
+
+    if (totalDuration === 0) {
+      return 50;
+    }
+
     const elapsed = now.getTime() - start.getTime();
     return this.getProgressPercentage(elapsed, totalDuration);
   }
