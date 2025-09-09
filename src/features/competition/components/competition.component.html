@@ -6,7 +6,7 @@
   } @else if(competition()) {
     <div class="pt-6 pb-4 flex flex-col items-center justify-center gap-6">
       <h1 class="text-4xl font-bold text-center">{{ competition()!.name }}</h1>
-      <mat-tab-group class="w-full">
+      <mat-tab-group class="w-full" [selectedIndex]="currentTab()" (selectedTabChange)="onTabChange($event.index)">
         <mat-tab label="Resumen">
           @if(competition()!.imageUrl) {
             <img [src]="competition()!.imageUrl" [alt]="'Imagen para la competición ' + competition()!.name" />

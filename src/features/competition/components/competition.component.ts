@@ -15,6 +15,7 @@ import { DetailedCompetition } from '@shared/models/competition';
 import {
   BehaviorSubject,
   catchError,
+  map,
   Observable,
   of,
   switchMap,
@@ -66,6 +67,27 @@ export class CompetitionComponent {
     { initialValue: null },
   );
 
+  // Get the current tab from query parameters
+  public currentTab = toSignal(
+    this.activatedRoute.queryParams.pipe(
+      takeUntilDestroyed(),
+      map((params) => {
+        const tab = params['tab'];
+        switch (tab) {
+          case 'clasificacion':
+            return 1;
+          case 'resultados':
+            return 2;
+          case 'equipos':
+            return 3;
+          default:
+            return 0; // Default to Resumen tab
+        }
+      }),
+    ),
+    { initialValue: 0 },
+  );
+
   public onNotFoundButtonClick = (): void => {
     this.router.navigate(['/competiciones']);
   };
@@ -74,6 +96,30 @@ export class CompetitionComponent {
     this.failedToLoadCompetition.set(false);
     this.isLoading.set(true);
     this.reloadTrigger.next();
+  }
+
+  public onTabChange(index: number): void {
+    const competitionId = this.activatedRoute.snapshot.params['id'];
+    const baseUrl = `/competiciones/${competitionId}`;
+
+    let queryParams: { tab?: string } = {};
+
+    switch (index) {
+      case 0:
+        // No query parameter for Resumen tab
+        break;
+      case 1:
+        queryParams = { tab: 'clasificacion' };
+        break;
+      case 2:
+        queryParams = { tab: 'resultados' };
+        break;
+      case 3:
+        queryParams = { tab: 'equipos' };
+        break;
+    }
+
+    this.router.navigate([baseUrl], { queryParams });
   }
 
   private getCompetition(): Observable<DetailedCompetition | null> {
