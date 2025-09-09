@@ -3,7 +3,7 @@
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-3">
       @if (competition().imageUrl) {
-        <div class="aspect-[1/1] overflow-hidden rounded-t-md">
+        <div class="aspect-square overflow-hidden rounded-t-md">
           <img
             [src]="competition().imageUrl"
             [alt]="'Imagen para la competición ' + competition().name"

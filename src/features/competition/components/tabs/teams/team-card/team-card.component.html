@@ -2,7 +2,7 @@
 [routerLink]="['equipos', team().id]">
   <div class="flex flex-col items-center gap-y-4">
     @if (team().imageUrl) {
-      <div class="aspect-[1:1] overflow-hidden rounded-t-md">
+      <div class="aspect-square overflow-hidden rounded-t-md">
         <img
           [src]="team().imageUrl"
           [alt]="'Imagen para el equipo ' + team().name"

@@ -1,6 +1,6 @@
 
 @if(!match().awayTeam) {
-  <p class="text-md uppercase font-semibold">Descansa</p>
+  <p class="text-base uppercase font-semibold">Descansa</p>
 } @else {
   @switch (match().status) {
     @case ('Finished') {
@@ -18,16 +18,16 @@
       </div>
     }
     @case ('NotStarted') {
-      <p class="text-md uppercase font-semibold">Pendiente</p>
+      <p class="text-base uppercase font-semibold">Pendiente</p>
     }
     @case ('Rest') {
-      <p class="text-md uppercase font-semibold">Descansa</p>
+      <p class="text-base uppercase font-semibold">Descansa</p>
     }
     @case ('Cancelled') {
-      <p class="text-md uppercase font-semibold">Cancelado</p>
+      <p class="text-base uppercase font-semibold">Cancelado</p>
     }
     @case ('Postponed') {
-      <p class="text-md uppercase font-semibold">Postpuesto</p>
+      <p class="text-base uppercase font-semibold">Postpuesto</p>
     }
   }
 }
