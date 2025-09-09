@@ -6,16 +6,16 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
+import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { CompetitionStatus } from '@shared/models/competition';
-import { BehaviorSubject, catchError, of, switchMap, tap } from 'rxjs';
-import { CompetitionsService } from '../services/competitions.service';
+import { getCompetitionsEvent } from '../store/competitions-events';
+import { CompetitionsStore } from '../store/competitions-store';
 import { CompetitionCardComponent } from './competition-card/competition-card.component';
 
 @Component({
@@ -34,37 +34,18 @@ import { CompetitionCardComponent } from './competition-card/competition-card.co
   ],
 })
 export class CompetitionsComponent {
-  public competitionsService = inject(CompetitionsService);
+  public competitionsStore = inject(CompetitionsStore);
   private router = inject(Router);
+  private dispatcher = inject(Dispatcher);
 
-  private reloadTrigger = new BehaviorSubject<void>(undefined);
-  public failedToLoadCompetitions = signal(false);
-  public isLoading = signal(false);
-  public allCompetitions = toSignal(
-    this.reloadTrigger.pipe(
-      takeUntilDestroyed(),
-      switchMap(() => {
-        this.isLoading.set(true);
-        this.failedToLoadCompetitions.set(false);
-        return this.competitionsService.getAllCompetitions().pipe(
-          tap(() => {
-            this.isLoading.set(false);
-          }),
-          catchError(() => {
-            this.failedToLoadCompetitions.set(true);
-            this.isLoading.set(false);
-            return of([]);
-          }),
-        );
-      }),
-    ),
-    { initialValue: null },
-  );
+  constructor() {
+    this.getCompetitions();
+  }
 
   public statusFilter = signal<CompetitionStatus | 'all' | null>(null);
   public seasonFilter = signal<number | null>(null);
   public seasons = computed<{ display: string; value: number }[]>(() => {
-    const competitions = this.allCompetitions();
+    const competitions = this.competitionsStore.competitions();
     if (!competitions) {
       return [];
     }
@@ -84,7 +65,7 @@ export class CompetitionsComponent {
   });
 
   public filteredCompetitions = computed(() => {
-    const competitions = this.allCompetitions();
+    const competitions = this.competitionsStore.competitions();
     const filter = this.statusFilter();
     const seasonFilter = this.seasonFilter();
 
@@ -116,8 +97,14 @@ export class CompetitionsComponent {
   }
 
   public reloadCompetitions(): void {
-    this.failedToLoadCompetitions.set(false);
-    this.isLoading.set(true);
-    this.reloadTrigger.next();
+    this.getCompetitions();
+  }
+
+  private getCompetitions(): void {
+    if (this.competitionsStore.competitions()) {
+      return;
+    }
+
+    this.dispatcher.dispatch(getCompetitionsEvent());
   }
 }

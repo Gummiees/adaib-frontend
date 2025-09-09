@@ -7,7 +7,7 @@ import { getErrorMessage } from '@shared/utils/utils';
 import { filter, switchMap } from 'rxjs/operators';
 import { CompetitionService } from '../services/competition.service';
 import { competitionApiEvent } from './competition-api-events';
-import { competitionEvent } from './competition-events';
+import { getCompetitionEvent } from './competition-events';
 
 type CompetitionState = {
   competition: DetailedCompetition | null;
@@ -26,7 +26,7 @@ const initialState: CompetitionState = {
 export const CompetitionStore = signalStore(
   withState(initialState),
   withReducer(
-    on(competitionEvent.getCompetition, ({ payload: id }) => ({
+    on(getCompetitionEvent, ({ payload: id }) => ({
       isLoading: true,
       competitionId: id,
       error: null,
@@ -50,7 +50,7 @@ export const CompetitionStore = signalStore(
       events = inject(Events),
       competitionService = inject(CompetitionService),
     ) => ({
-      login$: events.on(competitionEvent.getCompetition).pipe(
+      login$: events.on(getCompetitionEvent).pipe(
         filter(() => !!store.competitionId()),
         switchMap(() =>
           competitionService.getCompetitionById(store.competitionId()!).pipe(

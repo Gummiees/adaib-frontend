@@ -1,9 +1,9 @@
 <div class="relative">
-  @if(failedToLoadCompetitions()) {
+  @if(competitionsStore.error()) {
     <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al cargar las competiciones. Inténtelo más tarde." buttonText="Volver a cargar" (buttonClicked)="reloadCompetitions()"></app-not-found>
-  } @else if(isLoading()) {
+  } @else if(competitionsStore.isLoading()) {
     <app-full-spinner></app-full-spinner>
-  } @else if(allCompetitions() && allCompetitions()!.length > 0) {
+  } @else if(competitionsStore.competitions() && competitionsStore.competitions()!.length > 0) {
     <div class="pt-6 pb-4 flex flex-col items-center justify-center gap-6">
       <h1 class="text-4xl font-bold text-center">Competiciones</h1>
       <div class="w-full flex flex-col items-center gap-2">

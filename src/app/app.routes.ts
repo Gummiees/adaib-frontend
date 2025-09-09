@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { CompetitionService } from '@features/competition/services/competition.service';
 import { CompetitionStore } from '@features/competition/store/competition-store';
 import { CompetitionsService } from '@features/competitions/services/competitions.service';
+import { CompetitionsStore } from '@features/competitions/store/competitions-store';
 import { LandingComponent } from '@features/landing/landing.component';
 import { TeamService } from '@features/team/services/team.service';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
@@ -36,7 +37,7 @@ export const routes: Routes = [
       import('@features/competitions/components/competitions.component').then(
         (m) => m.CompetitionsComponent,
       ),
-    providers: [CompetitionsService],
+    providers: [CompetitionsService, CompetitionsStore],
   },
   {
     path: 'competiciones/:id',

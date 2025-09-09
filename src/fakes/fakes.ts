@@ -9,8 +9,8 @@ import { DetailedTeam } from '@shared/models/team';
 let _fakeTeams: DetailedTeam[] = [
   {
     id: 1,
-    name: 'CA TEVA PROPERTIES – MANANTIAL',
-    shortName: 'CA TEVA',
+    name: 'FC Barcelona',
+    shortName: 'FCB',
     description: 'Descripción 1',
     imageUrl:
       'https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/142px-FC_Barcelona_%28crest%29.svg.png',
@@ -29,6 +29,18 @@ let _fakeTeams: DetailedTeam[] = [
     active: true,
     location: 'Palma',
     phaseName: 'Finales',
+    groupName: 'Grupo 1',
+    matches: [],
+  },
+  {
+    id: 3,
+    name: 'Test',
+    description: 'Descripción 3',
+    imageUrl:
+      'https://www.aidebcompeticiones.com/master/teams/005208/005208.png',
+    active: false,
+    location: 'Manacor',
+    phaseName: 'Fase de grupos',
     groupName: 'Grupo 1',
     matches: [],
   },
@@ -231,9 +243,9 @@ export const fakeCompetitions: DetailedApiCompetition[] = [
     startDate: new Date(new Date().setDate(new Date().getDate() + 10)),
     imageUrl:
       'https://www.aidebcompeticiones.com/clients/aideb/leagues/000068/000068_thumb.png',
-    active: true,
+    active: false,
     status: 'NotStarted',
-    teams: _fakeTeams,
-    phases: faksePhases,
+    teams: [],
+    phases: [],
   },
 ];

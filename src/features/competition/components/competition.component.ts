@@ -8,7 +8,7 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { map } from 'rxjs';
-import { competitionEvent } from '../store/competition-events';
+import { getCompetitionEvent } from '../store/competition-events';
 import { CompetitionStore } from '../store/competition-store';
 import { ResultsComponent } from './tabs/results/results.component';
 
@@ -105,6 +105,6 @@ export class CompetitionComponent {
       return;
     }
 
-    this.dispatcher.dispatch(competitionEvent.getCompetition(parsedId));
+    this.dispatcher.dispatch(getCompetitionEvent(parsedId));
   }
 }
