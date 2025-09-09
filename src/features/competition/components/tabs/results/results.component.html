@@ -1,24 +1,78 @@
 <div class="w-full pt-6 pb-4 flex flex-col gap-2">
   <h2 class="text-4xl font-bold text-center">Resultados</h2>
-  @if(filteredCompetition().phases.length > 0) {
+  @if(competition().phases.length > 0) {
+    <div class="flex flex-col md:flex-row gap-2 w-full sm:w-auto">
+      <mat-form-field>
+        <mat-label>Fase</mat-label>
+        <mat-select [value]="phaseFilter()" (selectionChange)="onPhaseFilterChange($event.value)">
+          <mat-option value="all">Todas</mat-option>
+          @for (phase of availablePhases(); track phase.id) {
+            <mat-option [value]="phase">{{ phase.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      @if(availableGroups().length > 0) {
+        <mat-form-field>
+          <mat-label>Grupo</mat-label>
+          <mat-select [value]="groupFilter()" (selectionChange)="onGroupFilterChange($event.value)">
+            <mat-option value="all">Todos</mat-option>
+            @for (group of availableGroups(); track group.id) {
+              <mat-option [value]="group">{{ group.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      @if(availableRounds().length > 0) {
+        <mat-form-field>
+          <mat-label>Jornada</mat-label>
+          <mat-select [value]="roundFilter()" (selectionChange)="onRoundFilterChange($event.value)">
+            <mat-option value="all">Todas</mat-option>
+            @for (round of availableRounds(); track round.id) {
+              <mat-option [value]="round">{{ round.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Agrupar</mat-label>
+          <mat-select [value]="groupByRound()" (selectionChange)="onGroupByRoundChange($event.value)">
+            <mat-option [value]="false">No agrupar</mat-option>
+            <mat-option [value]="true">Agrupar por jornadas</mat-option>
+          </mat-select>
+        </mat-form-field>
+      }
+    </div>
+  }
+
+
+  @if(groupByRound()) {
+    @if(filteredCompetitionByRound().phases.length > 0) {
+      @for (phase of filteredCompetitionByRound().phases; track phase.id) {
+        @for (round of phase.roundsWithMatches; track round.id) {
+          <h3 class="text-xl font-bold text-center py-1">{{ round.name }}</h3>
+          @if(round.matches.length > 0) {
+            @for (match of round.matches; track match.id) {
+              <app-match [match]="match"></app-match>
+            }
+          }
+        }
+      }
+    }
+  } @else if(filteredCompetition().phases.length > 0) {
     @for (phase of filteredCompetition().phases; track phase.id) {
-      <h3 class="text-3xl font-bold text-center pt-2">{{ phase.name }}</h3>
       @if(phase.groups.length > 0) {
         @for (group of phase.groups; track group.id) {
-          <h4 class="text-lg font-bold text-center py-2">{{ group.name }}</h4>
           @if(group.matches.length > 0) {
             @for (match of group.matches; track match.id) {
               <app-match [match]="match"></app-match>
             }
-          } @else {
-            <app-not-found title="No hay partidos" subtitle="No hay partidos para este grupo." [hideButton]="true"></app-not-found>
           }
         }
-      }@else {
-        <app-not-found title="No hay grupos" subtitle="No hay grupos para esta fase." [hideButton]="true"></app-not-found>
       }
     }
-  } @else {
-    <app-not-found title="No hay resultados" subtitle="No hay resultados para esta competición." [hideButton]="true"></app-not-found>
+  }
+
+  @if(!hasVisibleMatches()) {
+    <app-not-found title="No hay resultados disponibles" subtitle="No hay resultados que coincidan con los filtros seleccionados." [hideButton]="true"></app-not-found>
   }
 </div>

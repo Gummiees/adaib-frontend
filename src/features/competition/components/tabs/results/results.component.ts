@@ -1,28 +1,46 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   computed,
   input,
+  QueryList,
   signal,
+  ViewChildren,
 } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
-import { DetailedCompetition } from '@shared/models/competition';
+import {
+  DetailedCompetition,
+  DetailedCustomCompetition,
+} from '@shared/models/competition';
 import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
+import { Round } from '@shared/models/round';
 
 @Component({
   selector: 'app-results',
   templateUrl: './results.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatchComponent, NotFoundComponent],
+  imports: [
+    MatchComponent,
+    NotFoundComponent,
+    MatSelectModule,
+    MatFormFieldModule,
+  ],
 })
-export class ResultsComponent {
+export class ResultsComponent implements AfterViewInit {
   public competition = input.required<DetailedCompetition>();
-  public phaseFilter = signal<Phase | null>(null);
-  public groupFilter = signal<Group | null>(null);
-  public roundFilter = signal<number | null>(null);
+  public phaseFilter = signal<Phase | 'all'>('all');
+  public groupFilter = signal<Group | 'all'>('all');
+  public roundFilter = signal<Round | 'all'>('all');
+  public groupByRound = signal<boolean>(false);
+
+  @ViewChildren(MatchComponent) matchComponents!: QueryList<MatchComponent>;
+  public hasVisibleMatches = signal<boolean>(false);
 
   public filteredCompetition = computed<DetailedCompetition>(() => {
     const competition = this.competition();
@@ -30,71 +48,125 @@ export class ResultsComponent {
     const phaseFilter = this.phaseFilter();
     const groupFilter = this.groupFilter();
     const roundFilter = this.roundFilter();
-    if (phaseFilter || groupFilter || roundFilter) {
-      if (phaseFilter) {
-        filteredCompetition = {
-          ...filteredCompetition,
-          phases: competition.phases.filter(
-            (phase) => phase.id === phaseFilter.id,
-          ),
-        };
-      }
-      if (groupFilter) {
-        filteredCompetition = {
-          ...filteredCompetition,
-          phases: filteredCompetition.phases.map((phase) => ({
-            ...phase,
-            groups: phase.groups.filter((group) => group.id === groupFilter.id),
-          })),
-        };
-      }
-      if (roundFilter) {
-        filteredCompetition = {
-          ...filteredCompetition,
-          phases: filteredCompetition.phases.map((phase) => ({
-            ...phase,
-            groups: phase.groups.map((group) => ({
-              ...group,
-              matches: group.matches.filter(
-                (match) => match.round === roundFilter,
-              ),
-            })),
-          })),
-        };
-      }
+    if (phaseFilter !== 'all') {
+      filteredCompetition = {
+        ...filteredCompetition,
+        phases: competition.phases.filter(
+          (phase) => phase.id === phaseFilter.id,
+        ),
+      };
     }
+    if (groupFilter !== 'all') {
+      filteredCompetition = {
+        ...filteredCompetition,
+        phases: filteredCompetition.phases.map((phase) => ({
+          ...phase,
+          groups: phase.groups.filter((group) => group.id === groupFilter.id),
+        })),
+      };
+    }
+    if (roundFilter !== 'all') {
+      filteredCompetition = {
+        ...filteredCompetition,
+        phases: filteredCompetition.phases.map((phase) => ({
+          ...phase,
+          groups: phase.groups.map((group) => ({
+            ...group,
+            matches: group.matches.filter(
+              (match) => match.round.id === roundFilter.id,
+            ),
+          })),
+        })),
+      };
+    }
+
     return filteredCompetition;
   });
 
+  public filteredCompetitionByRound = computed<DetailedCustomCompetition>(
+    () => {
+      const competition = this.filteredCompetition();
+      return {
+        ...competition,
+        phases: competition.phases.map((phase) => ({
+          ...phase,
+          roundsWithMatches: phase.rounds
+            .map((round) => ({
+              ...round,
+              matches: phase.groups
+                .flatMap((group) => group.matches)
+                .filter((match) => match.round.id === round.id),
+            }))
+            .filter((round) => round.matches.length > 0),
+        })),
+      };
+    },
+  );
+
   public availablePhases = computed<Phase[]>(() => {
     return [
-      ...new Set(
-        this.competition().phases.filter((phase) =>
-          phase.groups.some((group) => group.matches.length > 0),
-        ),
-      ),
+      ...new Set(this.competition().phases.filter((phase) => phase.groups)),
     ];
   });
 
   public availableGroups = computed<Group[]>(() => {
-    return [
-      ...new Set(
-        this.competition().phases.flatMap((phase) =>
-          phase.groups.filter((group) => group.matches.length > 0),
-        ),
-      ),
-    ];
+    const phaseFilter = this.phaseFilter();
+    if (phaseFilter === 'all') {
+      return [];
+    }
+
+    return [...new Set(phaseFilter.groups)];
   });
 
-  public availableRounds = computed<number[]>(() => {
-    return [
-      ...new Set(
-        this.competition().phases.flatMap((phase) =>
-          phase.groups.flatMap((group) =>
-            group.matches.map((match) => match.round),
-          ),
-        ),
-      ),
-    ];
+  public availableRounds = computed<Round[]>(() => {
+    const phaseFilter = this.phaseFilter();
+    if (phaseFilter === 'all') {
+      return [];
+    }
+
+    return [...new Set(phaseFilter.rounds)];
   });
+
+  ngAfterViewInit() {
+    this.updateVisibleMatches();
+  }
+
+  private updateVisibleMatches() {
+    setTimeout(() => {
+      const hasMatches =
+        this.matchComponents && this.matchComponents.length > 0;
+      this.hasVisibleMatches.set(hasMatches);
+    });
+  }
+
+  public onPhaseFilterChange(phase: Phase | 'all') {
+    if (phase === 'all') {
+      this.phaseFilter.set('all');
+    } else {
+      this.phaseFilter.set(phase);
+    }
+    this.updateVisibleMatches();
+  }
+
+  public onGroupFilterChange(group: Group | 'all') {
+    if (group === 'all') {
+      this.groupFilter.set('all');
+    } else {
+      this.groupFilter.set(group);
+    }
+    this.updateVisibleMatches();
+  }
+
+  public onRoundFilterChange(round: Round | 'all') {
+    if (round === 'all') {
+      this.roundFilter.set('all');
+    } else {
+      this.roundFilter.set(round);
+    }
+    this.updateVisibleMatches();
+  }
+
+  public onGroupByRoundChange(groupByRound: boolean) {
+    this.groupByRound.set(groupByRound);
+  }
 }

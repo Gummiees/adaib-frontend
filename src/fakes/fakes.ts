@@ -1,8 +1,9 @@
 import { Classification } from '@shared/models/classification';
 import { DetailedApiCompetition } from '@shared/models/competition';
 import { ApiGroup } from '@shared/models/group';
-import { ApiMatch } from '@shared/models/match';
+import { ApiMatch, Match } from '@shared/models/match';
 import { ApiPhase } from '@shared/models/phase';
+import { Round } from '@shared/models/round';
 import { DetailedTeam } from '@shared/models/team';
 
 let _fakeTeams: DetailedTeam[] = [
@@ -33,17 +34,28 @@ let _fakeTeams: DetailedTeam[] = [
   },
 ];
 
+export const fakeRounds: Round[] = [
+  {
+    id: 1,
+    name: 'Finales',
+  },
+  {
+    id: 2,
+    name: 'Semifinales',
+  },
+];
+
 export const fakeMatches: ApiMatch[] = [
   {
     id: 1,
-    round: 1,
+    roundId: 1,
     homeTeamId: _fakeTeams[0].id,
     awayTeamId: _fakeTeams[1].id,
     status: 'NotStarted',
   },
   {
     id: 2,
-    round: 1,
+    roundId: 1,
     homeTeamId: _fakeTeams[0].id,
     awayTeamId: _fakeTeams[1].id,
     status: 'NotStarted',
@@ -51,13 +63,13 @@ export const fakeMatches: ApiMatch[] = [
   },
   {
     id: 3,
-    round: 1,
+    roundId: 1,
     homeTeamId: _fakeTeams[0].id,
     status: 'Rest',
   },
   {
     id: 4,
-    round: 1,
+    roundId: 2,
     homeTeamId: _fakeTeams[1].id,
     awayTeamId: _fakeTeams[0].id,
     status: 'Ongoing',
@@ -68,7 +80,7 @@ export const fakeMatches: ApiMatch[] = [
   },
   {
     id: 5,
-    round: 1,
+    roundId: 2,
     homeTeamId: _fakeTeams[0].id,
     awayTeamId: _fakeTeams[1].id,
     status: 'Finished',
@@ -80,7 +92,7 @@ export const fakeMatches: ApiMatch[] = [
   },
   {
     id: 6,
-    round: 1,
+    roundId: 2,
     homeTeamId: _fakeTeams[0].id,
     awayTeamId: _fakeTeams[1].id,
     status: 'Cancelled',
@@ -88,7 +100,7 @@ export const fakeMatches: ApiMatch[] = [
   },
   {
     id: 7,
-    round: 1,
+    roundId: 2,
     homeTeamId: _fakeTeams[0].id,
     awayTeamId: _fakeTeams[1].id,
     status: 'Postponed',
@@ -99,10 +111,11 @@ export const fakeMatches: ApiMatch[] = [
 
 _fakeTeams = _fakeTeams.map((team) => ({
   ...team,
-  matches: fakeMatches.map((match) => ({
-    ...match,
-    homeTeam: _fakeTeams.find((team) => team.id === match.homeTeamId)!,
-    awayTeam: _fakeTeams.find((team) => team.id === match.awayTeamId)!,
+  matches: fakeMatches.map<Match>((apiMatch) => ({
+    ...apiMatch,
+    homeTeam: _fakeTeams.find((team) => team.id === apiMatch.homeTeamId)!,
+    awayTeam: _fakeTeams.find((team) => team.id === apiMatch.awayTeamId)!,
+    round: fakeRounds.find((round) => round.id === apiMatch.roundId)!,
   })),
 }));
 
@@ -150,19 +163,22 @@ export const fakeGroups: ApiGroup[] = [
 
 export const faksePhases: ApiPhase[] = [
   {
-    id: 2,
+    id: 1,
     name: 'Finales',
     groups: fakeGroups,
+    rounds: fakeRounds,
   },
   {
-    id: 1,
+    id: 2,
     name: 'Semifinales',
     groups: fakeGroups,
+    rounds: fakeRounds,
   },
   {
-    id: 1,
+    id: 3,
     name: 'Fase de grupos',
     groups: [],
+    rounds: [],
   },
 ];
 

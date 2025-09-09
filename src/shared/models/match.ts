@@ -1,3 +1,4 @@
+import { Round } from './round';
 import { Team } from './team';
 
 export type MatchStatus =
@@ -12,9 +13,9 @@ export type MatchResult = 'Home' | 'Away' | 'Draw';
 
 export interface ApiMatch {
   id: number;
-  round: number;
   homeTeamId: number;
   awayTeamId?: number;
+  roundId?: number;
   date?: Date | null;
   homeTeamScore?: number | null;
   awayTeamScore?: number | null;
@@ -25,7 +26,7 @@ export interface ApiMatch {
 
 export interface Match {
   id: number;
-  round: number;
+  round: Round;
   homeTeam: Team;
   awayTeam?: Team;
   date?: Date | null;
