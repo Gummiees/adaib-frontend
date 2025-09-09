@@ -13,6 +13,7 @@ export type MatchTeamPosition = 'left' | 'right';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatchTeamComponent {
+  public isWinner = input.required<boolean>();
   public team = input.required<Team>();
   public position = input<MatchTeamPosition>();
 }

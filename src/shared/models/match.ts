@@ -8,6 +8,8 @@ export type MatchStatus =
   | 'Postponed'
   | 'Rest';
 
+export type MatchResult = 'Home' | 'Away' | 'Draw';
+
 export interface ApiMatch {
   id: number;
   round: number;
@@ -17,6 +19,7 @@ export interface ApiMatch {
   homeTeamScore?: number | null;
   awayTeamScore?: number | null;
   location?: string | null;
+  result?: MatchResult;
   status: MatchStatus;
 }
 
@@ -29,5 +32,6 @@ export interface Match {
   homeTeamScore?: number | null;
   awayTeamScore?: number | null;
   location?: string | null;
+  result?: MatchResult;
   status: MatchStatus;
 }

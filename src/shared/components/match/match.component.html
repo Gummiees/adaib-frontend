@@ -1,11 +1,11 @@
-<div class="bg-white p-4 rounded-md shadow-sm border border-gray-200 w-full flex justify-between items-center">
-  <app-match-team class="flex-1" [team]="match().homeTeam"></app-match-team>
+<div class="bg-white p-2 sm:p-3 rounded-md shadow-sm border border-gray-200 w-full flex justify-between items-center gap-2 overflow-hidden">
+  <app-match-team class="flex-1" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)"></app-match-team>
   <div class="flex flex-col items-center">
     <app-match-score [match]="match()"></app-match-score>
     <app-match-info [match]="match()"></app-match-info>
   </div>
   @if(match().awayTeam) {
-    <app-match-team class="flex-1" [team]="match().awayTeam!" position="right"></app-match-team>
+    <app-match-team class="flex-1" [team]="match().awayTeam!" position="right" [isWinner]="isTeamWinner(match().awayTeam!)"></app-match-team>
   } @else {
     <p class="flex-1 text-md italic text-gray-500 text-right">Descansa</p>
   }

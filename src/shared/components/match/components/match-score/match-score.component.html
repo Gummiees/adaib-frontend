@@ -5,16 +5,16 @@
   @switch (match().status) {
     @case ('Finished') {
       <div class="flex items-center gap-2">
-        <p class="text-xl font-semibold">{{ match().homeTeamScore || 0 }}</p>
-        <p class="text-xl font-semibold">-</p>
-        <p class="text-xl font-semibold">{{ match().awayTeamScore || 0 }}</p>
+        <p class="text-lg font-semibold">{{ match().homeTeamScore || 0 }}</p>
+        <p class="text-lg font-semibold">-</p>
+        <p class="text-lg font-semibold">{{ match().awayTeamScore || 0 }}</p>
       </div>
     }
     @case ('Ongoing') {
       <div class="flex items-center gap-2">
-        <p class="text-xl font-semibold">{{ match().homeTeamScore || 0 }}</p>
-        <p class="text-xl font-semibold">-</p>
-        <p class="text-xl font-semibold">{{ match().awayTeamScore || 0 }}</p>
+        <p class="text-lg font-semibold">{{ match().homeTeamScore || 0 }}</p>
+        <p class="text-lg font-semibold">-</p>
+        <p class="text-lg font-semibold">{{ match().awayTeamScore || 0 }}</p>
       </div>
     }
     @case ('NotStarted') {

@@ -8,7 +8,8 @@ import { DetailedTeam } from '@shared/models/team';
 let _fakeTeams: DetailedTeam[] = [
   {
     id: 1,
-    name: 'Equipo 1',
+    name: 'CA TEVA PROPERTIES – MANANTIAL',
+    shortName: 'CA TEVA',
     description: 'Descripción 1',
     imageUrl:
       'https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/142px-FC_Barcelona_%28crest%29.svg.png',
@@ -20,7 +21,7 @@ let _fakeTeams: DetailedTeam[] = [
   },
   {
     id: 2,
-    name: 'Equipo 2',
+    name: 'DEPORTIVO-INMOVYP-VIPHOME',
     description: 'Descripción 2',
     imageUrl:
       'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
@@ -71,7 +72,8 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: _fakeTeams[0].id,
     awayTeamId: _fakeTeams[1].id,
     status: 'Finished',
-    homeTeamScore: 1,
+    result: 'Home',
+    homeTeamScore: 5,
     awayTeamScore: 0,
     date: new Date(new Date().setDate(new Date().getDate() - 1)),
     location: 'Sa Pobla',

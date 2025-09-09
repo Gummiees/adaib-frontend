@@ -4,6 +4,7 @@ import { MatchInfoComponent } from '@shared/components/match/components/match-in
 import { MatchScoreComponent } from '@shared/components/match/components/match-score/match-score.component';
 import { MatchTeamComponent } from '@shared/components/match/components/match-team/match-team.component';
 import { Match } from '@shared/models/match';
+import { Team } from '@shared/models/team';
 
 @Component({
   selector: 'app-match',
@@ -19,4 +20,12 @@ import { Match } from '@shared/models/match';
 })
 export class MatchComponent {
   public match = input.required<Match>();
+
+  public isTeamWinner(team: Team) {
+    const match = this.match();
+    if (!match.result) return false;
+    return match.result === 'Home'
+      ? match.homeTeam.id === team.id
+      : match.awayTeam?.id === team.id;
+  }
 }
