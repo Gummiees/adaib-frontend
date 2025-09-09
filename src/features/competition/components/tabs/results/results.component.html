@@ -1,8 +1,8 @@
 <div class="w-full pt-6 pb-4 flex flex-col gap-2">
   <h2 class="text-4xl font-bold text-center">Resultados</h2>
   @if(competition().phases.length > 0) {
-    <div class="flex flex-col md:flex-row gap-2 w-full sm:w-auto">
-      <mat-form-field>
+    <div class="flex flex-col md:flex-row gap-2 w-full">
+      <mat-form-field class="w-full">
         <mat-label>Fase</mat-label>
         <mat-select [value]="phaseFilter()" (selectionChange)="onPhaseFilterChange($event.value)">
           <mat-option value="all">Todas</mat-option>
@@ -12,7 +12,7 @@
         </mat-select>
       </mat-form-field>
       @if(availableGroups().length > 0) {
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Grupo</mat-label>
           <mat-select [value]="groupFilter()" (selectionChange)="onGroupFilterChange($event.value)">
             <mat-option value="all">Todos</mat-option>
@@ -23,7 +23,7 @@
         </mat-form-field>
       }
       @if(availableRounds().length > 0) {
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Jornada</mat-label>
           <mat-select [value]="roundFilter()" (selectionChange)="onRoundFilterChange($event.value)">
             <mat-option value="all">Todas</mat-option>
@@ -33,7 +33,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field>
+        <mat-form-field class="w-full">
           <mat-label>Agrupar</mat-label>
           <mat-select [value]="groupByRound()" (selectionChange)="onGroupByRoundChange($event.value)">
             <mat-option [value]="false">No agrupar</mat-option>
