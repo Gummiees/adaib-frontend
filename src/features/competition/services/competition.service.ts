@@ -6,7 +6,7 @@ import {
   DetailedCompetition,
 } from '@shared/models/competition';
 import { ApiGroup, Group } from '@shared/models/group';
-import { ApiMatch, Match } from '@shared/models/match';
+import { ApiMatch, DetailedMatch } from '@shared/models/match';
 import { ApiPhase, Phase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
 import { Team } from '@shared/models/team';
@@ -36,27 +36,52 @@ export class CompetitionService {
   private parsePhases(phases: ApiPhase[], teams: Team[]): Phase[] {
     return phases.map((phase) => ({
       ...phase,
-      groups: this.parseGroups(phase.groups, teams, phase.rounds),
+      groups: this.parseGroups({
+        groups: phase.groups,
+        teams: teams,
+        rounds: phase.rounds,
+        phaseName: phase.name,
+      }),
     }));
   }
 
-  private parseGroups(
-    groups: ApiGroup[],
-    teams: Team[],
-    rounds: Round[],
-  ): Group[] {
+  private parseGroups({
+    groups,
+    teams,
+    rounds,
+    phaseName,
+  }: {
+    groups: ApiGroup[];
+    teams: Team[];
+    rounds: Round[];
+    phaseName: string;
+  }): Group[] {
     return groups.map((group) => ({
       ...group,
-      matches: this.parseMatches(group.matches, teams, rounds),
+      matches: this.parseMatches({
+        matches: group.matches,
+        teams: teams,
+        rounds: rounds,
+        phaseName: phaseName,
+        groupName: group.name,
+      }),
     }));
   }
 
-  private parseMatches(
-    matches: ApiMatch[],
-    teams: Team[],
-    rounds: Round[],
-  ): Match[] {
-    return matches.map<Match>((match) => {
+  private parseMatches({
+    matches,
+    teams,
+    rounds,
+    phaseName,
+    groupName,
+  }: {
+    matches: ApiMatch[];
+    teams: Team[];
+    rounds: Round[];
+    phaseName: string;
+    groupName: string;
+  }): DetailedMatch[] {
+    return matches.map<DetailedMatch>((match) => {
       const homeTeam = teams.find((team) => team.id === match.homeTeamId);
       const awayTeam = teams.find((team) => team.id === match.awayTeamId);
       const round = rounds.find((round) => round.id === match.roundId);
@@ -71,6 +96,8 @@ export class CompetitionService {
         homeTeam: homeTeam,
         awayTeam: awayTeam,
         round: round,
+        phaseName: phaseName,
+        groupName: groupName,
       };
     });
   }
