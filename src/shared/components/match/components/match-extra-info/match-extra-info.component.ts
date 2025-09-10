@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DetailedMatch } from '@shared/models/match';
 
 @Component({
   selector: 'app-match-extra-info',
   templateUrl: './match-extra-info.component.html',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatTooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatchExtraInfoComponent {

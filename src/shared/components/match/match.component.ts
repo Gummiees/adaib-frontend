@@ -6,6 +6,7 @@ import {
   input,
   output,
 } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatchInfoComponent } from '@shared/components/match/components/match-info/match-info.component';
 import { MatchScoreComponent } from '@shared/components/match/components/match-score/match-score.component';
 import { MatchTeamComponent } from '@shared/components/match/components/match-team/match-team.component';
@@ -23,6 +24,7 @@ import { MatchExtraInfoComponent } from './components/match-extra-info/match-ext
     MatchScoreComponent,
     MatchInfoComponent,
     MatchExtraInfoComponent,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

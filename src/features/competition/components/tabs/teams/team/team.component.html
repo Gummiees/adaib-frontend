@@ -4,12 +4,12 @@
     <app-full-spinner></app-full-spinner>
   } @else if(team()) {
     <app-team-info [team]="team()!"></app-team-info>
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+    <div class="flex flex-col lg:flex-row justify-center gap-4 w-full">
       <div class="flex flex-col w-full">
         <h3 class="text-3xl font-bold text-center text-gray-800 py-4">Resultados</h3>
         <div class="flex flex-col gap-2">
           @if(pastMatches() && pastMatches().length > 0) {
-            @for (match of pastMatches(); track match.id) {
+            @for (match of pastMatches(); track 'past-' + match.id) {
               <app-match class="w-full flex justify-center" [match]="match" [showExtraInfo]="true" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
             }
           } @else {
@@ -23,7 +23,7 @@
         <h3 class="text-3xl font-bold text-center text-gray-800 py-4">Calendario</h3>
         <div class="flex flex-col gap-2">
           @if(futureMatches() && futureMatches().length > 0) {
-            @for (match of futureMatches(); track match.id) {
+            @for (match of futureMatches(); track 'future-' + match.id) {
               <app-match class="w-full flex justify-center" [match]="match" [showExtraInfo]="true" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
             }
           } @else {

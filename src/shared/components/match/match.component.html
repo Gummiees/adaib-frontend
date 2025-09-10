@@ -1,7 +1,6 @@
 <div class="w-full bg-white rounded-md shadow-sm border border-gray-200 max-w-200 flex">
   @if(isMatchOngoing()) {
-    <div class="bg-green-500 h-full rounded-tl-md rounded-bl-md w-[5px] tooltip">
-      <span class="tooltiptext tooltiptext-top">En juego</span>
+    <div class="bg-green-500 h-full rounded-tl-md rounded-bl-md w-[5px]" aria-label="En juego" matTooltip="En juego" matTooltipPosition="above">
     </div>
   } @else {
     <div class="bg-transparent h-full rounded-tl-md rounded-bl-md w-[5px]"></div>
@@ -10,7 +9,7 @@
     @if(isDetailedMatch() && showExtraInfo()) {
       <app-match-extra-info [match]="detailedMatch()"></app-match-extra-info>
     }
-    <div class="w-full flex justify-between items-center gap-2 overflow-hidden">
+    <div class="w-full flex justify-between items-center gap-2">
       <app-match-team class="flex-1" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)" (matchTeamClicked)="onMatchTeamClicked(match().homeTeam)"></app-match-team>
       <div class="flex flex-col items-center">
         <app-match-score [match]="match()"></app-match-score>
