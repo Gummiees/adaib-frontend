@@ -56,6 +56,29 @@ export class TeamComponent {
     return detailedTeam;
   });
 
+  public futureMatches = computed<DetailedMatch[]>(() => {
+    return (
+      this.team()?.matches.filter(
+        (match) =>
+          match.status === 'NotStarted' ||
+          match.status === 'Postponed' ||
+          (match.date && match.date > new Date() && match.status === 'Rest'),
+      ) || []
+    );
+  });
+
+  public pastMatches = computed<DetailedMatch[]>(() => {
+    return (
+      this.team()?.matches.filter(
+        (match) =>
+          match.status === 'Finished' ||
+          match.status === 'Cancelled' ||
+          match.status === 'Ongoing' ||
+          (match.date && match.date <= new Date() && match.status === 'Rest'),
+      ) || []
+    );
+  });
+
   public onNotFoundButtonClick(): void {
     this.errorButtonClick.emit();
   }
@@ -78,7 +101,11 @@ export class TeamComponent {
         index === self.findIndex((m) => m.id === match.id),
     );
 
-    return uniqueMatches;
+    return uniqueMatches.sort((a, b) => {
+      const aTime = a.date?.getTime() ?? -Infinity;
+      const bTime = b.date?.getTime() ?? -Infinity;
+      return bTime - aTime;
+    });
   }
 
   public getStatusText(status: string): string {

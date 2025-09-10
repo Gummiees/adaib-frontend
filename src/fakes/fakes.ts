@@ -66,7 +66,7 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: _fakeTeams[0].id,
     awayTeamId: _fakeTeams[1].id,
     status: 'NotStarted',
-    date: new Date(),
+    date: new Date(new Date().setDate(new Date().getDate() + 1)),
   },
   {
     id: 3,

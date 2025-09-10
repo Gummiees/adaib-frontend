@@ -8,6 +8,12 @@
     } @else {
       <mat-icon class="!w-[28px] !h-[28px] !text-[28px] border-[2px] box-content rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="false" aria-label="Icono del equipo" fontIcon="groups"></mat-icon>
     }
-    <p class="text-xs sm:text-sm text-wrap" [ngClass]="{'font-bold': isWinner(), 'text-right': position() === 'right', 'text-gray-500': !team().active}">{{ team().shortName || team().name }}</p>
+    <p class="sm:text-sm text-wrap" [ngClass]="{
+      'font-bold': isWinner(),
+      'text-right': position() === 'right',
+      'text-gray-500': !team().active,
+      'text-xs': !team().shortName || !isWinner(),
+      'text-sm': team().shortName && isWinner(),
+    }">{{ team().shortName || team().name }}</p>
   </a>
 </div>

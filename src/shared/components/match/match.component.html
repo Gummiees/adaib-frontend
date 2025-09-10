@@ -1,6 +1,8 @@
 <div class="w-full bg-white rounded-md shadow-sm border border-gray-200 max-w-200 flex">
   @if(isMatchOngoing()) {
-    <div class="bg-green-500 h-full rounded-tl-md rounded-bl-md w-[5px]"></div>
+    <div class="bg-green-500 h-full rounded-tl-md rounded-bl-md w-[5px] tooltip">
+      <span class="tooltiptext tooltiptext-top">En juego</span>
+    </div>
   } @else {
     <div class="bg-transparent h-full rounded-tl-md rounded-bl-md w-[5px]"></div>
   }

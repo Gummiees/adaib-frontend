@@ -107,6 +107,8 @@ body {
   border-radius: 6px;
   padding: 6px 10px;
   position: absolute;
+  text-wrap: nowrap;
+  font-size: 12px;
   z-index: 1;
 }
 
@@ -123,7 +125,7 @@ body {
 }
 
 .tooltip .tooltiptext.tooltiptext-top {
-  bottom: 130%;
+  bottom: 110%;
   left: 50%;
   transform: translateX(-50%);
 
@@ -136,7 +138,7 @@ body {
 }
 
 .tooltip .tooltiptext.tooltiptext-bottom {
-  top: 130%;
+  top: 110%;
   left: 50%;
   transform: translateX(-50%);
 
