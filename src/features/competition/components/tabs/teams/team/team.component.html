@@ -1,0 +1,27 @@
+
+<div class="relative">
+  @if(competitionStore.isLoading()) {
+    <app-full-spinner></app-full-spinner>
+  } @else if(team()) {
+    <app-team-info [team]="team()!"></app-team-info>
+    <h3 class="text-3xl font-bold text-center text-gray-800 py-4">Calendario</h3>
+    <div class="flex flex-col gap-2">
+      @if(team()!.matches && team()!.matches.length > 0) {
+        @for (match of team()!.matches; track match.id) {
+          <app-match class="w-full flex justify-center" [match]="match" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
+        }
+      } @else {
+        <div class="text-center py-8 text-gray-500">
+          <p>No hay partidos disponibles para este equipo.</p>
+        </div>
+      }
+    </div>
+  } @else {
+    <app-not-found
+      title="Equipo no encontrado"
+      subtitle="Lo sentimos, no se ha encontrado el equipo."
+      buttonText="Ir a la página de equipos"
+      (buttonClicked)="onNotFoundButtonClick()">
+    </app-not-found>
+  }
+</div>

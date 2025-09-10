@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
   QueryList,
   signal,
@@ -10,6 +11,7 @@ import {
 } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { Router } from '@angular/router';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import {
@@ -19,6 +21,7 @@ import {
 import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
+import { Team } from '@shared/models/team';
 
 @Component({
   selector: 'app-results',
@@ -41,6 +44,8 @@ export class ResultsComponent implements AfterViewInit {
 
   @ViewChildren(MatchComponent) matchComponents!: QueryList<MatchComponent>;
   public hasVisibleMatches = signal<boolean>(false);
+
+  private router = inject(Router);
 
   public filteredCompetition = computed<DetailedCompetition>(() => {
     const competition = this.competition();
@@ -168,5 +173,11 @@ export class ResultsComponent implements AfterViewInit {
 
   public onGroupByRoundChange(groupByRound: boolean) {
     this.groupByRound.set(groupByRound);
+  }
+
+  public onMatchTeamClicked(team: Team) {
+    this.router.navigate(['/competiciones', this.competition().id], {
+      queryParams: { tab: 'equipos', equipo: team.id.toString() },
+    });
   }
 }

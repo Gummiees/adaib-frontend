@@ -1,4 +1,4 @@
-import { Match } from '@shared/models/match';
+import { DetailedMatch } from './match';
 
 export interface Team {
   id: number;
@@ -11,7 +11,5 @@ export interface Team {
 }
 
 export interface DetailedTeam extends Team {
-  phaseName: string;
-  groupName: string;
-  matches: Match[];
+  matches: DetailedMatch[];
 }

@@ -36,3 +36,8 @@ export interface Match {
   result?: MatchResult;
   status: MatchStatus;
 }
+
+export interface DetailedMatch extends Match {
+  phaseName: string;
+  groupName: string;
+}

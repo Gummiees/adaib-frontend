@@ -9,9 +9,9 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TeamComponent } from '@features/competition/components/tabs/teams/team/team.component';
 import { TeamsComponent } from '@features/competition/components/tabs/teams/teams.component';
 import { CompetitionsStore } from '@features/competitions/store/competitions-store';
-import { TeamComponent } from '@features/team/team.component';
 import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
@@ -105,6 +105,7 @@ export class CompetitionComponent {
 
     switch (index) {
       case 0:
+        // Default tab - no query parameters
         break;
       case 1:
         queryParams = { tab: 'clasificacion' };
@@ -112,9 +113,15 @@ export class CompetitionComponent {
       case 2:
         queryParams = { tab: 'resultados' };
         break;
-      case 3:
+      case 3: {
+        // For teams tab, preserve the equipo parameter if it exists
+        const currentQueryParams = this.activatedRoute.snapshot.queryParams;
         queryParams = { tab: 'equipos' };
+        if (currentQueryParams['equipo']) {
+          queryParams.equipo = currentQueryParams['equipo'];
+        }
         break;
+      }
     }
 
     this.router.navigate([baseUrl], { queryParams });

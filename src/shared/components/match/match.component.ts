@@ -1,10 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  output,
+} from '@angular/core';
 import { MatchInfoComponent } from '@shared/components/match/components/match-info/match-info.component';
 import { MatchScoreComponent } from '@shared/components/match/components/match-score/match-score.component';
 import { MatchTeamComponent } from '@shared/components/match/components/match-team/match-team.component';
-import { Match } from '@shared/models/match';
+import { DetailedMatch, Match } from '@shared/models/match';
 import { Team } from '@shared/models/team';
+import { MatchExtraInfoComponent } from './components/match-extra-info/match-extra-info.component';
 
 @Component({
   selector: 'app-match',
@@ -15,11 +22,21 @@ import { Team } from '@shared/models/team';
     MatchTeamComponent,
     MatchScoreComponent,
     MatchInfoComponent,
+    MatchExtraInfoComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatchComponent {
   public match = input.required<Match>();
+  public matchTeamClicked = output<Team>();
+
+  public isDetailedMatch = computed<boolean>(() => {
+    return 'phaseName' in this.match();
+  });
+
+  public detailedMatch = computed<DetailedMatch>(() => {
+    return this.match() as DetailedMatch;
+  });
 
   public isTeamWinner(team: Team) {
     const match = this.match();
@@ -27,5 +44,9 @@ export class MatchComponent {
     return match.result === 'Home'
       ? match.homeTeam.id === team.id
       : match.awayTeam?.id === team.id;
+  }
+
+  public onMatchTeamClicked(team: Team): void {
+    this.matchTeamClicked.emit(team);
   }
 }

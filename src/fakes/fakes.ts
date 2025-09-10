@@ -1,7 +1,7 @@
 import { Classification } from '@shared/models/classification';
 import { DetailedApiCompetition } from '@shared/models/competition';
 import { ApiGroup } from '@shared/models/group';
-import { ApiMatch, Match } from '@shared/models/match';
+import { ApiMatch, DetailedMatch } from '@shared/models/match';
 import { ApiPhase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
 import { DetailedTeam } from '@shared/models/team';
@@ -11,25 +11,22 @@ let _fakeTeams: DetailedTeam[] = [
     id: 1,
     name: 'FC Barcelona',
     shortName: 'FCB',
-    description: 'Descripción 1',
+    description:
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?',
     imageUrl:
       'https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/142px-FC_Barcelona_%28crest%29.svg.png',
     active: true,
     location: 'Sa Pobla',
-    phaseName: 'Semifinales',
-    groupName: 'Grupo 2',
     matches: [],
   },
   {
     id: 2,
     name: 'DEPORTIVO-INMOVYP-VIPHOME',
-    description: 'Descripción 2',
-    imageUrl:
-      'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
+    // description: 'Descripción 2',
+    // imageUrl:
+    //   'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
     active: true,
-    location: 'Palma',
-    phaseName: 'Finales',
-    groupName: 'Grupo 1',
+    // location: 'Palma',
     matches: [],
   },
   {
@@ -40,8 +37,6 @@ let _fakeTeams: DetailedTeam[] = [
       'https://www.aidebcompeticiones.com/master/teams/005208/005208.png',
     active: false,
     location: 'Manacor',
-    phaseName: 'Fase de grupos',
-    groupName: 'Grupo 1',
     matches: [],
   },
 ];
@@ -135,11 +130,13 @@ export const fakeMatches: ApiMatch[] = [
 
 _fakeTeams = _fakeTeams.map((team) => ({
   ...team,
-  matches: fakeMatches.map<Match>((apiMatch) => ({
+  matches: fakeMatches.map<DetailedMatch>((apiMatch) => ({
     ...apiMatch,
     homeTeam: _fakeTeams.find((team) => team.id === apiMatch.homeTeamId)!,
     awayTeam: _fakeTeams.find((team) => team.id === apiMatch.awayTeamId)!,
     round: fakeRounds.find((round) => round.id === apiMatch.roundId)!,
+    phaseName: 'Finales',
+    groupName: 'Grupo 1',
   })),
 }));
 
@@ -211,7 +208,8 @@ export const fakeCompetitions: DetailedApiCompetition[] = [
     id: 1,
     name: 'La Liga',
     sportName: 'Baloncesto',
-    description: 'La Liga es una competición que se juega en España.',
+    description:
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?',
     imageUrl:
       'https://www.aidebcompeticiones.com/clients/aideb/leagues/000068/000068_thumb.png',
     active: true,

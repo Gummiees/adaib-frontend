@@ -5,7 +5,12 @@
     <app-full-spinner></app-full-spinner>
   } @else if(competitionStore.competition()) {
     <div class="pt-6 pb-4 flex flex-col items-center justify-center gap-6">
-      <h1 class="text-4xl font-bold text-center">{{ competitionStore.competition()!.name }}</h1>
+      <div class="flex gap-4 items-center flex-wrap justify-center">
+        @if(competitionStore.competition()!.imageUrl) {
+          <img class="w-[48px] h-[48px] object-contain" [src]="competitionStore.competition()!.imageUrl" [alt]="'Imagen para la competición ' + competitionStore.competition()!.name" />
+        }
+        <h1 class="text-4xl font-bold text-center">{{ competitionStore.competition()!.name }}</h1>
+      </div>
       <mat-tab-group class="w-full" [selectedIndex]="currentTab()" (selectedTabChange)="onTabChange($event.index)">
         <mat-tab label="Resumen">
           <app-summary [competition]="competitionStore.competition()!"></app-summary>

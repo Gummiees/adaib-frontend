@@ -7,13 +7,16 @@ import {
   input,
   output,
 } from '@angular/core';
+import { Router } from '@angular/router';
+import { CompetitionService } from '@features/competition/services/competition.service';
+import { CompetitionStore } from '@features/competition/store/competition-store';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
+import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { DetailedCompetition } from '@shared/models/competition';
-import { Match } from '@shared/models/match';
-import { DetailedTeam } from '@shared/models/team';
-import { CompetitionService } from '../competition/services/competition.service';
-import { CompetitionStore } from '../competition/store/competition-store';
+import { DetailedMatch } from '@shared/models/match';
+import { DetailedTeam, Team } from '@shared/models/team';
+import { TeamInfoComponent } from './components/team-info.component';
 
 @Component({
   selector: 'app-team',
@@ -21,11 +24,17 @@ import { CompetitionStore } from '../competition/store/competition-store';
   standalone: true,
   providers: [CompetitionStore, CompetitionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NotFoundComponent, CommonModule, FullSpinnerComponent],
+  imports: [
+    NotFoundComponent,
+    CommonModule,
+    FullSpinnerComponent,
+    TeamInfoComponent,
+    MatchComponent,
+  ],
 })
 export class TeamComponent {
   public competitionStore = inject(CompetitionStore);
-
+  private router = inject(Router);
   public teamId = input.required<number>();
   public competition = input.required<DetailedCompetition>();
   public errorButtonClick = output<void>();
@@ -41,8 +50,6 @@ export class TeamComponent {
 
     const detailedTeam: DetailedTeam = {
       ...team,
-      phaseName: this.getPhaseName(team.id, competition),
-      groupName: this.getGroupName(team.id, competition),
       matches: this.getTeamMatches(team.id, competition),
     };
 
@@ -53,57 +60,25 @@ export class TeamComponent {
     this.errorButtonClick.emit();
   }
 
-  private getPhaseName(
-    teamId: number,
-    competition: DetailedCompetition,
-  ): string {
-    // Find the phase that contains this team
-    for (const phase of competition.phases) {
-      for (const group of phase.groups) {
-        if (group.teamIds.includes(teamId)) {
-          return phase.name;
-        }
-      }
-    }
-    return 'Fase no encontrada';
-  }
-
-  private getGroupName(
-    teamId: number,
-    competition: DetailedCompetition,
-  ): string {
-    // Find the group that contains this team
-    for (const phase of competition.phases) {
-      for (const group of phase.groups) {
-        if (group.teamIds.includes(teamId)) {
-          return group.name;
-        }
-      }
-    }
-    return 'Grupo no encontrado';
-  }
-
   private getTeamMatches(
     teamId: number,
     competition: DetailedCompetition,
-  ): Match[] {
-    const teamMatches: Match[] = [];
+  ): DetailedMatch[] {
+    const matches = competition.phases.flatMap((phase) =>
+      phase.groups.flatMap((group) =>
+        group.matches.filter(
+          (match) =>
+            match.homeTeam.id === teamId || match.awayTeam?.id === teamId,
+        ),
+      ),
+    );
 
-    // Find all matches for this team across all phases and groups
-    for (const phase of competition.phases) {
-      for (const group of phase.groups) {
-        if (group.teamIds.includes(teamId)) {
-          // Add all matches from this group where the team participates
-          for (const match of group.matches) {
-            if (match.homeTeam.id === teamId || match.awayTeam?.id === teamId) {
-              teamMatches.push(match);
-            }
-          }
-        }
-      }
-    }
+    const uniqueMatches = matches.filter(
+      (match, index, self) =>
+        index === self.findIndex((m) => m.id === match.id),
+    );
 
-    return teamMatches;
+    return uniqueMatches;
   }
 
   public getStatusText(status: string): string {
@@ -128,5 +103,11 @@ export class TeamComponent {
       Rest: 'bg-purple-100 text-purple-800',
     };
     return statusClassMap[status] || 'bg-gray-100 text-gray-800';
+  }
+
+  public onMatchTeamClicked(team: Team) {
+    this.router.navigate(['/competiciones', this.competition().id], {
+      queryParams: { tab: 'equipos', equipo: team.id.toString() },
+    });
   }
 }

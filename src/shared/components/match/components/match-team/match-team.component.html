@@ -1,5 +1,6 @@
-<a class="cursor-pointer text-gray-900 hover:text-blue-700" [routerLink]="['equipos', team().id]" aria-label="Ver equipo">
-    <div class="flex items-center gap-2 overflow-hidden" [ngClass]="{'flex-row-reverse': position() === 'right'}">
+
+<div class="flex" [ngClass]="{'flex-row-reverse': position() === 'right'}">
+  <a class="flex items-center gap-2 overflow-hidden cursor-pointer text-gray-900 hover:text-blue-700" [ngClass]="{'flex-row-reverse': position() === 'right'}" aria-label="Ver equipo" tabindex="0" (click)="onMatchTeamClicked()" (keypress)="onMatchTeamClicked()">
     @if(team().imageUrl) {
       <div class="aspect-square overflow-hidden rounded-t-md flex-shrink-0">
         <img [src]="team().imageUrl" [alt]="team().name" class="w-[32px] h-[32px] object-contain">
@@ -8,5 +9,5 @@
       <mat-icon class="!w-[28px] !h-[28px] !text-[28px] border-[2px] box-content rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="false" aria-label="Icono del equipo" fontIcon="groups"></mat-icon>
     }
     <p class="text-xs sm:text-sm text-wrap" [ngClass]="{'font-bold': isWinner(), 'text-right': position() === 'right', 'text-gray-500': !team().active}">{{ team().shortName || team().name }}</p>
-  </div>
-</a>
+  </a>
+</div>
