@@ -2,11 +2,13 @@
   <h1 class="sm:hidden text-4xl font-bold text-center">{{ team()!.name }}</h1>
   <div class="flex flex-row items-center justify-center gap-6">
     @if(team()!.imageUrl) {
-      <img
-        [src]="team()!.imageUrl"
-        [alt]="'Imagen para el equipo ' + team()!.name"
-        class="w-32 h-32 object-contain rounded-lg shadow-lg"
-      />
+      <div class="aspect-square overflow-hidden rounded-t-md">
+        <img
+          [src]="team()!.imageUrl"
+          [alt]="'Imagen para el equipo ' + team()!.name"
+          class="w-32 h-32 object-contain"
+        />
+      </div>
     } @else {
       <mat-icon class="!w-[140px] !h-[140px] !text-[140px] border-[5px] box-content rounded-full flex items-center justify-center" aria-hidden="false" aria-label="Icono del equipo" fontIcon="groups"></mat-icon>
     }

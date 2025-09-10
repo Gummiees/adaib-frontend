@@ -44,11 +44,11 @@ let _fakeTeams: DetailedTeam[] = [
 export const fakeRounds: Round[] = [
   {
     id: 1,
-    name: 'Finales',
+    name: 'Jornada 1',
   },
   {
     id: 2,
-    name: 'Semifinales',
+    name: 'Jornada 2',
   },
 ];
 
@@ -251,8 +251,6 @@ export const fakeCompetitions: DetailedApiCompetition[] = [
     sportName: 'Baloncesto',
     description: 'La Liga 2 es una competición que se juega en España.',
     startDate: new Date(new Date().setDate(new Date().getDate() + 10)),
-    imageUrl:
-      'https://www.aidebcompeticiones.com/clients/aideb/leagues/000068/000068_thumb.png',
     active: false,
     status: 'NotStarted',
     teams: [],

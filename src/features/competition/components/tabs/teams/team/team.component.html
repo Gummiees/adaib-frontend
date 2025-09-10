@@ -8,7 +8,7 @@
     <div class="flex flex-col gap-2">
       @if(team()!.matches && team()!.matches.length > 0) {
         @for (match of team()!.matches; track match.id) {
-          <app-match class="w-full flex justify-center" [match]="match" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
+          <app-match class="w-full flex justify-center" [match]="match" [showExtraInfo]="true" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
         }
       } @else {
         <div class="text-center py-8 text-gray-500">

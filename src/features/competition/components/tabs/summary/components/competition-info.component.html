@@ -1,9 +1,11 @@
 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 bg-white shadow-md rounded-lg p-4 border border-gray-200">
-  <div class="flex gap-4 items-center flex-wrap justify-center">
+  <div class="flex gap-4 items-center flex-wrap justify-center flex-shrink-0">
     @if(competition().imageUrl) {
-      <div class="aspect-square overflow-hidden rounded-t-md flex-shrink-0">
+      <div class="aspect-square overflow-hidden rounded-t-md">
         <img [src]="competition().imageUrl" class="w-[100px] h-[100px] object-contain" [alt]="'Imagen para la competición ' + competition().name" />
       </div>
+    } @else {
+      <mat-icon class="!w-[100px] !h-[100px] !text-[100px] border-[5px] box-content rounded-full flex items-center justify-center" aria-hidden="false" aria-label="Icono de la competición" fontIcon="emoji_events"></mat-icon>
     }
     <div class="flex sm:hidden flex-col gap-2">
       <p class="font-semibold uppercase text-lg">

@@ -28,6 +28,7 @@ import { MatchExtraInfoComponent } from './components/match-extra-info/match-ext
 })
 export class MatchComponent {
   public match = input.required<Match>();
+  public showExtraInfo = input<boolean>(false);
   public matchTeamClicked = output<Team>();
 
   public isDetailedMatch = computed<boolean>(() => {
@@ -48,5 +49,9 @@ export class MatchComponent {
 
   public onMatchTeamClicked(team: Team): void {
     this.matchTeamClicked.emit(team);
+  }
+
+  public isMatchOngoing(): boolean {
+    return this.match().status === 'Ongoing';
   }
 }

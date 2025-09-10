@@ -1,18 +1,25 @@
-
-<div class="w-full bg-white p-2 sm:p-3 rounded-md shadow-sm border border-gray-200 flex flex-col gap-2 max-w-200">
-  @if(isDetailedMatch()) {
-    <app-match-extra-info [match]="detailedMatch()"></app-match-extra-info>
+<div class="w-full bg-white rounded-md shadow-sm border border-gray-200 max-w-200 flex">
+  @if(isMatchOngoing()) {
+    <div class="bg-green-500 h-full rounded-tl-md rounded-bl-md w-[5px]"></div>
+  } @else {
+    <div class="bg-transparent h-full rounded-tl-md rounded-bl-md w-[5px]"></div>
   }
-  <div class="w-full flex justify-between items-center gap-2 overflow-hidden">
-    <app-match-team class="flex-1" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)" (matchTeamClicked)="onMatchTeamClicked(match().homeTeam)"></app-match-team>
-    <div class="flex flex-col items-center">
-      <app-match-score [match]="match()"></app-match-score>
-      <app-match-info [match]="match()"></app-match-info>
-    </div>
-    @if(match().awayTeam) {
-      <app-match-team class="flex-1" [team]="match().awayTeam!" position="right" [isWinner]="isTeamWinner(match().awayTeam!)" (matchTeamClicked)="onMatchTeamClicked(match().awayTeam!)"></app-match-team>
-    } @else {
-      <p class="flex-1 text-base italic text-gray-500 text-right">Descansa</p>
+  <div class="w-full bg-white p-2 sm:p-3 flex flex-col gap-2 rounded-md">
+    @if(isDetailedMatch() && showExtraInfo()) {
+      <app-match-extra-info [match]="detailedMatch()"></app-match-extra-info>
     }
+    <div class="w-full flex justify-between items-center gap-2 overflow-hidden">
+      <app-match-team class="flex-1" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)" (matchTeamClicked)="onMatchTeamClicked(match().homeTeam)"></app-match-team>
+      <div class="flex flex-col items-center">
+        <app-match-score [match]="match()"></app-match-score>
+        <app-match-info [match]="match()"></app-match-info>
+      </div>
+      @if(match().awayTeam) {
+        <app-match-team class="flex-1" [team]="match().awayTeam!" position="right" [isWinner]="isTeamWinner(match().awayTeam!)" (matchTeamClicked)="onMatchTeamClicked(match().awayTeam!)"></app-match-team>
+      } @else {
+        <p class="flex-1 text-base italic text-gray-500 text-right mr-[2px]">Descansa</p>
+      }
+    </div>
   </div>
+  <div class="bg-transparent h-full rounded-tl-md rounded-bl-md w-[5px]"></div>
 </div>
