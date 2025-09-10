@@ -8,20 +8,7 @@
       <h1 class="text-4xl font-bold text-center">{{ competitionStore.competition()!.name }}</h1>
       <mat-tab-group class="w-full" [selectedIndex]="currentTab()" (selectedTabChange)="onTabChange($event.index)">
         <mat-tab label="Resumen">
-          @if(competitionStore.competition()!.imageUrl) {
-            <img [src]="competitionStore.competition()!.imageUrl" [alt]="'Imagen para la competición ' + competitionStore.competition()!.name" />
-          }
-          @if(competitionStore.competition()!.description) {
-            <p>{{ competitionStore.competition()!.description }}</p>
-          }
-          <p>Estado: {{ competitionStore.competition()!.status }}</p>
-          @if(competitionStore.competition()!.startDate) {
-            <p>Inicio: {{ competitionStore.competition()!.startDate | date: 'dd/MM/yyyy' }}</p>
-          }
-          @if(competitionStore.competition()!.endDate) {
-            <p>Fin: {{ competitionStore.competition()!.endDate | date: 'dd/MM/yyyy' }}</p>
-          }
-          <p>Activo: {{ competitionStore.competition()!.active }}</p>
+          <app-summary [competition]="competitionStore.competition()!"></app-summary>
         </mat-tab>
         <mat-tab label="Clasificación">
 
@@ -31,7 +18,17 @@
         </mat-tab>
         <mat-tab label="Equipos">
           <ng-template matTabContent>
-            <app-teams [teams]="competitionStore.competition()!.teams"></app-teams>
+            @if(showTeamComponent() && competitionStore.competition()) {
+              <div class="py-4 w-full flex flex-col gap-4">
+                <div class="w-full sm:w-fit">
+                  <button matButton="filled" (click)="onBackToTeams()"> Volver a equipos </button>
+                </div>
+
+                <app-team [teamId]="selectedTeamId()!" [competition]="competitionStore.competition()!" (errorButtonClick)="onBackToTeams()"></app-team>
+              </div>
+            } @else {
+              <app-teams [teams]="competitionStore.competition()!.teams" (teamSelected)="onTeamSelect($event)"></app-teams>
+            }
           </ng-template>
         </mat-tab>
       </mat-tab-group>

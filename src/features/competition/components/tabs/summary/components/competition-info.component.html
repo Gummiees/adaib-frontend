@@ -1,0 +1,56 @@
+<div class="w-full flex flex-col sm:flex-row items-center justify-center gap-4">
+  <div class="flex gap-4 items-center flex-wrap justify-center">
+    @if(competition().imageUrl) {
+      <div class="aspect-square overflow-hidden rounded-t-md flex-shrink-0">
+        <img [src]="competition().imageUrl" class="w-[100px] h-[100px] object-contain" [alt]="'Imagen para la competición ' + competition().name" />
+      </div>
+    }
+    <div class="flex sm:hidden flex-col gap-2">
+      <p class="font-semibold uppercase text-lg">
+        @switch(competition().status) {
+          @case('NotStarted') {
+            <span class="text-gray-600">No iniciada</span>
+          }
+          @case('Ongoing') {
+            <span class="text-green-600">En juego</span>
+          }
+          @case('Finished') {
+            <span class="text-red-600">Finalizada</span>
+          }
+        }
+      </p>
+      @if(competition().startDate && competition().endDate) {
+        <p class="text-gray-600">{{ competition().startDate | date: 'dd/MM/yyyy' }} - {{ competition().endDate | date: 'dd/MM/yyyy' }}</p>
+      }
+      @if(competition().sportName) {
+        <p class="text-gray-600 uppercase">{{ competition().sportName }}</p>
+      }
+    </div>
+  </div>
+  <div class="flex flex-col gap-2 flex-1">
+    <div class="hidden sm:flex flex-col sm:flex-row gap-2 items-center">
+      <p class="font-semibold uppercase text-lg">
+        @switch(competition().status) {
+          @case('NotStarted') {
+            <span class="text-gray-600">No iniciada</span>
+          }
+          @case('Ongoing') {
+            <span class="text-green-600">En juego</span>
+          }
+          @case('Finished') {
+            <span class="text-red-600">Finalizada</span>
+          }
+        }
+      </p>
+      @if(competition().startDate && competition().endDate) {
+        <p class="text-gray-600">{{ competition().startDate | date: 'dd/MM/yyyy' }} - {{ competition().endDate | date: 'dd/MM/yyyy' }}</p>
+      }
+      @if(competition().sportName) {
+        <p class="text-gray-600 uppercase">{{ competition().sportName }}</p>
+      }
+    </div>
+    @if(competition().description) {
+      <p class="text-lg text-pretty">{{ competition().description }}</p>
+    }
+  </div>
+</div>

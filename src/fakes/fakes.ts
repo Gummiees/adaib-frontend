@@ -119,6 +119,18 @@ export const fakeMatches: ApiMatch[] = [
     date: new Date(new Date().setDate(new Date().getDate() + 3)),
     location: 'Sa Pobla',
   },
+  {
+    id: 8,
+    roundId: 2,
+    homeTeamId: _fakeTeams[0].id,
+    awayTeamId: _fakeTeams[2].id,
+    status: 'Finished',
+    result: 'Home',
+    homeTeamScore: 4,
+    awayTeamScore: 2,
+    date: new Date(new Date().setDate(new Date().getDate() + 3)),
+    location: 'Sa Pobla',
+  },
 ];
 
 _fakeTeams = _fakeTeams.map((team) => ({
