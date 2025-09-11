@@ -1,4 +1,6 @@
-<div class="w-full bg-white rounded-md shadow-sm border border-gray-200 max-w-200 flex">
+<div class="w-full max-w-200 flex" [ngClass]="{
+  'bg-white rounded-md shadow-sm border border-gray-200': !compactView(),
+}">
   @if(isMatchOngoing()) {
     <div class="bg-green-500 h-full rounded-tl-md rounded-bl-md w-[5px]" aria-label="En juego" matTooltip="En juego" matTooltipPosition="above">
     </div>

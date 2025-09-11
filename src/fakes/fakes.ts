@@ -61,14 +61,6 @@ export const fakeMatches: ApiMatch[] = [
     status: 'NotStarted',
   },
   {
-    id: 2,
-    roundId: 1,
-    homeTeamId: _fakeTeams[0].id,
-    awayTeamId: _fakeTeams[1].id,
-    status: 'NotStarted',
-    date: new Date(new Date().setDate(new Date().getDate() + 1)),
-  },
-  {
     id: 3,
     roundId: 1,
     homeTeamId: _fakeTeams[0].id,
@@ -105,27 +97,6 @@ export const fakeMatches: ApiMatch[] = [
     status: 'Cancelled',
     location: 'Sa Pobla',
   },
-  {
-    id: 7,
-    roundId: 2,
-    homeTeamId: _fakeTeams[0].id,
-    awayTeamId: _fakeTeams[1].id,
-    status: 'Postponed',
-    date: new Date(new Date().setDate(new Date().getDate() + 3)),
-    location: 'Sa Pobla',
-  },
-  {
-    id: 8,
-    roundId: 2,
-    homeTeamId: _fakeTeams[0].id,
-    awayTeamId: _fakeTeams[2].id,
-    status: 'Finished',
-    result: 'Home',
-    homeTeamScore: 4,
-    awayTeamScore: 2,
-    date: new Date(new Date().setDate(new Date().getDate() + 3)),
-    location: 'Sa Pobla',
-  },
 ];
 
 _fakeTeams = _fakeTeams.map((team) => ({
@@ -160,17 +131,17 @@ export const fakeGroups: ApiGroup[] = [
     id: 1,
     name: 'Grupo 1',
     teamIds: _fakeTeams.map((team) => team.id),
-    matches: fakeMatches,
+    matches: fakeMatches.slice(0, 2),
     classification: fakeClassification,
-    actualRound: 1,
+    actualRoundId: 1,
   },
   {
     id: 2,
     name: 'Grupo 2',
     teamIds: _fakeTeams.map((team) => team.id),
-    matches: fakeMatches,
+    matches: fakeMatches.slice(1, 4),
     classification: fakeClassification,
-    actualRound: 2,
+    actualRoundId: 2,
   },
   {
     id: 3,
@@ -178,7 +149,6 @@ export const fakeGroups: ApiGroup[] = [
     teamIds: _fakeTeams.map((team) => team.id),
     matches: [],
     classification: fakeClassification,
-    actualRound: 3,
   },
 ];
 
@@ -192,7 +162,7 @@ export const faksePhases: ApiPhase[] = [
   {
     id: 2,
     name: 'Semifinales',
-    groups: fakeGroups,
+    groups: [fakeGroups[1]],
     rounds: fakeRounds,
   },
   {

@@ -31,6 +31,7 @@ import { MatchExtraInfoComponent } from './components/match-extra-info/match-ext
 export class MatchComponent {
   public match = input.required<Match>();
   public showExtraInfo = input<boolean>(false);
+  public compactView = input<boolean>(false);
   public matchTeamClicked = output<Team>();
 
   public isDetailedMatch = computed<boolean>(() => {

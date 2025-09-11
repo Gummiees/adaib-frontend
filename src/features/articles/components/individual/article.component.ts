@@ -30,14 +30,6 @@ export class ArticleComponent {
   private router = inject(Router);
   public articleWithLoading$ = this.getArticle();
 
-  constructor() {
-    // Test subscription to see if observable works
-    this.articleWithLoading$.subscribe({
-      next: (result) => console.log('Article observable emitted:', result),
-      error: (error) => console.log('Article observable error:', error),
-    });
-  }
-
   public onNotFoundButtonClick(): void {
     this.router.navigate(['/noticias']);
   }

@@ -1,5 +1,5 @@
 import { Team } from '@shared/models/team';
-import { ApiPhase, CustomPhase, Phase } from './phase';
+import { ApiPhase, Phase } from './phase';
 
 export type CompetitionStatus = 'NotStarted' | 'Ongoing' | 'Finished';
 
@@ -18,10 +18,6 @@ export interface Competition {
 export interface DetailedCompetition extends Competition {
   teams: Team[];
   phases: Phase[];
-}
-
-export interface DetailedCustomCompetition extends DetailedCompetition {
-  phases: CustomPhase[];
 }
 
 export interface DetailedApiCompetition {

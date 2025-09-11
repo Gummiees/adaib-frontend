@@ -3,15 +3,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   QueryList,
   signal,
   ViewChildren,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { DetailedCompetition } from '@shared/models/competition';
@@ -44,6 +46,9 @@ export class ResultsComponent implements AfterViewInit {
   public hasVisibleMatches = signal<boolean>(false);
 
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+
+  public queryParams = toSignal<Params>(this.activatedRoute.queryParams, {});
 
   public allMatchesSorted = computed(() => {
     const competition = this.filteredCompetition();
@@ -144,6 +149,45 @@ export class ResultsComponent implements AfterViewInit {
     return [...new Set(phaseFilter.rounds)];
   });
 
+  constructor() {
+    effect(() => {
+      this.updateVisibleMatches();
+      this.recalculatePhaseFilter();
+      this.recalculateGroupFilter();
+    });
+  }
+
+  private recalculatePhaseFilter() {
+    const queryParams = this.queryParams();
+    const faseId: string | undefined = queryParams?.['fase'];
+
+    if (faseId) {
+      const competition = this.competition();
+      const phase = competition.phases.find((p) => p.id.toString() === faseId);
+      if (phase) {
+        this.phaseFilter.set(phase);
+      }
+    } else {
+      this.phaseFilter.set('all');
+    }
+  }
+
+  private recalculateGroupFilter() {
+    const queryParams = this.queryParams();
+    const grupoId: string | undefined = queryParams?.['grupo'];
+    if (grupoId) {
+      const competition = this.competition();
+      const group = competition.phases
+        .flatMap((phase) => phase.groups)
+        .find((g) => g.id.toString() === grupoId);
+      if (group) {
+        this.groupFilter.set(group);
+      }
+    } else {
+      this.groupFilter.set('all');
+    }
+  }
+
   ngAfterViewInit() {
     this.updateVisibleMatches();
   }
@@ -162,15 +206,32 @@ export class ResultsComponent implements AfterViewInit {
     } else {
       this.phaseFilter.set(phase);
     }
+    this.groupFilter.set('all');
+    this.roundFilter.set('all');
     this.updateVisibleMatches();
   }
 
   public onGroupFilterChange(group: Group | 'all') {
     if (group === 'all') {
       this.groupFilter.set('all');
+      this.roundFilter.set('all');
     } else {
       this.groupFilter.set(group);
+      const phase = this.phaseFilter();
+      if (phase !== 'all') {
+        const round = phase?.rounds.find(
+          (round) => round.id === group.actualRoundId,
+        );
+        if (round) {
+          this.roundFilter.set(round);
+        } else {
+          this.roundFilter.set('all');
+        }
+      } else {
+        this.roundFilter.set('all');
+      }
     }
+
     this.updateVisibleMatches();
   }
 

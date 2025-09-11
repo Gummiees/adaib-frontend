@@ -101,21 +101,30 @@ export class CompetitionComponent {
     const competitionId = this.activatedRoute.snapshot.params['id'];
     const baseUrl = `/competiciones/${competitionId}`;
 
-    let queryParams: { tab?: string; equipo?: string } = {};
+    let queryParams: {
+      tab?: string;
+      equipo?: string;
+      fase?: string;
+      grupo?: string;
+    } = {};
+    const currentQueryParams = this.activatedRoute.snapshot.queryParams;
 
     switch (index) {
       case 0:
-        // Default tab - no query parameters
         break;
       case 1:
         queryParams = { tab: 'clasificacion' };
         break;
       case 2:
         queryParams = { tab: 'resultados' };
+        if (currentQueryParams['fase']) {
+          queryParams.fase = currentQueryParams['fase'];
+        }
+        if (currentQueryParams['grupo']) {
+          queryParams.grupo = currentQueryParams['grupo'];
+        }
         break;
       case 3: {
-        // For teams tab, preserve the equipo parameter if it exists
-        const currentQueryParams = this.activatedRoute.snapshot.queryParams;
         queryParams = { tab: 'equipos' };
         if (currentQueryParams['equipo']) {
           queryParams.equipo = currentQueryParams['equipo'];

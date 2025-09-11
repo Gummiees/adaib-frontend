@@ -4,7 +4,7 @@ import { ApiMatch, DetailedMatch } from './match';
 export interface ApiGroup {
   id: number;
   name: string;
-  actualRound: number;
+  actualRoundId?: number;
   matches: ApiMatch[];
   teamIds: number[];
   classification: Classification[];
@@ -13,7 +13,7 @@ export interface ApiGroup {
 export interface Group {
   id: number;
   name: string;
-  actualRound: number;
+  actualRoundId?: number;
   matches: DetailedMatch[];
   teamIds: number[];
   classification: Classification[];
