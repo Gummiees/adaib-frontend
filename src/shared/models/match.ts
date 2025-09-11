@@ -6,7 +6,6 @@ export type MatchStatus =
   | 'Ongoing'
   | 'Finished'
   | 'Cancelled'
-  | 'Postponed'
   | 'Rest';
 
 export type MatchResult = 'Home' | 'Away' | 'Draw';

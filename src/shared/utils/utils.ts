@@ -1,4 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { DetailedMatch, MatchStatus } from '@shared/models/match';
 
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -12,4 +13,50 @@ export function getErrorMessage(error: unknown) {
     errorMessage = error.message;
   }
   return errorMessage;
+}
+
+export function sortMatches(matches: DetailedMatch[]): DetailedMatch[] {
+  return [...matches].sort((a, b) => {
+    if (a.status === 'Ongoing' && b.status !== 'Ongoing') {
+      return -1;
+    }
+    if (a.status !== 'Ongoing' && b.status === 'Ongoing') {
+      return 1;
+    }
+
+    if (a.status === 'Ongoing' && b.status === 'Ongoing') {
+      if (a.date && !b.date) return 1;
+      if (!a.date && b.date) return -1;
+      if (a.date && b.date) return b.date.getTime() - a.date.getTime();
+      return 0;
+    }
+
+    const statusGroup1: MatchStatus[] = ['NotStarted', 'Rest'];
+    const statusGroup2: MatchStatus[] = ['NotStarted', 'Rest'];
+
+    if (statusGroup1.includes(a.status) && statusGroup2.includes(b.status)) {
+      if (a.date && !b.date) return -1;
+      if (!a.date && b.date) return 1;
+      if (a.date && b.date) return b.date.getTime() - a.date.getTime();
+      return 0;
+    }
+
+    if (a.status === 'Finished' && b.status === 'Finished') {
+      if (a.date && !b.date) return -1;
+      if (!a.date && b.date) return 1;
+      if (a.date && b.date) return b.date.getTime() - a.date.getTime();
+      return 0;
+    }
+
+    if (a.status === 'Cancelled' && b.status === 'Cancelled') {
+      if (a.date && !b.date) return -1;
+      if (!a.date && b.date) return 1;
+      if (a.date && b.date) return b.date.getTime() - a.date.getTime();
+      return 0;
+    }
+
+    const aTime = a.date?.getTime() ?? -Infinity;
+    const bTime = b.date?.getTime() ?? -Infinity;
+    return bTime - aTime;
+  });
 }

@@ -16,6 +16,7 @@ import { NotFoundComponent } from '@shared/components/not-found/not-found.compon
 import { DetailedCompetition } from '@shared/models/competition';
 import { DetailedMatch } from '@shared/models/match';
 import { DetailedTeam, Team } from '@shared/models/team';
+import { sortMatches } from '@shared/utils/utils';
 import { TeamInfoComponent } from './components/team-info.component';
 
 @Component({
@@ -61,7 +62,6 @@ export class TeamComponent {
       this.team()?.matches.filter(
         (match) =>
           match.status === 'NotStarted' ||
-          match.status === 'Postponed' ||
           (match.date && match.date > new Date() && match.status === 'Rest'),
       ) || []
     );
@@ -96,16 +96,12 @@ export class TeamComponent {
       ),
     );
 
-    const uniqueMatches = matches.filter(
-      (match, index, self) =>
-        index === self.findIndex((m) => m.id === match.id),
+    return sortMatches(
+      matches.filter(
+        (match, index, self) =>
+          index === self.findIndex((m) => m.id === match.id),
+      ),
     );
-
-    return uniqueMatches.sort((a, b) => {
-      const aTime = a.date?.getTime() ?? -Infinity;
-      const bTime = b.date?.getTime() ?? -Infinity;
-      return bTime - aTime;
-    });
   }
 
   public getStatusText(status: string): string {

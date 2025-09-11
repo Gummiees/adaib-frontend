@@ -14,14 +14,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
-import {
-  DetailedCompetition,
-  DetailedCustomCompetition,
-} from '@shared/models/competition';
+import { DetailedCompetition } from '@shared/models/competition';
 import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
-import { Round } from '@shared/models/round';
+import { Round, RoundWithMatches } from '@shared/models/round';
 import { Team } from '@shared/models/team';
+import { sortMatches } from '@shared/utils/utils';
 
 @Component({
   selector: 'app-results',
@@ -46,6 +44,15 @@ export class ResultsComponent implements AfterViewInit {
   public hasVisibleMatches = signal<boolean>(false);
 
   private router = inject(Router);
+
+  public allMatchesSorted = computed(() => {
+    const competition = this.filteredCompetition();
+    const allMatches = competition.phases
+      .flatMap((phase) => phase.groups)
+      .flatMap((group) => group.matches);
+
+    return sortMatches(allMatches);
+  });
 
   public filteredCompetition = computed<DetailedCompetition>(() => {
     const competition = this.competition();
@@ -88,25 +95,30 @@ export class ResultsComponent implements AfterViewInit {
     return filteredCompetition;
   });
 
-  public filteredCompetitionByRound = computed<DetailedCustomCompetition>(
-    () => {
-      const competition = this.filteredCompetition();
-      return {
-        ...competition,
-        phases: competition.phases.map((phase) => ({
-          ...phase,
-          roundsWithMatches: phase.rounds
-            .map((round) => ({
-              ...round,
-              matches: phase.groups
-                .flatMap((group) => group.matches)
-                .filter((match) => match.round.id === round.id),
-            }))
-            .filter((round) => round.matches.length > 0),
+  public filteredMatches = computed(() => {
+    const competition = this.filteredCompetition();
+    const allMatches = competition.phases
+      .flatMap((phase) => phase.groups)
+      .flatMap((group) => group.matches);
+
+    return sortMatches(allMatches);
+  });
+
+  public filteredMatchesByRound = computed<RoundWithMatches[]>(() => {
+    return this.filteredCompetition()
+      .phases.flatMap<RoundWithMatches[]>((phase) =>
+        phase.rounds.map((round) => ({
+          ...round,
+          matches: sortMatches(
+            phase.groups
+              .flatMap((group) => group.matches)
+              .filter((match) => match.round.id === round.id),
+          ),
         })),
-      };
-    },
-  );
+      )
+      .flat()
+      .filter((round) => round.matches.length > 0);
+  });
 
   public availablePhases = computed<Phase[]>(() => {
     return [

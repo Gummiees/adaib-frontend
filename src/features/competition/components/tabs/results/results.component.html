@@ -46,29 +46,17 @@
 
 
   @if(groupByRound()) {
-    @if(filteredCompetitionByRound().phases.length > 0) {
-      @for (phase of filteredCompetitionByRound().phases; track phase.id) {
-        @for (round of phase.roundsWithMatches; track round.id) {
-          <h3 class="text-xl font-bold text-center py-1">{{ round.name }}</h3>
-          @if(round.matches.length > 0) {
-            @for (match of round.matches; track match.id) {
-              <app-match class="w-full flex justify-center" [match]="match" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
-            }
-          }
+    @for (round of filteredMatchesByRound(); track round.id) {
+      <h3 class="text-xl font-bold text-center py-1">{{ round.name }}</h3>
+      @if(round.matches.length > 0) {
+        @for (match of round.matches; track match.id) {
+          <app-match class="w-full flex justify-center" [match]="match" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
         }
       }
     }
-  } @else if(filteredCompetition().phases.length > 0) {
-    @for (phase of filteredCompetition().phases; track phase.id) {
-      @if(phase.groups.length > 0) {
-        @for (group of phase.groups; track group.id) {
-          @if(group.matches.length > 0) {
-            @for (match of group.matches; track match.id) {
-              <app-match class="w-full flex justify-center" [match]="match" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
-            }
-          }
-        }
-      }
+  } @else {
+    @for (match of filteredMatches(); track match.id) {
+      <app-match class="w-full flex justify-center" [match]="match" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
     }
   }
 

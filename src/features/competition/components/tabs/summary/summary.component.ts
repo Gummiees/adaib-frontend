@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DetailedCompetition } from '@shared/models/competition';
-import { CompetitionInfoComponent } from './components/competition-info.component';
+import { CompetitionInfoComponent } from './components/competition-info/competition-info.component';
 
 @Component({
   selector: 'app-summary',
