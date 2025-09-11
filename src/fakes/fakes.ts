@@ -50,6 +50,54 @@ export const fakeRounds: Round[] = [
     id: 2,
     name: 'Jornada 2',
   },
+  {
+    id: 3,
+    name: 'Jornada 3',
+  },
+  {
+    id: 4,
+    name: 'Jornada 4',
+  },
+  {
+    id: 5,
+    name: 'Jornada 5',
+  },
+  {
+    id: 6,
+    name: 'Jornada 6',
+  },
+  {
+    id: 7,
+    name: 'Jornada 7',
+  },
+  {
+    id: 8,
+    name: 'Jornada 8',
+  },
+  {
+    id: 9,
+    name: 'Jornada 9',
+  },
+  {
+    id: 10,
+    name: 'Jornada 10',
+  },
+  {
+    id: 11,
+    name: 'Jornada 11',
+  },
+  {
+    id: 12,
+    name: 'Jornada 12',
+  },
+  {
+    id: 13,
+    name: 'Jornada 13',
+  },
+  {
+    id: 14,
+    name: 'Jornada 14',
+  },
 ];
 
 export const fakeMatches: ApiMatch[] = [

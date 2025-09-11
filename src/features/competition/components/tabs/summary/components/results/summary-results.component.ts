@@ -12,6 +12,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
+import { RoundButtonComponent } from '@shared/components/round-button/round-button.component';
 import { DetailedCompetition } from '@shared/models/competition';
 import { Group } from '@shared/models/group';
 import { Match } from '@shared/models/match';
@@ -24,7 +25,13 @@ import { SummaryStore } from '../../store/summary-store';
   selector: 'app-summary-results',
   templateUrl: './summary-results.component.html',
   standalone: true,
-  imports: [CommonModule, MatchComponent, NotFoundComponent, MatButtonModule],
+  imports: [
+    CommonModule,
+    MatchComponent,
+    NotFoundComponent,
+    MatButtonModule,
+    RoundButtonComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SummaryResultsComponent {
@@ -97,5 +104,9 @@ export class SummaryResultsComponent {
 
   public onRoundClick(round: Round) {
     this.currentRound.set(round);
+  }
+
+  public getRoundNumber(index: number): string {
+    return (index + 1).toString();
   }
 }

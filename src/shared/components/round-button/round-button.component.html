@@ -1,0 +1,8 @@
+<button
+type="button"
+class="flex items-center justify-center text-sky-600 hover:bg-sky-500/30 focus:bg-sky-600/70 hover:text-sky-800 focus:text-white focus:ring-2 focus:ring-sky-400 focus:outline-none font-medium text-xs px-2 py-1.5 border border-sky-700 cursor-pointer transition-colors duration-300 w-[28px] h-[28px]"
+[ngClass]="{'bg-sky-600/70 text-white': isSelected(), 'bg-white': !isSelected()}"
+matTooltipPosition="above"
+[matTooltip]="tooltip()"
+(click)="onRoundClick()"
+>{{ text() }}</button>
