@@ -9,12 +9,7 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 
-import {
-  provideRouter,
-  Router,
-  withInMemoryScrolling,
-  withRouterConfig,
-} from '@angular/router';
+import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import * as Sentry from '@sentry/angular';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
@@ -33,7 +28,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
-      withRouterConfig({ onSameUrlNavigation: 'reload' }),
     ),
     {
       provide: ErrorHandler,

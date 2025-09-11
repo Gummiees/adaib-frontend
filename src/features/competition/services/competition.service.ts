@@ -98,6 +98,7 @@ export class CompetitionService {
         round: round,
         phaseName: phaseName,
         groupName: groupName,
+        date: match.date ? new Date(match.date) : null,
       };
     });
   }
