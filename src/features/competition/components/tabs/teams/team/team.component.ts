@@ -104,30 +104,6 @@ export class TeamComponent {
     );
   }
 
-  public getStatusText(status: string): string {
-    const statusMap: Record<string, string> = {
-      NotStarted: 'No iniciado',
-      Ongoing: 'En curso',
-      Finished: 'Finalizado',
-      Cancelled: 'Cancelado',
-      Postponed: 'Aplazado',
-      Rest: 'Descanso',
-    };
-    return statusMap[status] || status;
-  }
-
-  public getStatusClass(status: string): string {
-    const statusClassMap: Record<string, string> = {
-      NotStarted: 'bg-gray-100 text-gray-800',
-      Ongoing: 'bg-blue-100 text-blue-800',
-      Finished: 'bg-green-100 text-green-800',
-      Cancelled: 'bg-red-100 text-red-800',
-      Postponed: 'bg-yellow-100 text-yellow-800',
-      Rest: 'bg-purple-100 text-purple-800',
-    };
-    return statusClassMap[status] || 'bg-gray-100 text-gray-800';
-  }
-
   public onMatchTeamClicked(team: Team) {
     this.router.navigate(['/competiciones', this.competition().id], {
       queryParams: { tab: 'equipos', equipo: team.id.toString() },

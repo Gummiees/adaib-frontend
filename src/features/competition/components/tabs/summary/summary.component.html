@@ -3,14 +3,14 @@
   @if(store.phase()) {
     @if(store.group() && !!getGroup(store.group())) {
       <h4 class="text-3xl font-bold text-center">{{ getGroup(store.group())!.name }}</h4>
-      <div class="w-full flex flex-col md:flex-row justify-center items-center gap-4">
+      <div class="w-full flex flex-col md:flex-row justify-center gap-4">
         <app-summary-results class="flex-1" [competition]="competition()" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoClicked()" (matchTeamClicked)="onMatchTeamClicked($event)"></app-summary-results>
         <app-summary-results class="flex-1" [competition]="competition()" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoClicked()" (matchTeamClicked)="onMatchTeamClicked($event)"></app-summary-results>
       </div>
     } @else if(store.phase()!.groups.length > 0) {
       @for (group of store.phase()!.groups; track group.id) {
         <h4 class="text-3xl font-bold text-center">{{ group.name }}</h4>
-        <div class="w-full flex flex-col md:flex-row justify-center items-center gap-4">
+        <div class="w-full flex flex-col md:flex-row justify-center gap-4">
           <app-summary-results class="flex-1" [competition]="competition()" [group]="group" (moreInfoClick)="onMoreInfoClicked()" (matchTeamClicked)="onMatchTeamClicked($event)"></app-summary-results>
           <app-summary-results class="flex-1" [competition]="competition()" [group]="group" (moreInfoClick)="onMoreInfoClicked()" (matchTeamClicked)="onMatchTeamClicked($event)"></app-summary-results>
         </div>
