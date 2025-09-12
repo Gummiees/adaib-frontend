@@ -1,10 +1,10 @@
 @if(phase()) {
   <div class="w-full flex flex-col justify-center gap-4">
     @if(getGroup(store.group())) {
-      <app-group-summary class="w-full" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoClicked()" (teamClick)="onTeamClicked($event)"></app-group-summary>
+      <app-group-summary class="w-full" [group]="getGroup(store.group())!" (moreInfoResultsClick)="onMoreInfoResultsClicked()" (moreInfoClassificationClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-group-summary>
     } @else if(phase()!.groups.length > 0) {
       @for (group of phase()!.groups; track group.id) {
-        <app-group-summary class="w-full" [group]="group" (moreInfoClick)="onMoreInfoClicked()" (teamClick)="onTeamClicked($event)"></app-group-summary>
+        <app-group-summary class="w-full" [group]="group" (moreInfoResultsClick)="onMoreInfoResultsClicked()" (moreInfoClassificationClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-group-summary>
       }
     } @else {
       <app-not-found title="No hay partidos disponibles" subtitle="No hay partidos disponibles para esta fase." [hideButton]="true"></app-not-found>

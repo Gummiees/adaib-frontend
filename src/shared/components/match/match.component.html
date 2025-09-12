@@ -2,10 +2,10 @@
   'bg-white rounded-md shadow-sm border border-gray-200': !compactView(),
 }">
   @if(isMatchOngoing()) {
-    <div class="bg-green-500 h-full rounded-tl-md rounded-bl-md w-[5px]" aria-label="En juego" matTooltip="En juego" matTooltipPosition="above">
+    <div class="bg-green-500 h-full w-[5px]" [ngClass]="{'rounded-tl-md rounded-bl-md': !compactView()}" aria-label="En juego" matTooltip="En juego" matTooltipPosition="above">
     </div>
   } @else {
-    <div class="bg-transparent h-full rounded-tl-md rounded-bl-md w-[5px]"></div>
+    <div class="bg-transparent h-full w-[5px]"></div>
   }
   <div class="w-full bg-white p-2 sm:p-3 flex flex-col gap-2 rounded-md">
     @if(isDetailedMatch() && showExtraInfo()) {
@@ -24,5 +24,5 @@
       }
     </div>
   </div>
-  <div class="bg-transparent h-full rounded-tl-md rounded-bl-md w-[5px]"></div>
+  <div class="bg-transparent h-full w-[5px]"></div>
 </div>

@@ -22,7 +22,8 @@ export class GroupSummaryComponent {
   public group = input<Group | null>(null);
   public store = inject(CompetitionStore);
 
-  public moreInfoClick = output<void>();
+  public moreInfoResultsClick = output<void>();
+  public moreInfoClassificationClick = output<void>();
   public teamClick = output<Team>();
 
   public getGroup(group: Group | 'all'): Group | null {
@@ -32,11 +33,23 @@ export class GroupSummaryComponent {
     return group;
   }
 
-  public onMoreInfoClicked(): void {
-    this.moreInfoClick.emit();
+  public onMoreInfoResultsClicked(): void {
+    this.moreInfoResultsClick.emit();
+  }
+
+  public onMoreInfoClassificationClicked(): void {
+    this.moreInfoClassificationClick.emit();
   }
 
   public onTeamClicked(team: Team): void {
     this.teamClick.emit(team);
+  }
+
+  public hasClassification(group: Group): boolean {
+    return group.classification && group.classification.length > 0;
+  }
+
+  public hasMatches(group: Group): boolean {
+    return group.matches && group.matches.length > 0;
   }
 }

@@ -16,6 +16,7 @@ import { NotFoundComponent } from '@shared/components/not-found/not-found.compon
 import { RoundButtonComponent } from '@shared/components/round-button/round-button.component';
 import { Group } from '@shared/models/group';
 import { Match } from '@shared/models/match';
+import { Phase } from '@shared/models/phase';
 import { Round, RoundWithMatches } from '@shared/models/round';
 import { Team } from '@shared/models/team';
 import { sortMatches } from '@shared/utils/utils';
@@ -38,26 +39,40 @@ export class GroupResultsComponent {
   private dispatcher = inject(Dispatcher);
 
   public moreInfoClick = output<void>();
-  public matchTeamClick = output<Team>();
-  public group = input.required<Group>();
+  public teamClick = output<Team>();
+  public group = input<Group | null>(null);
+  public phase = input<Phase | null>(null);
   public roundsWithMatches = computed<RoundWithMatches[]>(() => {
     const competition = this.store.competition();
-    if (!competition) {
-      return [];
-    }
-    const phase = competition.phases.find((phase) =>
-      phase.groups.includes(this.group()),
-    );
-    if (!phase) {
+    const group = this.group();
+    const phase = this.phase();
+    if (!competition || (!group && !phase)) {
       return [];
     }
 
-    const group = this.group();
-    return (
-      phase?.rounds.map((round) => ({
+    if (phase) {
+      return phase.rounds.map((round) => ({
         ...round,
         matches: sortMatches(
-          group.matches.filter((match) => match.round.id === round.id),
+          phase.groups
+            .flatMap((group) => group.matches)
+            .filter((match) => match.round.id === round.id),
+        ),
+      }));
+    }
+
+    const groupPhase = competition.phases.find((phase) =>
+      phase.groups.includes(group!),
+    );
+    if (!groupPhase) {
+      return [];
+    }
+
+    return (
+      groupPhase.rounds.map((round) => ({
+        ...round,
+        matches: sortMatches(
+          group!.matches.filter((match) => match.round.id === round.id),
         ),
       })) ?? []
     );
@@ -76,18 +91,39 @@ export class GroupResultsComponent {
   });
 
   public filteredMatches = computed<Match[]>(() => {
-    const currentRound = this.store.roundByGroupId()[this.group().id];
+    const phase = this.phase();
+    const group = this.group();
+    if (phase) {
+      return this.filterMatchesByPhase(phase);
+    }
+    if (group) {
+      return this.filterMatchesByGroup(group);
+    }
+    return [];
+  });
+
+  private filterMatchesByPhase(phase: Phase): Match[] {
+    const currentRound = this.store.roundByPhaseId()[phase.id];
     if (currentRound && currentRound !== 'all') {
       return this.roundsWithMatches()
         .filter((roundWithMatches) => roundWithMatches.id === currentRound.id)
         .flatMap((roundWithMatches) => roundWithMatches.matches);
     }
+    return sortMatches(phase.groups.flatMap((group) => group.matches));
+  }
 
-    return sortMatches(this.group().matches);
-  });
+  private filterMatchesByGroup(group: Group): Match[] {
+    const currentRound = this.store.roundByGroupId()[group.id];
+    if (currentRound && currentRound !== 'all') {
+      return this.roundsWithMatches()
+        .filter((roundWithMatches) => roundWithMatches.id === currentRound.id)
+        .flatMap((roundWithMatches) => roundWithMatches.matches);
+    }
+    return sortMatches(group.matches);
+  }
 
-  public onMatchTeamClicked(team: Team): void {
-    this.matchTeamClick.emit(team);
+  public onTeamClicked(team: Team): void {
+    this.teamClick.emit(team);
   }
 
   public onMoreInfoClicked(): void {
@@ -95,12 +131,24 @@ export class GroupResultsComponent {
   }
 
   public onRoundClick(round: Round): void {
-    this.dispatcher.dispatch(
-      competitionEvents.roundByGroupChange({
-        group: this.group(),
-        round: round,
-      }),
-    );
+    const group = this.group();
+    const phase = this.phase();
+    if (phase) {
+      this.dispatcher.dispatch(
+        competitionEvents.roundByPhaseChange({
+          phase: phase,
+          round: round,
+        }),
+      );
+    }
+    if (group) {
+      this.dispatcher.dispatch(
+        competitionEvents.roundByGroupChange({
+          group: group,
+          round: round,
+        }),
+      );
+    }
   }
 
   public getRoundNumber(index: number): string {
@@ -108,7 +156,15 @@ export class GroupResultsComponent {
   }
 
   public isRoundSelected(round: Round): boolean {
-    const currentRound = this.store.roundByGroupId()[this.group().id];
+    const group = this.group();
+    const phase = this.phase();
+    let currentRound = null;
+    if (phase) {
+      currentRound = this.store.roundByPhaseId()[phase.id];
+    }
+    if (group) {
+      currentRound = this.store.roundByGroupId()[group.id];
+    }
     if (!currentRound || currentRound === 'all') {
       return false;
     }

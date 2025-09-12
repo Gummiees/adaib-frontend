@@ -5,6 +5,8 @@ import {
   input,
   output,
 } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { ClassificationTableGroupComponent } from '@shared/components/classification-table-group/classification-table-group.component';
 import { Group } from '@shared/models/group';
 import { Team } from '@shared/models/team';
 
@@ -12,7 +14,7 @@ import { Team } from '@shared/models/team';
   selector: 'app-group-classification',
   templateUrl: './group-classification.component.html',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ClassificationTableGroupComponent, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupClassificationComponent {

@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
 import { GroupFilterComponent } from '@features/competition/components/filters/group/group-filter.component';
 import { PhaseFilterComponent } from '@features/competition/components/filters/phase/phase-filter.component';
 import { CompetitionStore } from '@features/competition/store/competition-store';
-import { ClassificationItemComponent } from '@shared/components/classification-item/classification-item.component';
-import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
+import { ClassificationTableComponent } from '@shared/components/classification-table/classification-table.component';
 import { Classification } from '@shared/models/classification';
 import { Group } from '@shared/models/group';
 import { Team } from '@shared/models/team';
@@ -25,8 +24,7 @@ import { sortClassification } from '@shared/utils/utils';
     CommonModule,
     PhaseFilterComponent,
     GroupFilterComponent,
-    ClassificationItemComponent,
-    NotFoundComponent,
+    ClassificationTableComponent,
   ],
 })
 export class ClassificationComponent {

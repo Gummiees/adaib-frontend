@@ -17,7 +17,8 @@ export class PhaseSummaryComponent {
   public store = inject(CompetitionStore);
   public phase = input<Phase | null>(null);
 
-  public moreInfoClick = output<void>();
+  public moreInfoResultsClick = output<void>();
+  public moreInfoClassificationClick = output<void>();
   public teamClick = output<Team>();
 
   public getPhase(phase: Phase | 'all'): Phase | null {
@@ -34,8 +35,12 @@ export class PhaseSummaryComponent {
     return group;
   }
 
-  public onMoreInfoClicked(): void {
-    this.moreInfoClick.emit();
+  public onMoreInfoResultsClicked(): void {
+    this.moreInfoResultsClick.emit();
+  }
+
+  public onMoreInfoClassificationClicked(): void {
+    this.moreInfoClassificationClick.emit();
   }
 
   public onTeamClicked(team: Team): void {

@@ -1,11 +1,11 @@
 <div class="pt-6 pb-4 flex flex-col items-center justify-center gap-4">
   <app-info-with-filters class="w-full"></app-info-with-filters>
   @if(getPhase(store.phase())) {
-    <app-phase-summary class="w-full" [phase]="getPhase(store.phase())!" (moreInfoClick)="onMoreInfoClicked()" (teamClick)="onTeamClicked($event)"></app-phase-summary>
+    <app-phase-summary class="w-full" [phase]="getPhase(store.phase())!" (moreInfoResultsClick)="onMoreInfoResultsClicked()" (moreInfoClassificationClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-phase-summary>
   } @else if(store.competition()!.phases.length > 0) {
     @for (phase of store.competition()!.phases; track phase.id) {
-      <h4 class="text-3xl font-bold text-center">{{ phase.name }}</h4>
-      <app-phase-results class="w-full" [phase]="phase" (moreInfoClick)="onMoreInfoClicked()" (teamClick)="onTeamClicked($event)"></app-phase-results>
+      <h3 class="text-4xl font-bold text-center">{{ phase.name }}</h3>
+      <app-phase-summary class="w-full" [phase]="phase" (moreInfoResultsClick)="onMoreInfoResultsClicked()" (moreInfoClassificationClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-phase-summary>
     }
   } @else {
     <app-not-found title="No hay partidos disponibles" subtitle="No hay partidos disponibles para esta competición." [hideButton]="true"></app-not-found>

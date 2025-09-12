@@ -6,23 +6,5 @@
       <app-group-filter class="w-full"></app-group-filter>
     </div>
   }
-  <div class="w-full flex flex-col gap-3 max-w-200">
-    @if(allClassifications().length > 0) {
-    @for (classifications of allClassifications(); track classifications.group.id) {
-      <div class="flex flex-col gap-2 bg-white rounded-md shadow-sm border border-gray-200">
-        <h3 class="text-3xl font-bold text-center pt-4 pb-2">{{ classifications.group.name }}</h3>
-        @if(classifications.classifications.length > 0) {
-        <app-classification-item class="w-full border-y border-gray-300" [isHeader]="true"></app-classification-item>
-          @for (classification of classifications.classifications; track classification.id; let i = $index) {
-            <app-classification-item class="w-full border-b border-gray-300" [classification]="classification" (teamClick)="onTeamClicked($event)"></app-classification-item>
-          }
-        } @else {
-          <app-not-found title="No hay clasificaciones disponibles" subtitle="No hay clasificaciones disponibles para este grupo." [hideButton]="true"></app-not-found>
-        }
-      </div>
-    }
-  } @else {
-    <app-not-found title="No hay clasificaciones disponibles" subtitle="No hay clasificaciones disponibles para esta competición." [hideButton]="true"></app-not-found>
-  }
-  </div>
+  <app-classification-table class="w-full flex justify-center" (teamClick)="onTeamClicked($event)"></app-classification-table>
 </div>

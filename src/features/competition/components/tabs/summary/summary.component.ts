@@ -8,7 +8,6 @@ import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
 import { Team } from '@shared/models/team';
 import { InfoWithFiltersComponent } from './components/info-with-filters/info-with-filters.component';
-import { PhaseResultsComponent } from './components/phase-results/phase-results.component';
 import { PhaseSummaryComponent } from './components/phase-summary/phase-summary.component';
 
 @Component({
@@ -21,7 +20,6 @@ import { PhaseSummaryComponent } from './components/phase-summary/phase-summary.
     NotFoundComponent,
     MatButtonModule,
     PhaseSummaryComponent,
-    PhaseResultsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -41,7 +39,13 @@ export class SummaryComponent {
     });
   }
 
-  public onMoreInfoClicked(): void {
+  public onMoreInfoClassificationClicked(): void {
+    this.router.navigate(['/competiciones', this.store.competition()!.id], {
+      queryParams: { tab: 'clasificacion' },
+    });
+  }
+
+  public onMoreInfoResultsClicked(): void {
     this.router.navigate(['/competiciones', this.store.competition()!.id], {
       queryParams: { tab: 'resultados' },
     });
