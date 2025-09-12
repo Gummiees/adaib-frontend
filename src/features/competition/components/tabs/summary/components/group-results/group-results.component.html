@@ -17,7 +17,7 @@
     <app-not-found title="No hay partidos disponibles" subtitle="No hay partidos disponibles en esta jornada." [hideButton]="true"></app-not-found>
   }
   @if(roundsWithMatches().length > 0) {
-    <div class="w-full flex items-center justify-center flex-wrap px-1 py-4 gap-1">
+    <div class="w-full flex items-center justify-center flex-wrap px-1 pt-2 pb-4 gap-1">
       @for (round of roundsWithMatches(); track round.id; let i = $index) {
           <app-round-button [text]="getRoundNumber(i)" [tooltip]="round.name" [isSelected]="isRoundSelected(round)" (clicked)="onRoundClick(round)"></app-round-button>
       }
