@@ -104,7 +104,7 @@ export class TeamComponent {
     );
   }
 
-  public onMatchTeamClicked(team: Team) {
+  public onMatchTeamClicked(team: Team): void {
     this.router.navigate(['/competiciones', this.competition().id], {
       queryParams: { tab: 'equipos', equipo: team.id.toString() },
     });

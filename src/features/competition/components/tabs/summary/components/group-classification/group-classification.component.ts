@@ -20,11 +20,11 @@ export class GroupClassificationComponent {
   public teamClick = output<Team>();
   public group = input.required<Group>();
 
-  public onTeamClicked(team: Team) {
+  public onTeamClicked(team: Team): void {
     this.teamClick.emit(team);
   }
 
-  public onMoreInfoClicked() {
+  public onMoreInfoClicked(): void {
     this.moreInfoClick.emit();
   }
 }

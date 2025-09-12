@@ -12,13 +12,13 @@
       <app-match-extra-info [match]="detailedMatch()"></app-match-extra-info>
     }
     <div class="w-full flex justify-between items-center gap-2">
-      <app-match-team class="flex-1" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)" (matchTeamClicked)="onMatchTeamClicked(match().homeTeam)"></app-match-team>
+      <app-compact-team class="flex-1" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)" (teamClicked)="onMatchTeamClicked(match().homeTeam)"></app-compact-team>
       <div class="flex flex-col items-center">
         <app-match-score [match]="match()"></app-match-score>
         <app-match-info [match]="match()"></app-match-info>
       </div>
       @if(match().awayTeam) {
-        <app-match-team class="flex-1" [team]="match().awayTeam!" position="right" [isWinner]="isTeamWinner(match().awayTeam!)" (matchTeamClicked)="onMatchTeamClicked(match().awayTeam!)"></app-match-team>
+        <app-compact-team class="flex-1" [team]="match().awayTeam!" position="right" [isWinner]="isTeamWinner(match().awayTeam!)" (teamClicked)="onMatchTeamClicked(match().awayTeam!)"></app-compact-team>
       } @else {
         <p class="flex-1 text-base italic text-gray-500 text-right mr-[2px]">Descansa</p>
       }

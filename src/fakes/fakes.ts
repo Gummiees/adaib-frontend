@@ -1,4 +1,4 @@
-import { Classification } from '@shared/models/classification';
+import { ClassificationApi } from '@shared/models/classification';
 import { DetailedApiCompetition } from '@shared/models/competition';
 import { ApiGroup } from '@shared/models/group';
 import { ApiMatch, DetailedMatch } from '@shared/models/match';
@@ -161,7 +161,7 @@ _fakeTeams = _fakeTeams.map((team) => ({
 
 export const fakeTeams = _fakeTeams;
 
-export const fakeClassification: Classification[] = [
+export const fakeClassification: ClassificationApi[] = [
   {
     position: 1,
     teamId: _fakeTeams[0].id,

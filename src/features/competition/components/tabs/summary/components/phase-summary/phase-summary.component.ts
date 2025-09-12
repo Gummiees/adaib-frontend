@@ -34,11 +34,11 @@ export class PhaseSummaryComponent {
     return group;
   }
 
-  public onMoreInfoClicked() {
+  public onMoreInfoClicked(): void {
     this.moreInfoClick.emit();
   }
 
-  public onTeamClicked(team: Team) {
+  public onTeamClicked(team: Team): void {
     this.teamClick.emit(team);
   }
 }

@@ -5,16 +5,14 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { GroupFilterComponent } from '@features/competition/components/filters/group/group-filter.component';
 import { PhaseFilterComponent } from '@features/competition/components/filters/phase/phase-filter.component';
 import { RoundFilterComponent } from '@features/competition/components/filters/round/round-filter.component';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
-import { DetailedCompetition } from '@shared/models/competition';
 import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
 import { Round, RoundWithMatches } from '@shared/models/round';
@@ -39,15 +37,14 @@ import { CompetitionStore } from '../../../store/competition-store';
 })
 export class ResultsComponent {
   public competitionStore = inject(CompetitionStore);
-  public groupByRound = signal<boolean>(false);
-
   private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
 
-  public queryParams = toSignal<Params>(this.activatedRoute.queryParams, {});
-
+  public groupByRound = signal<boolean>(false);
   public allMatchesSorted = computed(() => {
-    const competition = this.filteredCompetition();
+    const competition = this.competitionStore.filteredCompetition();
+    if (!competition) {
+      return [];
+    }
     const allMatches = competition.phases
       .flatMap((phase) => phase.groups)
       .flatMap((group) => group.matches);
@@ -55,56 +52,11 @@ export class ResultsComponent {
     return sortMatches(allMatches);
   });
 
-  public filteredCompetition = computed<DetailedCompetition>(() => {
-    const competition = this.competitionStore.competition()!;
-    let filteredCompetition = { ...competition };
-    const phaseFilter = this.competitionStore.phase();
-    const groupFilter = this.competitionStore.group();
-    let roundFilter = null;
-
-    if (phaseFilter !== 'all') {
-      filteredCompetition = {
-        ...filteredCompetition,
-        phases: competition.phases.filter(
-          (phase) => phase.id === phaseFilter.id,
-        ),
-      };
-
-      if (groupFilter !== 'all') {
-        filteredCompetition = {
-          ...filteredCompetition,
-          phases: filteredCompetition.phases.map((phase) => ({
-            ...phase,
-            groups: phase.groups.filter((group) => group.id === groupFilter.id),
-          })),
-        };
-
-        roundFilter = this.competitionStore.roundByGroupId()[groupFilter.id];
-      } else {
-        roundFilter = this.competitionStore.roundByPhaseId()[phaseFilter.id];
-      }
-    }
-
-    if (roundFilter && roundFilter !== 'all') {
-      filteredCompetition = {
-        ...filteredCompetition,
-        phases: filteredCompetition.phases.map((phase) => ({
-          ...phase,
-          groups: phase.groups.map((group) => ({
-            ...group,
-            matches: group.matches.filter(
-              (match) => match.round.id === roundFilter.id,
-            ),
-          })),
-        })),
-      };
-    }
-
-    return filteredCompetition;
-  });
-
   public filteredMatches = computed(() => {
-    const competition = this.filteredCompetition();
+    const competition = this.competitionStore.filteredCompetition();
+    if (!competition) {
+      return [];
+    }
     const allMatches = competition.phases
       .flatMap((phase) => phase.groups)
       .flatMap((group) => group.matches);
@@ -113,8 +65,12 @@ export class ResultsComponent {
   });
 
   public filteredMatchesByRound = computed<RoundWithMatches[]>(() => {
-    return this.filteredCompetition()
-      .phases.flatMap<RoundWithMatches[]>((phase) =>
+    const competition = this.competitionStore.filteredCompetition();
+    if (!competition) {
+      return [];
+    }
+    return competition.phases
+      .flatMap<RoundWithMatches[]>((phase) =>
         phase.rounds.map((round) => ({
           ...round,
           matches: sortMatches(
@@ -156,11 +112,11 @@ export class ResultsComponent {
     return [...new Set(phaseFilter.rounds)];
   });
 
-  public onGroupByRoundChange(groupByRound: boolean) {
+  public onGroupByRoundChange(groupByRound: boolean): void {
     this.groupByRound.set(groupByRound);
   }
 
-  public onMatchTeamClicked(team: Team) {
+  public onMatchTeamClicked(team: Team): void {
     this.router.navigate(
       ['/competiciones', this.competitionStore.competition()!.id],
       {

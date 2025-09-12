@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { GroupFilterComponent } from '@features/competition/components/filters/group/group-filter.component';
 import { PhaseFilterComponent } from '@features/competition/components/filters/phase/phase-filter.component';
@@ -9,6 +10,7 @@ import { CompetitionInfoComponent } from '../competition-info/competition-info.c
   templateUrl: './info-with-filters.component.html',
   standalone: true,
   imports: [
+    CommonModule,
     CompetitionInfoComponent,
     PhaseFilterComponent,
     GroupFilterComponent,

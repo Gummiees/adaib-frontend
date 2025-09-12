@@ -86,15 +86,15 @@ export class GroupResultsComponent {
     return sortMatches(this.group().matches);
   });
 
-  public onMatchTeamClicked(team: Team) {
+  public onMatchTeamClicked(team: Team): void {
     this.matchTeamClick.emit(team);
   }
 
-  public onMoreInfoClicked() {
+  public onMoreInfoClicked(): void {
     this.moreInfoClick.emit();
   }
 
-  public onRoundClick(round: Round) {
+  public onRoundClick(round: Round): void {
     this.dispatcher.dispatch(
       competitionEvents.roundByGroupChange({
         group: this.group(),

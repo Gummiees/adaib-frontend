@@ -29,19 +29,19 @@ export class SummaryComponent {
   private router = inject(Router);
   public store = inject(CompetitionStore);
 
-  public onTeamClicked(team: Team) {
+  public onTeamClicked(team: Team): void {
     this.router.navigate(['/competiciones', this.store.competition()!.id], {
       queryParams: { tab: 'equipos', equipo: team.id.toString() },
     });
   }
 
-  public onPhaseMoreInfoClicked() {
+  public onPhaseMoreInfoClicked(): void {
     this.router.navigate(['/competiciones', this.store.competition()!.id], {
       queryParams: { tab: 'resultados' },
     });
   }
 
-  public onMoreInfoClicked() {
+  public onMoreInfoClicked(): void {
     this.router.navigate(['/competiciones', this.store.competition()!.id], {
       queryParams: { tab: 'resultados' },
     });

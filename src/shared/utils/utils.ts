@@ -1,11 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { DetailedMatch, MatchStatus } from '@shared/models/match';
+import { Classification } from '../models/classification';
 
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function getErrorMessage(error: unknown) {
+export function getErrorMessage(error: unknown): string {
   let errorMessage = 'Failed to load pets';
   if (error instanceof HttpErrorResponse && error.error.message) {
     errorMessage = error.error.message;
@@ -59,4 +60,10 @@ export function sortMatches(matches: DetailedMatch[]): DetailedMatch[] {
     const bTime = b.date?.getTime() ?? -Infinity;
     return bTime - aTime;
   });
+}
+
+export function sortClassification(
+  classification: Classification[],
+): Classification[] {
+  return [...classification].sort((a, b) => b.points - a.points);
 }

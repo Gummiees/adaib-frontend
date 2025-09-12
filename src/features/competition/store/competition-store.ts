@@ -1,6 +1,6 @@
-import { inject } from '@angular/core';
+import { computed, inject } from '@angular/core';
 import { mapResponse } from '@ngrx/operators';
-import { signalStore, withState } from '@ngrx/signals';
+import { signalStore, withComputed, withState } from '@ngrx/signals';
 import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
 import { DetailedCompetition } from '@shared/models/competition';
 import { Group } from '@shared/models/group';
@@ -83,6 +83,61 @@ export const CompetitionStore = signalStore(
       }),
     ),
   ),
+  withComputed((store) => ({
+    filteredCompetition: computed<DetailedCompetition | null>(() => {
+      const competition = store.competition();
+      if (!competition) {
+        return null;
+      }
+
+      let filteredCompetition = { ...competition };
+      const phaseFilter = store.phase();
+      const groupFilter = store.group();
+      let roundFilter = null;
+
+      if (phaseFilter !== 'all') {
+        filteredCompetition = {
+          ...filteredCompetition,
+          phases: competition.phases.filter(
+            (phase) => phase.id === phaseFilter.id,
+          ),
+        };
+
+        if (groupFilter !== 'all') {
+          filteredCompetition = {
+            ...filteredCompetition,
+            phases: filteredCompetition.phases.map((phase) => ({
+              ...phase,
+              groups: phase.groups.filter(
+                (group) => group.id === groupFilter.id,
+              ),
+            })),
+          };
+
+          roundFilter = store.roundByGroupId()[groupFilter.id];
+        } else {
+          roundFilter = store.roundByPhaseId()[phaseFilter.id];
+        }
+      }
+
+      if (roundFilter && roundFilter !== 'all') {
+        filteredCompetition = {
+          ...filteredCompetition,
+          phases: filteredCompetition.phases.map((phase) => ({
+            ...phase,
+            groups: phase.groups.map((group) => ({
+              ...group,
+              matches: group.matches.filter(
+                (match) => match.round.id === roundFilter.id,
+              ),
+            })),
+          })),
+        };
+      }
+
+      return filteredCompetition;
+    }),
+  })),
   withEffects(
     (
       store,

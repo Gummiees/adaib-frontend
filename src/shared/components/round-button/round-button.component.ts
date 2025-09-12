@@ -21,7 +21,7 @@ export class RoundButtonComponent {
   public isSelected = input<boolean>(false);
   public clicked = output<void>();
 
-  public onRoundClick() {
+  public onRoundClick(): void {
     this.clicked.emit();
   }
 }

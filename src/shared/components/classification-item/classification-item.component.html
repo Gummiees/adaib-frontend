@@ -1,0 +1,12 @@
+<div class="w-full flex p-2 sm:p-3 justify-between items-center gap-2 text-lg">
+    <div class="flex items-center gap-2">
+      @if(classification() && !isHeader()) {
+        <p>{{ classification()!.position }}</p>
+        <app-compact-team [team]="classification()!.team" fontSize="large" (teamClicked)="onTeamClicked(classification()!.team)"></app-compact-team>
+      }
+      @else {
+        <p class="text-gray-500">Equipo</p>
+      }
+    </div>
+    <p [ngClass]="{'text-gray-500': isHeader()}">{{ getPointsText() }}</p>
+</div>

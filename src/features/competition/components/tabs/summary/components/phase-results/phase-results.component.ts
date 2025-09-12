@@ -81,15 +81,15 @@ export class PhaseResultsComponent {
     return sortMatches(this.phase().groups.flatMap((group) => group.matches));
   });
 
-  public onTeamClicked(team: Team) {
+  public onTeamClicked(team: Team): void {
     this.teamClick.emit(team);
   }
 
-  public onMoreInfoClicked() {
+  public onMoreInfoClicked(): void {
     this.moreInfoClick.emit();
   }
 
-  public onRoundClick(round: Round) {
+  public onRoundClick(round: Round): void {
     this.dispatcher.dispatch(
       competitionEvents.roundByPhaseChange({
         phase: this.phase(),

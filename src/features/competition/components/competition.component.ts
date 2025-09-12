@@ -69,7 +69,7 @@ export class CompetitionComponent {
     });
   }
 
-  private dispatchRoundChange() {
+  private dispatchRoundChange(): void {
     const competition = this.competitionStore.competition();
     const initialPhase = this.initialPhase();
     const initialGroup = this.initialGroup();
@@ -84,7 +84,7 @@ export class CompetitionComponent {
     }
   }
 
-  private dispatchRoundChangeByPhase(phase: Phase) {
+  private dispatchRoundChangeByPhase(phase: Phase): void {
     const roundRecord: RoundWithPhase = {
       phase: phase,
       round: 'all',
@@ -96,7 +96,7 @@ export class CompetitionComponent {
     }
   }
 
-  private dispatchRoundChangeByGroup(group: Group) {
+  private dispatchRoundChangeByGroup(group: Group): void {
     const roundRecord: RoundWithGroup = {
       group: group,
       round: group.actualRound ?? 'all',
@@ -170,6 +170,10 @@ export class CompetitionComponent {
   }
 
   public onTabChange(index: number): void {
+    if (index === this.currentTab()) {
+      return;
+    }
+
     const competitionId = this.activatedRoute.snapshot.params['id'];
     const baseUrl = `/competiciones/${competitionId}`;
 
@@ -179,7 +183,6 @@ export class CompetitionComponent {
       fase?: string;
       grupo?: string;
     } = {};
-    const currentQueryParams = this.activatedRoute.snapshot.queryParams;
 
     switch (index) {
       case 0:
@@ -192,6 +195,7 @@ export class CompetitionComponent {
         break;
       case 3: {
         queryParams = { tab: 'equipos' };
+        const currentQueryParams = this.activatedRoute.snapshot.queryParams;
         if (currentQueryParams['equipo']) {
           queryParams.equipo = currentQueryParams['equipo'];
         }

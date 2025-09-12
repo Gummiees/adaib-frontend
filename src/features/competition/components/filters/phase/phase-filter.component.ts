@@ -35,7 +35,7 @@ export class PhaseFilterComponent {
     }
   }
 
-  private dispatchRoundChange(phase: Phase) {
+  private dispatchRoundChange(phase: Phase): void {
     this.dispatcher.dispatch(
       competitionEvents.roundByPhaseChange({
         phase: phase,
