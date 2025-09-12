@@ -130,7 +130,7 @@ export class GroupResultsComponent {
     this.moreInfoClick.emit();
   }
 
-  public onRoundClick(round: Round): void {
+  public onRoundClick(round: Round | 'all'): void {
     const group = this.group();
     const phase = this.phase();
     if (phase) {
@@ -155,7 +155,7 @@ export class GroupResultsComponent {
     return (index + 1).toString();
   }
 
-  public isRoundSelected(round: Round): boolean {
+  public isRoundSelected(round: Round | 'all'): boolean {
     const group = this.group();
     const phase = this.phase();
     let currentRound = null;
@@ -165,9 +165,12 @@ export class GroupResultsComponent {
     if (group) {
       currentRound = this.store.roundByGroupId()[group.id];
     }
-    if (!currentRound || currentRound === 'all') {
+    if (!currentRound) {
       return false;
     }
-    return round.id === currentRound.id;
+    if (round === 'all') {
+      return currentRound === 'all';
+    }
+    return currentRound !== 'all' && round.id === currentRound.id;
   }
 }

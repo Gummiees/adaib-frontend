@@ -20,6 +20,7 @@ export class RoundButtonComponent {
   public tooltip = input<string>();
   public isSelected = input<boolean>(false);
   public clicked = output<void>();
+  public dynamicSize = input<boolean>(false);
 
   public onRoundClick(): void {
     this.clicked.emit();

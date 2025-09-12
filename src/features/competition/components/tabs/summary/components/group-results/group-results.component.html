@@ -21,6 +21,7 @@
       @for (round of roundsWithMatches(); track round.id; let i = $index) {
           <app-round-button [text]="getRoundNumber(i)" [tooltip]="round.name" [isSelected]="isRoundSelected(round)" (clicked)="onRoundClick(round)"></app-round-button>
       }
+      <app-round-button text="Todas" tooltip="Todas las jornadas" [dynamicSize]="true" [isSelected]="isRoundSelected('all')" (clicked)="onRoundClick('all')"></app-round-button>
     </div>
   }
 </div>
