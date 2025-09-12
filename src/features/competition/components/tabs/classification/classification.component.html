@@ -12,7 +12,7 @@
         <h3 class="text-3xl font-bold text-center pt-4 pb-2">{{ classifications.group.name }}</h3>
         <app-classification-item class="w-full border-y border-gray-300" [isHeader]="true"></app-classification-item>
         @for (classification of classifications.classifications; track classification.id; let i = $index) {
-          <app-classification-item class="w-full border-b border-gray-300" [classification]="classification"></app-classification-item>
+          <app-classification-item class="w-full border-b border-gray-300" [classification]="classification" (teamClick)="onTeamClicked($event)"></app-classification-item>
         }
       </div>
     }

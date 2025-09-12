@@ -2,6 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import {
+  Classification,
+  ClassificationApi,
+} from '@shared/models/classification';
+import {
   DetailedApiCompetition,
   DetailedCompetition,
 } from '@shared/models/competition';
@@ -11,6 +15,7 @@ import { ApiPhase, Phase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
 import { Team } from '@shared/models/team';
 import { map, Observable } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CompetitionService {
@@ -58,6 +63,10 @@ export class CompetitionService {
   }): Group[] {
     return groups.map((group) => ({
       ...group,
+      classification: this.parseClassification(group.classification, teams),
+      actualRound: group.actualRoundId
+        ? rounds.find((round) => round.id === group.actualRoundId)
+        : null,
       matches: this.parseMatches({
         matches: group.matches,
         teams: teams,
@@ -66,6 +75,21 @@ export class CompetitionService {
         groupName: group.name,
       }),
     }));
+  }
+
+  private parseClassification(
+    classification: ClassificationApi[],
+    teams: Team[],
+  ): Classification[] {
+    return classification
+      .filter((classification) =>
+        teams.some((team) => team.id === classification.teamId),
+      )
+      .map((classification) => ({
+        id: uuidv4(),
+        team: teams.find((team) => team.id === classification.teamId)!,
+        ...classification,
+      }));
   }
 
   private parseMatches({
