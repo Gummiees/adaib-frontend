@@ -1,13 +1,15 @@
-<ng-content></ng-content>
-@if(group().classification.length > 0) {
-  <div class="w-full border-y border-gray-300 mt-2">
-    <app-classification-item class="w-full" [isHeader]="true"></app-classification-item>
-  </div>
-  @for (classification of group().classification; track classification.id; let i = $index) {
-    <div class="w-full border-b border-gray-300">
-      <app-classification-item class="w-full" [classification]="classification" (teamClick)="onTeamClicked($event)"></app-classification-item>
+<div class="w-full flex flex-col">
+  <ng-content></ng-content>
+  @if(group().classification.length > 0) {
+    <div class="w-full border-y border-gray-300 mt-2">
+      <app-classification-item class="w-full" [isHeader]="true"></app-classification-item>
     </div>
+    @for (classification of group().classification; track classification.id; let i = $index) {
+      <div class="w-full border-b border-gray-300">
+        <app-classification-item class="w-full" [classification]="classification" (teamClick)="onTeamClicked($event)"></app-classification-item>
+      </div>
+    }
+  } @else {
+    <app-not-found title="No hay clasificaciones disponibles" subtitle="No hay clasificaciones disponibles para este grupo." [hideButton]="true"></app-not-found>
   }
-} @else {
-  <app-not-found title="No hay clasificaciones disponibles" subtitle="No hay clasificaciones disponibles para este grupo." [hideButton]="true"></app-not-found>
-}
+</div>
