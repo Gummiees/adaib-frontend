@@ -13,7 +13,7 @@
         }
         <h1 class="text-4xl font-bold text-center">{{ competitionStore.competition()!.name }}</h1>
       </div>
-      <mat-tab-group class="w-full" [selectedIndex]="currentTab()" (selectedTabChange)="onTabChange($event.index)">
+      <mat-tab-group class="w-full" [selectedIndex]="currentTab()" (selectedTabChange)="onTabChange($event.index)" [animationDuration]="'100ms'" [dynamicHeight]="true">
         <mat-tab label="Resumen">
           <app-summary></app-summary>
         </mat-tab>
