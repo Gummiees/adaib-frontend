@@ -1,0 +1,26 @@
+<div class="flex flex-col pt-4 rounded-md shadow-sm bg-white border border-gray-300">
+  <div class="flex justify-center items-center gap-4">
+    <h5 class="text-2xl font-bold text-center">Resultados</h5>
+    <a matButton="tonal" (click)="onMoreInfoClicked()" (keydown.enter)="onMoreInfoClicked()" (keydown.space)="onMoreInfoClicked()" tabindex="0" ariaLabel="Más información de este grupo">Más info</a>
+  </div>
+  @if(filteredMatches().length > 0) {
+    @for (match of filteredMatches(); track match.id; let i = $index) {
+      <app-match
+        class="w-full flex justify-center border-b border-gray-300 mt-4"
+        [ngClass]="{'border-t': i === 0}"
+        [match]="match"
+        [compactView]="true"
+        (matchTeamClicked)="onMatchTeamClicked($event)">
+      </app-match>
+    }
+  } @else {
+    <app-not-found title="No hay partidos disponibles" subtitle="No hay partidos disponibles en esta jornada." [hideButton]="true"></app-not-found>
+  }
+  @if(filteredMatches().length > 0 && roundsWithMatches().length > 0) {
+    <div class="w-full flex items-center justify-center flex-wrap py-4 px-1 gap-1">
+      @for (round of roundsWithMatches(); track round.id; let i = $index) {
+          <app-round-button [text]="getRoundNumber(i)" [tooltip]="round.name" [isSelected]="isRoundSelected(round)" (clicked)="onRoundClick(round)"></app-round-button>
+      }
+    </div>
+  }
+</div>

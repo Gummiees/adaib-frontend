@@ -1,22 +1,11 @@
 <div class="pt-6 pb-4 flex flex-col items-center justify-center gap-4">
-  <app-info-with-filters class="w-full" [competition]="competition()"></app-info-with-filters>
-  @if(store.phase()) {
-    @if(store.group() && !!getGroup(store.group())) {
-      <h4 class="text-3xl font-bold text-center">{{ getGroup(store.group())!.name }}</h4>
-      <div class="w-full flex flex-col md:flex-row justify-center gap-4">
-        <app-summary-results class="flex-1" [competition]="competition()" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoClicked()" (matchTeamClicked)="onMatchTeamClicked($event)"></app-summary-results>
-        <app-summary-results class="flex-1" [competition]="competition()" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoClicked()" (matchTeamClicked)="onMatchTeamClicked($event)"></app-summary-results>
-      </div>
-    } @else if(store.phase()!.groups.length > 0) {
-      @for (group of store.phase()!.groups; track group.id) {
-        <h4 class="text-3xl font-bold text-center">{{ group.name }}</h4>
-        <div class="w-full flex flex-col md:flex-row justify-center gap-4">
-          <app-summary-results class="flex-1" [competition]="competition()" [group]="group" (moreInfoClick)="onMoreInfoClicked()" (matchTeamClicked)="onMatchTeamClicked($event)"></app-summary-results>
-          <app-summary-results class="flex-1" [competition]="competition()" [group]="group" (moreInfoClick)="onMoreInfoClicked()" (matchTeamClicked)="onMatchTeamClicked($event)"></app-summary-results>
-        </div>
-      }
-    } @else {
-      <app-not-found title="No hay partidos disponibles" subtitle="No hay partidos disponibles para esta fase." [hideButton]="true"></app-not-found>
+  <app-info-with-filters class="w-full"></app-info-with-filters>
+  @if(getPhase(store.phase())) {
+    <app-phase-summary class="w-full" [phase]="getPhase(store.phase())!" (moreInfoClick)="onMoreInfoClicked()" (teamClick)="onTeamClicked($event)"></app-phase-summary>
+  } @else if(store.competition()!.phases.length > 0) {
+    @for (phase of store.competition()!.phases; track phase.id) {
+      <h4 class="text-3xl font-bold text-center">{{ phase.name }}</h4>
+      <app-phase-results class="w-full" [phase]="phase" (moreInfoClick)="onMoreInfoClicked()" (teamClick)="onTeamClicked($event)"></app-phase-results>
     }
   } @else {
     <app-not-found title="No hay partidos disponibles" subtitle="No hay partidos disponibles para esta competición." [hideButton]="true"></app-not-found>

@@ -1,45 +1,19 @@
 
 <div class="w-full flex flex-col gap-4 items-center bg-white rounded-md p-4 shadow-md border border-gray-200">
-  <div class="w-full flex flex-col sm:flex-row gap-2 justify-between items-center">
-    <h2 class="p-0 sm:pl-4 text-4xl font-bold text-center">Resumen</h2>
-    <div class="!hidden sm:!flex gap-2">
-      <mat-form-field class=" w-full sm:w-auto max-w-200">
-        <mat-label>Fase</mat-label>
-        <mat-select [value]="store.phase()" (selectionChange)="onPhaseChange($event.value)">
-          @for (phase of availablePhases(); track phase.id) {
-            <mat-option [value]="phase">{{ phase.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field class="w-full sm:w-auto max-w-200">
-        <mat-label>Grupo</mat-label>
-        <mat-select [value]="store.group()" (selectionChange)="onGroupChange($event.value)">
-          <mat-option value="all">Todos</mat-option>
-          @for (group of availableGroups(); track group.id) {
-            <mat-option [value]="group">{{ group.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+  <div class="w-full flex flex-col md:flex-row gap-2 justify-between items-center">
+    <h2 class="p-0 md:pl-4 text-4xl font-bold text-center">Resumen</h2>
+    <div class="!hidden md:!flex gap-2">
+      <app-phase-filter class="w-50 max-w-200" [class.w-102]="store.phase() === 'all'"></app-phase-filter>
+      @if(store.phase() !== 'all') {
+        <app-group-filter class="w-50 max-w-200"></app-group-filter>
+      }
     </div>
   </div>
-  <app-competition-info class="w-full" [competition]="competition()"></app-competition-info>
-  <div class="sm:!hidden flex flex-col gap-2 w-full">
-    <mat-form-field class="w-full">
-      <mat-label>Fase</mat-label>
-      <mat-select [value]="store.phase()" (selectionChange)="onPhaseChange($event.value)">
-        @for (phase of availablePhases(); track phase.id) {
-          <mat-option [value]="phase">{{ phase.name }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field class="w-full">
-      <mat-label>Grupo</mat-label>
-      <mat-select [value]="store.group()" (selectionChange)="onGroupChange($event.value)">
-        <mat-option value="all">Todos</mat-option>
-        @for (group of availableGroups(); track group.id) {
-          <mat-option [value]="group">{{ group.name }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+  <app-competition-info class="w-full"></app-competition-info>
+  <div class="md:!hidden flex flex-col gap-2 w-full">
+    <app-phase-filter class="w-full"></app-phase-filter>
+    @if(store.phase() !== 'all') {
+      <app-group-filter class="w-full"></app-group-filter>
+    }
   </div>
 </div>

@@ -1,0 +1,10 @@
+
+<mat-form-field class="w-full">
+  <mat-label>Fase</mat-label>
+  <mat-select [value]="store.phase()" (selectionChange)="onPhaseFilterChange($event.value)">
+    <mat-option value="all">Todos</mat-option>
+    @for (phase of store.competition()!.phases; track phase.id) {
+      <mat-option [value]="phase">{{ phase.name }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>

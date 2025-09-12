@@ -3,27 +3,26 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   input,
   output,
-  signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { competitionEvents } from '@features/competition/store/competition-events';
+import { CompetitionStore } from '@features/competition/store/competition-store';
+import { Dispatcher } from '@ngrx/signals/events';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { RoundButtonComponent } from '@shared/components/round-button/round-button.component';
-import { DetailedCompetition } from '@shared/models/competition';
-import { Group } from '@shared/models/group';
 import { Match } from '@shared/models/match';
+import { Phase } from '@shared/models/phase';
 import { Round, RoundWithMatches } from '@shared/models/round';
 import { Team } from '@shared/models/team';
 import { sortMatches } from '@shared/utils/utils';
-import { SummaryStore } from '../../store/summary-store';
 
 @Component({
-  selector: 'app-summary-results',
-  templateUrl: './summary-results.component.html',
+  selector: 'app-phase-results',
+  templateUrl: './phase-results.component.html',
   standalone: true,
   imports: [
     CommonModule,
@@ -34,21 +33,26 @@ import { SummaryStore } from '../../store/summary-store';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SummaryResultsComponent {
-  public store = inject(SummaryStore);
+export class PhaseResultsComponent {
+  public store = inject(CompetitionStore);
+  private dispatcher = inject(Dispatcher);
 
   public moreInfoClick = output<void>();
-  public matchTeamClicked = output<Team>();
-  public competition = input.required<DetailedCompetition>();
-  public group = input.required<Group>();
+  public teamClick = output<Team>();
+  public phase = input.required<Phase>();
   public roundsWithMatches = computed<RoundWithMatches[]>(() => {
-    const phase = this.store.phase();
-    const group = this.group();
+    const competition = this.store.competition();
+    if (!competition) {
+      return [];
+    }
+    const phase = this.phase();
     return (
-      phase?.rounds.map((round) => ({
+      phase.rounds.map((round) => ({
         ...round,
         matches: sortMatches(
-          group.matches.filter((match) => match.round.id === round.id),
+          phase.groups
+            .flatMap((group) => group.matches)
+            .filter((match) => match.round.id === round.id),
         ),
       })) ?? []
     );
@@ -65,37 +69,20 @@ export class SummaryResultsComponent {
       ) ?? null
     );
   });
-  public currentRound = signal<Round | null>(null);
-
-  constructor() {
-    effect(() => {
-      const group = this.group();
-      const phase = this.store.phase();
-      if (phase) {
-        const firstRound = this.firstRound();
-        const round = phase.rounds.find(
-          (round) => round.id === group.actualRoundId,
-        );
-        this.currentRound.set(round ?? firstRound);
-      } else {
-        this.currentRound.set(null);
-      }
-    });
-  }
 
   public filteredMatches = computed<Match[]>(() => {
-    const currentRound = this.currentRound();
-    if (currentRound) {
+    const currentRound = this.store.roundByPhaseId()[this.phase().id];
+    if (currentRound && currentRound !== 'all') {
       return this.roundsWithMatches()
         .filter((roundWithMatches) => roundWithMatches.id === currentRound.id)
         .flatMap((roundWithMatches) => roundWithMatches.matches);
     }
 
-    return sortMatches(this.group().matches);
+    return sortMatches(this.phase().groups.flatMap((group) => group.matches));
   });
 
-  public onMatchTeamClicked(team: Team) {
-    this.matchTeamClicked.emit(team);
+  public onTeamClicked(team: Team) {
+    this.teamClick.emit(team);
   }
 
   public onMoreInfoClicked() {
@@ -103,10 +90,23 @@ export class SummaryResultsComponent {
   }
 
   public onRoundClick(round: Round) {
-    this.currentRound.set(round);
+    this.dispatcher.dispatch(
+      competitionEvents.roundByPhaseChange({
+        phase: this.phase(),
+        round: round,
+      }),
+    );
   }
 
   public getRoundNumber(index: number): string {
     return (index + 1).toString();
+  }
+
+  public isRoundSelected(round: Round): boolean {
+    const currentRound = this.store.roundByPhaseId()[this.phase().id];
+    if (!currentRound || currentRound === 'all') {
+      return false;
+    }
+    return round.id === currentRound.id;
   }
 }

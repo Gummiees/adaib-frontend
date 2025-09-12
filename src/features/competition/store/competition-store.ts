@@ -3,17 +3,24 @@ import { mapResponse } from '@ngrx/operators';
 import { signalStore, withState } from '@ngrx/signals';
 import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
 import { DetailedCompetition } from '@shared/models/competition';
+import { Group } from '@shared/models/group';
+import { Phase } from '@shared/models/phase';
+import { Round } from '@shared/models/round';
 import { getErrorMessage } from '@shared/utils/utils';
 import { filter, switchMap } from 'rxjs/operators';
 import { CompetitionService } from '../services/competition.service';
 import { competitionApiEvent } from './competition-api-events';
-import { getCompetitionEvent } from './competition-events';
+import { competitionEvents } from './competition-events';
 
 type CompetitionState = {
   competition: DetailedCompetition | null;
   competitionId: number | null;
   isLoading: boolean;
   error: string | null;
+  phase: Phase | 'all';
+  group: Group | 'all';
+  roundByGroupId: Record<number, Round | 'all'>;
+  roundByPhaseId: Record<number, Round | 'all'>;
 };
 
 const initialState: CompetitionState = {
@@ -21,15 +28,23 @@ const initialState: CompetitionState = {
   competitionId: null,
   isLoading: false,
   error: null,
+  phase: 'all',
+  group: 'all',
+  roundByGroupId: {},
+  roundByPhaseId: {},
 };
 
 export const CompetitionStore = signalStore(
   withState(initialState),
   withReducer(
-    on(getCompetitionEvent, ({ payload: id }) => ({
+    on(competitionEvents.getCompetition, ({ payload: id }) => ({
       isLoading: true,
       competitionId: id,
       error: null,
+      phase: 'all' as const,
+      group: 'all' as const,
+      roundByGroupId: {},
+      roundByPhaseId: {},
     })),
     on(
       competitionApiEvent.getCompetitionSuccess,
@@ -43,6 +58,30 @@ export const CompetitionStore = signalStore(
       isLoading: false,
       error: error,
     })),
+    on(competitionEvents.phaseChange, ({ payload: phase }) => ({
+      phase: phase,
+    })),
+    on(competitionEvents.groupChange, ({ payload: group }) => ({
+      group: group,
+    })),
+    on(
+      competitionEvents.roundByPhaseChange,
+      ({ payload: roundWithPhase }, state) => ({
+        roundByPhaseId: {
+          ...state.roundByPhaseId,
+          [roundWithPhase.phase.id]: roundWithPhase.round,
+        },
+      }),
+    ),
+    on(
+      competitionEvents.roundByGroupChange,
+      ({ payload: roundWithGroup }, state) => ({
+        roundByGroupId: {
+          ...state.roundByGroupId,
+          [roundWithGroup.group.id]: roundWithGroup.round,
+        },
+      }),
+    ),
   ),
   withEffects(
     (
@@ -50,7 +89,7 @@ export const CompetitionStore = signalStore(
       events = inject(Events),
       competitionService = inject(CompetitionService),
     ) => ({
-      login$: events.on(getCompetitionEvent).pipe(
+      login$: events.on(competitionEvents.getCompetition).pipe(
         filter(() => !!store.competitionId()),
         switchMap(() =>
           competitionService.getCompetitionById(store.competitionId()!).pipe(

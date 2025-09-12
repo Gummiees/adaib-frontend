@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -11,13 +12,19 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TeamComponent } from '@features/competition/components/tabs/teams/team/team.component';
 import { TeamsComponent } from '@features/competition/components/tabs/teams/teams.component';
-import { CompetitionsStore } from '@features/competitions/store/competitions-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
+import { Group } from '@shared/models/group';
+import { Phase } from '@shared/models/phase';
 import { map } from 'rxjs';
-import { getCompetitionEvent } from '../store/competition-events';
+import {
+  competitionEvents,
+  RoundWithGroup,
+  RoundWithPhase,
+} from '../store/competition-events';
 import { CompetitionStore } from '../store/competition-store';
+import { ClassificationComponent } from './tabs/classification/classification.component';
 import { ResultsComponent } from './tabs/results/results.component';
 import { SummaryComponent } from './tabs/summary/summary.component';
 
@@ -26,7 +33,7 @@ import { SummaryComponent } from './tabs/summary/summary.component';
   templateUrl: './competition.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [CompetitionsStore],
+  providers: [CompetitionStore],
   imports: [
     CommonModule,
     NotFoundComponent,
@@ -37,6 +44,7 @@ import { SummaryComponent } from './tabs/summary/summary.component';
     ResultsComponent,
     MatButtonModule,
     SummaryComponent,
+    ClassificationComponent,
   ],
 })
 export class CompetitionComponent {
@@ -47,6 +55,53 @@ export class CompetitionComponent {
 
   constructor() {
     this.getCompetition();
+    effect(() => {
+      const initialPhase = this.initialPhase();
+      const initialGroup = this.initialGroup();
+      if (initialPhase) {
+        this.dispatcher.dispatch(competitionEvents.phaseChange(initialPhase));
+      }
+      if (initialGroup) {
+        this.dispatcher.dispatch(competitionEvents.groupChange(initialGroup));
+      }
+
+      this.dispatchRoundChange();
+    });
+  }
+
+  private dispatchRoundChange() {
+    const competition = this.competitionStore.competition();
+    const initialPhase = this.initialPhase();
+    const initialGroup = this.initialGroup();
+    if (initialGroup) {
+      this.dispatchRoundChangeByGroup(initialGroup);
+    } else if (initialPhase) {
+      this.dispatchRoundChangeByPhase(initialPhase);
+    } else if (competition) {
+      for (const phase of competition.phases) {
+        this.dispatchRoundChangeByPhase(phase);
+      }
+    }
+  }
+
+  private dispatchRoundChangeByPhase(phase: Phase) {
+    const roundRecord: RoundWithPhase = {
+      phase: phase,
+      round: 'all',
+    };
+    this.dispatcher.dispatch(competitionEvents.roundByPhaseChange(roundRecord));
+
+    for (const group of phase.groups) {
+      this.dispatchRoundChangeByGroup(group);
+    }
+  }
+
+  private dispatchRoundChangeByGroup(group: Group) {
+    const roundRecord: RoundWithGroup = {
+      group: group,
+      round: group.actualRound ?? 'all',
+    };
+    this.dispatcher.dispatch(competitionEvents.roundByGroupChange(roundRecord));
   }
 
   // Get the current tab from query parameters
@@ -89,6 +144,23 @@ export class CompetitionComponent {
     return tab === 3 && teamId !== null && !isNaN(teamId);
   });
 
+  private initialPhase = computed<Phase | null>(() => {
+    const competition = this.competitionStore.competition();
+    if (!competition) {
+      return null;
+    }
+    return (
+      competition.phases.find(
+        (phase) => phase.groups.flatMap((group) => group.matches).length > 0,
+      ) ?? null
+    );
+  });
+
+  private initialGroup = computed<Group | null>(() => {
+    const phase = this.initialPhase();
+    return phase?.groups.find((group) => group.matches.length > 0) ?? null;
+  });
+
   public onNotFoundButtonClick = (): void => {
     this.router.navigate(['/competiciones']);
   };
@@ -117,12 +189,6 @@ export class CompetitionComponent {
         break;
       case 2:
         queryParams = { tab: 'resultados' };
-        if (currentQueryParams['fase']) {
-          queryParams.fase = currentQueryParams['fase'];
-        }
-        if (currentQueryParams['grupo']) {
-          queryParams.grupo = currentQueryParams['grupo'];
-        }
         break;
       case 3: {
         queryParams = { tab: 'equipos' };
@@ -168,6 +234,6 @@ export class CompetitionComponent {
       return;
     }
 
-    this.dispatcher.dispatch(getCompetitionEvent(parsedId));
+    this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
   }
 }

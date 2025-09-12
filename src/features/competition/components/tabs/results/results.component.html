@@ -1,38 +1,14 @@
 <div class="w-full pt-6 pb-4 flex flex-col gap-2 items-center">
   <h2 class="text-4xl font-bold text-center">Resultados</h2>
-  @if(competition().phases.length > 0) {
+  @if(competitionStore.competition()!.phases.length > 0) {
     <div class="flex flex-col md:flex-row gap-2 w-full justify-center">
-      <mat-form-field class="w-full max-w-200">
-        <mat-label>Fase</mat-label>
-        <mat-select [value]="phaseFilter()" (selectionChange)="onPhaseFilterChange($event.value)">
-          <mat-option value="all">Todas</mat-option>
-          @for (phase of availablePhases(); track phase.id) {
-            <mat-option [value]="phase">{{ phase.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <app-phase-filter class="w-full max-w-200"></app-phase-filter>
+
       @if(availableGroups().length > 0) {
-        <mat-form-field class="w-full max-w-200">
-          <mat-label>Grupo</mat-label>
-          <mat-select [value]="groupFilter()" (selectionChange)="onGroupFilterChange($event.value)">
-            <mat-option value="all">Todos</mat-option>
-            @for (group of availableGroups(); track group.id) {
-              <mat-option [value]="group">{{ group.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <app-group-filter class="w-full max-w-200"></app-group-filter>
       }
       @if(availableRounds().length > 0) {
-        <mat-form-field class="w-full max-w-200">
-          <mat-label>Jornada</mat-label>
-          <mat-select [value]="roundFilter()" (selectionChange)="onRoundFilterChange($event.value)">
-            <mat-option value="all">Todas</mat-option>
-            @for (round of availableRounds(); track round.id) {
-              <mat-option [value]="round">{{ round.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
+        <app-round-filter class="w-full max-w-200"></app-round-filter>
         <mat-form-field class="w-full max-w-200">
           <mat-label>Agrupar</mat-label>
           <mat-select [value]="groupByRound()" (selectionChange)="onGroupByRoundChange($event.value)">
@@ -45,7 +21,7 @@
   }
 
 
-  @if(groupByRound()) {
+  @if(groupByRound() && filteredMatchesByRound().length > 0) {
     @for (round of filteredMatchesByRound(); track round.id) {
       <h3 class="text-xl font-bold text-center py-1">{{ round.name }}</h3>
       @if(round.matches.length > 0) {
@@ -54,13 +30,11 @@
         }
       }
     }
-  } @else {
+  } @else if(filteredMatches().length > 0) {
     @for (match of filteredMatches(); track match.id) {
       <app-match class="w-full flex justify-center" [match]="match" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
     }
-  }
-
-  @if(!hasVisibleMatches()) {
+  } @else {
     <app-not-found title="No hay resultados" subtitle="No hay resultados disponibles." [hideButton]="true"></app-not-found>
   }
 </div>

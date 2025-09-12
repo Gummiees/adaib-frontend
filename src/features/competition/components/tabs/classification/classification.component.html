@@ -1,0 +1,14 @@
+<div class="w-full pt-6 pb-4 flex flex-col gap-2 items-center">
+  <h2 class="text-4xl font-bold text-center">Clasificación</h2>
+  @if(competitionStore.competition()!.phases.length > 0) {
+    <div class="flex flex-col sm:flex-row gap-2 w-full max-w-200 justify-center">
+      <app-phase-filter class="w-full"></app-phase-filter>
+      <app-group-filter class="w-full"></app-group-filter>
+    </div>
+  }
+
+
+  @for (match of filteredMatches(); track match.id) {
+    <app-match class="w-full flex justify-center" [match]="match" (matchTeamClicked)="onTeamClicked($event)"></app-match>
+  }
+</div>

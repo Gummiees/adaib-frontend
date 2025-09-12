@@ -1,15 +1,18 @@
 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+  @if(store.isLoading()) {
+    <app-full-spinner></app-full-spinner>
+  } @else if(store.competition()) {
   <div class="flex gap-4 items-center flex-wrap justify-center flex-shrink-0">
-    @if(competition().imageUrl) {
+    @if(store.competition()!.imageUrl) {
       <div class="aspect-square overflow-hidden rounded-t-md">
-        <img [src]="competition().imageUrl" class="w-[100px] h-[100px] object-contain" [alt]="'Imagen para la competición ' + competition().name" />
+        <img [src]="store.competition()!.imageUrl" class="w-[100px] h-[100px] object-contain" [alt]="'Imagen para la competición ' + store.competition()!.name" />
       </div>
     } @else {
       <mat-icon class="!w-[100px] !h-[100px] !text-[100px] border-[5px] box-content rounded-full flex items-center justify-center" aria-hidden="false" aria-label="Icono de la competición" fontIcon="emoji_events"></mat-icon>
     }
     <div class="flex sm:hidden flex-col gap-2">
       <p class="font-semibold uppercase text-lg">
-        @switch(competition().status) {
+        @switch(store.competition()!.status) {
           @case('NotStarted') {
             <span class="text-gray-600">No iniciada</span>
           }
@@ -21,18 +24,18 @@
           }
         }
       </p>
-      @if(competition().startDate && competition().endDate) {
-        <p class="text-gray-600">{{ competition().startDate | date: 'dd/MM/yyyy' }} - {{ competition().endDate | date: 'dd/MM/yyyy' }}</p>
+      @if(store.competition()!.startDate && store.competition()!.endDate) {
+        <p class="text-gray-600">{{ store.competition()!.startDate | date: 'dd/MM/yyyy' }} - {{ store.competition()!.endDate | date: 'dd/MM/yyyy' }}</p>
       }
-      @if(competition().sportName) {
-        <p class="text-gray-600 uppercase">{{ competition().sportName }}</p>
+      @if(store.competition()!.sportName) {
+        <p class="text-gray-600 uppercase">{{ store.competition()!.sportName }}</p>
       }
     </div>
   </div>
   <div class="flex flex-col gap-2">
     <div class="hidden sm:flex flex-col sm:flex-row gap-2 items-center">
       <p class="font-semibold uppercase text-lg">
-        @switch(competition().status) {
+        @switch(store.competition()!.status) {
           @case('NotStarted') {
             <span class="text-gray-600">No iniciada</span>
           }
@@ -44,15 +47,18 @@
           }
         }
       </p>
-      @if(competition().startDate && competition().endDate) {
-        <p class="text-gray-600">{{ competition().startDate | date: 'dd/MM/yyyy' }} - {{ competition().endDate | date: 'dd/MM/yyyy' }}</p>
+      @if(store.competition()!.startDate && store.competition()!.endDate) {
+        <p class="text-gray-600">{{ store.competition()!.startDate | date: 'dd/MM/yyyy' }} - {{ store.competition()!.endDate | date: 'dd/MM/yyyy' }}</p>
       }
-      @if(competition().sportName) {
-        <p class="text-gray-600 uppercase">{{ competition().sportName }}</p>
+      @if(store.competition()!.sportName) {
+        <p class="text-gray-600 uppercase">{{ store.competition()!.sportName }}</p>
       }
     </div>
-    @if(competition().description) {
-      <p class="text-lg text-pretty">{{ competition().description }}</p>
+    @if(store.competition()!.description) {
+      <p class="text-lg text-pretty">{{ store.competition()!.description }}</p>
     }
   </div>
+  } @else {
+    <app-not-found title="Competición no encontrada" subtitle="Lo sentimos, no se ha encontrado la competición." [hideButton]="true"></app-not-found>
+  }
 </div>

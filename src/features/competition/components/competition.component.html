@@ -15,13 +15,13 @@
       </div>
       <mat-tab-group class="w-full" [selectedIndex]="currentTab()" (selectedTabChange)="onTabChange($event.index)">
         <mat-tab label="Resumen">
-          <app-summary [competition]="competitionStore.competition()!"></app-summary>
+          <app-summary></app-summary>
         </mat-tab>
         <mat-tab label="Clasificación">
-
+          <app-classification></app-classification>
         </mat-tab>
         <mat-tab label="Resultados">
-          <app-results [competition]="competitionStore.competition()!"></app-results>
+          <app-results></app-results>
         </mat-tab>
         <mat-tab label="Equipos">
           <ng-template matTabContent>

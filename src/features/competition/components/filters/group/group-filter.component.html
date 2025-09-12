@@ -1,0 +1,9 @@
+<mat-form-field class="w-full">
+  <mat-label>Grupo</mat-label>
+  <mat-select [value]="store.group()" (selectionChange)="onGroupFilterChange($event.value)">
+    <mat-option value="all">Todos</mat-option>
+    @for (group of availableGroups(); track group.id) {
+      <mat-option [value]="group">{{ group.name }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
