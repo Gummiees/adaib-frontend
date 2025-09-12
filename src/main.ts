@@ -19,14 +19,17 @@ Sentry.init({
   ],
   enableLogs: true,
   beforeSendLog: (logEvent) => {
-    if (!environment.isProduction) {
-      return null;
+    console.log(
+      `Sentry log event in ${environment.isProduction ? 'PRODUCTION' : 'DEVELOPMENT'} mode:`,
+      logEvent,
+    );
+    if (environment.isProduction) {
+      return logEvent;
     }
-    return logEvent;
+    return null;
   },
 });
 
 inject();
 injectSpeedInsights();
-
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));

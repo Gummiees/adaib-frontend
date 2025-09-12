@@ -10,6 +10,7 @@ import { GroupFilterComponent } from '@features/competition/components/filters/g
 import { PhaseFilterComponent } from '@features/competition/components/filters/phase/phase-filter.component';
 import { CompetitionStore } from '@features/competition/store/competition-store';
 import { ClassificationItemComponent } from '@shared/components/classification-item/classification-item.component';
+import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Classification } from '@shared/models/classification';
 import { Group } from '@shared/models/group';
 import { Team } from '@shared/models/team';
@@ -25,6 +26,7 @@ import { sortClassification } from '@shared/utils/utils';
     PhaseFilterComponent,
     GroupFilterComponent,
     ClassificationItemComponent,
+    NotFoundComponent,
   ],
 })
 export class ClassificationComponent {

@@ -180,7 +180,6 @@ export const fakeGroups: ApiGroup[] = [
     name: 'Grupo 1',
     teamIds: _fakeTeams.map((team) => team.id),
     matches: fakeMatches.slice(0, 2),
-    classification: fakeClassification,
     actualRoundId: 1,
   },
   {
