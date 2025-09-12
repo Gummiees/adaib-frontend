@@ -7,7 +7,7 @@ import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
 import { getErrorMessage } from '@shared/utils/utils';
-import { filter, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { CompetitionService } from '../services/competition.service';
 import { competitionApiEvent } from './competition-api-events';
 import { competitionEvents } from './competition-events';
@@ -159,6 +159,9 @@ export const CompetitionStore = signalStore(
           ),
         ),
       ),
+      error$: events
+        .on(competitionApiEvent.getCompetitionFailure)
+        .pipe(map(({ payload: error }) => console.error(error))),
     }),
   ),
 );
