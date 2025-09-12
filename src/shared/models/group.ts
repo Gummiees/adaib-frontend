@@ -8,7 +8,7 @@ export interface ApiGroup {
   actualRoundId?: number | null;
   matches: ApiMatch[];
   teamIds: number[];
-  classification: ClassificationApi[];
+  classification?: ClassificationApi[];
 }
 
 export interface Group {

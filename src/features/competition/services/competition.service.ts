@@ -63,7 +63,10 @@ export class CompetitionService {
   }): Group[] {
     return groups.map((group) => ({
       ...group,
-      classification: this.parseClassification(group.classification, teams),
+      classification: this.parseClassification(
+        group.classification || [],
+        teams,
+      ),
       actualRound: group.actualRoundId
         ? rounds.find((round) => round.id === group.actualRoundId)
         : null,
