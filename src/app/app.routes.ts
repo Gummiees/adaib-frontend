@@ -5,6 +5,7 @@ import { CompetitionsService } from '@features/competitions/services/competition
 import { CompetitionsStore } from '@features/competitions/store/competitions-store';
 import { LandingComponent } from '@features/landing/landing.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
+import { AnonymousGuard } from '@shared/guards/anonymous.guard';
 
 export const routes: Routes = [
   { path: 'inicio', component: LandingComponent },
@@ -29,6 +30,7 @@ export const routes: Routes = [
       import('@features/user/components/login/login.component').then(
         (m) => m.LoginComponent,
       ),
+    canActivate: [AnonymousGuard],
   },
   {
     path: 'competiciones',

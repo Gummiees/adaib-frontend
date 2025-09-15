@@ -1,4 +1,7 @@
-<main role="main" class="h-screen flex flex-col">
+<main role="main" class="h-screen flex flex-col relative" [ngClass]="{'overflow-hidden': userStore.isLoading()}">
+  @if(userStore.isLoading()) {
+    <app-full-screen-spinner class="absolute z-10"></app-full-screen-spinner>
+  }
   <app-navbar #navbar />
   <div class="w-full flex-1 min-h-0">
     <div class="content-container px-2 sm:px-4">

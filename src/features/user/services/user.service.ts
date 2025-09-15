@@ -1,8 +1,14 @@
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpStatusCode,
+} from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { delay, Observable, of } from 'rxjs';
-import { User, UserRequest } from '../models/user';
+import { jwtDecode } from 'jwt-decode';
+import { catchError, delay, map, Observable, of, throwError } from 'rxjs';
+import { Token } from '../models/token';
+import { ApiUser, User, UserRequest } from '../models/user';
 
 @Injectable({
   providedIn: 'root',
@@ -10,24 +16,59 @@ import { User, UserRequest } from '../models/user';
 export class UserService {
   private httpClient = inject(HttpClient);
 
-  login(userRequest: UserRequest): Observable<User> {
-    // FIXME: use real values
-    return of({
-      id: 1,
-      email: 'test@test.com',
-      authToken: 'test',
-      refreshToken: 'test',
-      expiresAt: new Date(),
-    }).pipe(delay(1000));
-    return this.httpClient.post<User>(
-      `${environment.apiUrl}/user/login`,
-      userRequest,
+  check(): Observable<User | null> {
+    return this.httpClient
+      .get<ApiUser>(`${environment.apiUrl}/auth/check`)
+      .pipe(
+        map((apiUser) => this.parseUser(apiUser)),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === HttpStatusCode.Unauthorized) {
+            return of(null);
+          }
+          return throwError(() => error);
+        }),
+      );
+  }
+
+  login(_: UserRequest): Observable<User> {
+    const fakeReturnedValue: ApiUser = {
+      accessToken:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6ImFkbWluIiwiZXhwIjoxNzU3OTMzMzU0LCJpc3MiOiJNeUFwcCIsImF1ZCI6Ik15QXBwQ2xpZW50cyJ9.PfsSDKC4ihsedciA7Xb-rlKcSqZzN2pIpeidKRBviNM',
+      refreshToken: 'fakeRefreshToken',
+    };
+    return of(fakeReturnedValue).pipe(
+      map((apiUser) => this.parseUser(apiUser)),
+      delay(1000),
     );
+    // return this.httpClient
+    //   .post<ApiUser>(`${environment.apiUrl}/auth/login`, userRequest)
+    //   .pipe(
+    //     map((apiUser) => {
+    //       const user = this.parseUser(apiUser);
+    //       return user;
+    //     }),
+    //   );
   }
 
   logout(): Observable<void> {
     // FIXME: use real values
     return of(undefined).pipe(delay(1000));
-    return this.httpClient.post<void>(`${environment.apiUrl}/user/logout`, {});
+
+    // Real implementation (commented out for now)
+    // return this.httpClient.post<void>(`${environment.apiUrl}/auth/logout`, {});
+  }
+
+  private parseUser(apiUser: ApiUser): User {
+    const decodedToken = jwtDecode(apiUser.accessToken) as Token;
+    return {
+      authToken: apiUser.accessToken,
+      refreshToken: apiUser.refreshToken,
+      id: decodedToken.sub,
+      username:
+        decodedToken[
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'
+        ],
+      expiresAt: new Date(decodedToken.exp * 1000),
+    };
   }
 }

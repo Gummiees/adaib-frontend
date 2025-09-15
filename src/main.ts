@@ -19,10 +19,6 @@ Sentry.init({
   ],
   enableLogs: true,
   beforeSendLog: (logEvent) => {
-    console.log(
-      `Sentry log event in ${environment.isProduction ? 'PRODUCTION' : 'DEVELOPMENT'} mode:`,
-      logEvent,
-    );
     if (environment.isProduction) {
       return logEvent;
     }

@@ -1,12 +1,22 @@
 export interface User {
   id: number;
-  email: string;
+  username: string;
   authToken: string;
-  refreshToken: string;
+  // FIXME: this should be mandatory
+  refreshToken?: string | null;
   expiresAt: Date;
 }
 
-export interface UserRequest {
-  email: string;
+export interface UserLogin {
+  username: string;
   password: string;
+}
+
+export interface UserRequest extends UserLogin {
+  deviceId: string;
+}
+
+export interface ApiUser {
+  accessToken: string;
+  refreshToken: string;
 }

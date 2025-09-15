@@ -7,6 +7,8 @@ const generateEnvFileContent = (isProduction) => {
   return `export const environment = {
   isProduction: ${isProduction},
   apiUrl: "${process.env.API_URL || ""}",
+  secureStorageKey: "${process.env.SECURE_STORAGE_KEY || ""}",
+  secureStorageSalt: "${process.env.SECURE_STORAGE_SALT || ""}",
 };
 `;
 };

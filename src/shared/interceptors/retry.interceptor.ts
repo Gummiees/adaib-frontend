@@ -2,7 +2,6 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { catchError, retry, throwError } from 'rxjs';
 
 export const retryInterceptor: HttpInterceptorFn = (req, next) => {
-  // Only retry GET requests
   if (req.method !== 'GET') {
     return next(req);
   }

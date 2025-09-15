@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -25,7 +26,6 @@ export class NavbarComponent {
   private dispatcher = inject(Dispatcher);
 
   isMenuOpen = signal(false);
-  userMenuOpen = signal(false);
 
   get user(): User | null {
     return this.userStore.user();
@@ -35,24 +35,33 @@ export class NavbarComponent {
     this.isMenuOpen.set(!this.isMenuOpen());
   }
 
-  toggleUserMenu(): void {
-    this.userMenuOpen.set(!this.userMenuOpen());
-  }
-
   closeMenus(): void {
     this.isMenuOpen.set(false);
-    this.userMenuOpen.set(false);
   }
 
-  async onLogout(): Promise<void> {
-    if (!this.userMenuOpen() || !this.user) {
+  get userButtonText(): string {
+    return this.user ? 'Logout' : 'Login';
+  }
+
+  isUserButtonDisabled = computed(() => this.userStore.isLoading());
+
+  public async onUserButtonClick(): Promise<void> {
+    if (this.user) {
+      await this.onLogout();
+    } else {
+      this.onLoginClick();
+    }
+  }
+
+  private onLoginClick(): void {
+    this.router.navigate(['/login']);
+  }
+
+  private async onLogout(): Promise<void> {
+    if (!this.user) {
       return;
     }
 
     this.dispatcher.dispatch(userEvent.logout());
-  }
-
-  onLoginClick(): void {
-    this.router.navigate(['/login']);
   }
 }

@@ -1,78 +1,136 @@
 import { inject } from '@angular/core';
-import { User, UserRequest } from '@features/user/models/user';
-import { mapResponse } from '@ngrx/operators';
-import { PartialStateUpdater, signalStore, withState } from '@ngrx/signals';
+import { User, UserLogin } from '@features/user/models/user';
+import {
+  patchState,
+  signalStore,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
 import { getErrorMessage } from '@shared/utils/utils';
-import { filter, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, filter, switchMap } from 'rxjs/operators';
+import { DeviceStorageService } from '../services/device-storage.service';
+import { UserStorageService } from '../services/user-storage.service';
 import { UserService } from '../services/user.service';
 import { userApiEvent } from './user-api-events';
 import { userEvent } from './user-events';
 
 type UserState = {
   user: User | null;
-  userRequest: UserRequest | null;
+  userLogin: UserLogin | null;
   isLoading: boolean;
   error: string | null;
 };
 
-const initialState: UserState = {
-  user: null,
-  userRequest: null,
-  isLoading: false,
-  error: null,
+const getInitialState = (): UserState => {
+  return {
+    user: null,
+    userLogin: null,
+    isLoading: true, // Start loading to check stored user
+    error: null,
+  };
 };
 
 export const UserStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
+  withState(getInitialState()),
+  withMethods((store) => ({
+    initSuccess(user: User): void {
+      patchState(store, () => ({
+        user,
+        isLoading: false,
+        error: null,
+      }));
+    },
+    initFailure(): void {
+      patchState(store, () => ({
+        user: null,
+        isLoading: false,
+        error: null,
+      }));
+    },
+  })),
   withReducer(
-    on(userEvent.login, ({ payload: userRequest }) => ({
+    on(userEvent.login, ({ payload: userLogin }) => ({
       isLoading: true,
-      userRequest: userRequest,
+      userLogin: userLogin,
       error: null,
     })),
     on(userEvent.logout, () => ({
       isLoading: true,
-      userRequest: null,
       error: null,
     })),
     on(userApiEvent.loginSuccess, ({ payload: user }) => ({
       user,
-      userRequest: null,
+      userLogin: null,
       isLoading: false,
-      error: null,
     })),
-    on(userApiEvent.loginFailure, ({ payload: error }) => onFailure(error)),
+    on(userApiEvent.loginFailure, ({ payload: error }) => ({
+      user: null,
+      userLogin: null,
+      isLoading: false,
+      error: error,
+    })),
     on(userApiEvent.logoutSuccess, () => ({
       user: null,
-      userRequest: null,
+      userLogin: null,
       isLoading: false,
-      error: null,
     })),
-    on(userApiEvent.logoutFailure, ({ payload: error }) => onFailure(error)),
+    on(userApiEvent.logoutFailure, ({ payload: error }) => ({
+      isLoading: false,
+      error: error,
+    })),
   ),
+  withHooks({
+    onInit: async (store, userStorage = inject(UserStorageService)) => {
+      const storedUser = await userStorage.getUser();
+      if (storedUser && storedUser.authToken) {
+        store.initSuccess(storedUser);
+      } else {
+        store.initFailure();
+      }
+    },
+  }),
   withEffects(
-    (store, events = inject(Events), userService = inject(UserService)) => ({
+    (
+      store,
+      events = inject(Events),
+      userService = inject(UserService),
+      userStorage = inject(UserStorageService),
+      deviceStorage = inject(DeviceStorageService),
+    ) => ({
       login$: events.on(userEvent.login).pipe(
-        filter(() => !!store.userRequest()),
+        filter(() => !!store.userLogin()),
         switchMap(() =>
-          userService.login(store.userRequest()!).pipe(
-            mapResponse({
-              next: (user) => userApiEvent.loginSuccess(user),
-              error: (error) =>
-                userApiEvent.loginFailure(getErrorMessage(error)),
-            }),
-          ),
+          userService
+            .login({
+              deviceId: deviceStorage.getDeviceId(),
+              ...store.userLogin()!,
+            })
+            .pipe(
+              switchMap(async (user) => {
+                // Store user data after successful login
+                await userStorage.storeUser(user);
+                return userApiEvent.loginSuccess(user);
+              }),
+              catchError((error) => {
+                return of(userApiEvent.loginFailure(getErrorMessage(error)));
+              }),
+            ),
         ),
       ),
       logout$: events.on(userEvent.logout).pipe(
         switchMap(() =>
           userService.logout().pipe(
-            mapResponse({
-              next: () => userApiEvent.logoutSuccess(),
-              error: (error) =>
-                userApiEvent.logoutFailure(getErrorMessage(error)),
+            switchMap(async () => {
+              userStorage.clearUser();
+              return userApiEvent.logoutSuccess();
+            }),
+            catchError((error) => {
+              userStorage.clearUser();
+              return of(userApiEvent.logoutFailure(getErrorMessage(error)));
             }),
           ),
         ),
@@ -80,15 +138,3 @@ export const UserStore = signalStore(
     }),
   ),
 );
-
-function onFailure(error: string): PartialStateUpdater<{
-  isLoading: boolean;
-  userRequest: UserRequest | null;
-  error: string | null;
-}> {
-  return () => ({
-    error: error,
-    isLoading: false,
-    userRequest: null,
-  });
-}
