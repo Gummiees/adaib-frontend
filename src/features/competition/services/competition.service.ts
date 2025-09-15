@@ -6,7 +6,6 @@ import {
   ClassificationApi,
 } from '@shared/models/classification';
 import {
-  Competition,
   DetailedApiCompetition,
   DetailedCompetition,
 } from '@shared/models/competition';
@@ -26,20 +25,6 @@ export class CompetitionService {
     return this.http
       .get<DetailedApiCompetition>(`${environment.apiUrl}/Competition/${id}`)
       .pipe(map((competition) => this.parseDetailedCompetition(competition)));
-  }
-
-  addCompetition(competition: Competition): Observable<Competition> {
-    return this.http.post<Competition>(
-      `${environment.apiUrl}/competition`,
-      this.competitionToJson(competition),
-    );
-  }
-
-  updateCompetition(competition: Competition): Observable<Competition> {
-    return this.http.put<Competition>(
-      `${environment.apiUrl}/competition`,
-      this.competitionToJson(competition),
-    );
   }
 
   private parseDetailedCompetition(
@@ -142,16 +127,6 @@ export class CompetitionService {
         groupName: groupName,
         date: match.date ? new Date(match.date) : null,
       };
-    });
-  }
-
-  private competitionToJson(competition: Competition): string {
-    return JSON.stringify({
-      ...competition,
-      startDate: competition.startDate
-        ? competition.startDate.toISOString()
-        : null,
-      endDate: competition.endDate ? competition.endDate.toISOString() : null,
     });
   }
 }

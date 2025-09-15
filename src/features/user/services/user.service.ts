@@ -41,8 +41,25 @@ export class UserService {
       );
   }
 
-  logout(): Observable<void> {
-    return this.httpClient.post<void>(`${environment.apiUrl}/auth/logout`, {});
+  refreshToken({
+    refreshToken,
+    deviceId,
+  }: {
+    refreshToken: string;
+    deviceId: string;
+  }): Observable<User> {
+    return this.httpClient
+      .post<ApiUser>(`${environment.apiUrl}/auth/refresh`, {
+        refreshToken,
+        deviceId,
+      })
+      .pipe(map((apiUser) => this.parseUser(apiUser)));
+  }
+
+  logout(deviceId: string): Observable<void> {
+    return this.httpClient.post<void>(`${environment.apiUrl}/auth/logout`, {
+      deviceId,
+    });
   }
 
   private parseUser(apiUser: ApiUser): User {

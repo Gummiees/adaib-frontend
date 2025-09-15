@@ -10,9 +10,13 @@ export function capitalize(str: string): string {
 }
 
 export function getErrorMessage(error: unknown): string {
-  let errorMessage = 'Failed to load pets';
-  if (error instanceof HttpErrorResponse && error.error.message) {
-    errorMessage = error.error.message;
+  let errorMessage = 'Failed to load data';
+  if (error instanceof HttpErrorResponse) {
+    if (error.error.message) {
+      errorMessage = error.error.message;
+    } else if (error.error.title) {
+      errorMessage = error.error.title;
+    }
   } else if (error instanceof Error && error.message) {
     errorMessage = error.message;
   }
@@ -59,8 +63,12 @@ export function sortMatches(matches: DetailedMatch[]): DetailedMatch[] {
       return 0;
     }
 
-    const aTime = a.date?.getTime() ?? -Infinity;
-    const bTime = b.date?.getTime() ?? -Infinity;
+    const aTime = a.date
+      ? a.date.getTime() - (b.date?.getTime() ?? 0)
+      : -Infinity;
+    const bTime = b.date
+      ? b.date.getTime() - (a.date?.getTime() ?? 0)
+      : -Infinity;
     return bTime - aTime;
   });
 }

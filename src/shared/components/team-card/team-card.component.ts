@@ -16,7 +16,7 @@ import { Team } from '@shared/models/team';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeamCardComponent {
-  team = input.required<Team>();
+  public team = input.required<Team>();
   public teamClick = output<void>();
 
   public onTeamClick(): void {

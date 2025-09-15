@@ -5,22 +5,18 @@ import { Team } from '@shared/models/team';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class TeamsService {
+export class AdminTeamsService {
   private http = inject(HttpClient);
 
   getAllTeams(): Observable<Team[]> {
     return this.http.get<Team[]>(`${environment.apiUrl}/Team/all`);
   }
 
-  addTeam(team: Team): Observable<Team> {
-    return this.http.post<Team>(`${environment.apiUrl}/Team`, team);
+  addTeam(team: Team): Observable<number> {
+    return this.http.post<number>(`${environment.apiUrl}/Team`, team);
   }
 
-  updateTeam(team: Team): Observable<Team> {
-    return this.http.put<Team>(`${environment.apiUrl}/Team`, team);
-  }
-
-  deleteTeam(id: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/Team/${id}`);
+  updateTeam(team: Team): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}/Team`, team);
   }
 }

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { TeamsService } from '@features/admin/features/teams/services/teams.service';
+import { AdminTeamsService } from '@features/admin/features/teams/services/admin-teams.service';
 import { AdminTeamsStore } from '@features/admin/features/teams/store/admin-teams-store';
 import { CompetitionService } from '@features/competition/services/competition.service';
 import { CompetitionStore } from '@features/competition/store/competition-store';
@@ -56,7 +56,7 @@ export const routes: Routes = [
     loadChildren: () =>
       import('@features/admin/admin.routes').then((m) => m.adminRoutes),
     canActivate: [AdminGuard],
-    providers: [AdminTeamsStore, TeamsService],
+    providers: [AdminTeamsStore, AdminTeamsService],
   },
   { path: '**', component: NotFoundComponent },
 ];

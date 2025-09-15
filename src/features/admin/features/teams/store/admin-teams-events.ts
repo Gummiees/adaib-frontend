@@ -7,6 +7,5 @@ export const adminTeamsEvent = eventGroup({
   events: {
     addTeam: type<Team>(),
     updateTeam: type<Team>(),
-    deleteTeam: type<number>(),
   },
 });

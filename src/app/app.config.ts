@@ -12,9 +12,9 @@ import {
 import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import * as Sentry from '@sentry/angular';
+import { contentTypeInterceptor } from '@shared/interceptors/content-type.interceptor';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
 import { retryInterceptor } from '@shared/interceptors/retry.interceptor';
-import { unauthorizedInterceptor } from '@shared/interceptors/unauthorized.interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -25,7 +25,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([
         retryInterceptor,
         credentialsInterceptor,
-        unauthorizedInterceptor,
+        contentTypeInterceptor,
       ]),
     ),
     provideZoneChangeDetection({ eventCoalescing: true }),

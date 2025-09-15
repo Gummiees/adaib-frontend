@@ -15,7 +15,6 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
 import { UserLogin } from '@features/user/models/user';
 import { userEvent } from '@features/user/store/user-events';
 import { Dispatcher } from '@ngrx/signals/events';
@@ -37,7 +36,6 @@ import { UserStore } from '../../store/user-store';
 export class LoginComponent {
   public userStore = inject(UserStore);
   private dispatcher = inject(Dispatcher);
-  private router = inject(Router);
 
   public isLoading = computed(() => this.userStore.isLoading());
 
@@ -84,9 +82,6 @@ export class LoginComponent {
 
   constructor() {
     effect(() => {
-      if (this.userStore.user()) {
-        this.router.navigate(['/']);
-      }
       if (this.isLoading()) {
         this.form.disable();
       } else {

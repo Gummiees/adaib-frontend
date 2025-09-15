@@ -9,5 +9,7 @@ export const userApiEvent = eventGroup({
     loginFailure: type<string>(),
     logoutSuccess: type<void>(),
     logoutFailure: type<string>(),
+    tokenRefreshSuccess: type<User>(),
+    tokenRefreshFailure: type<string>(),
   },
 });

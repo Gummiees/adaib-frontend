@@ -8,8 +8,11 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
+import { UserStore } from '@features/user/store/user-store';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { CompetitionStatus } from '@shared/models/competition';
@@ -29,10 +32,13 @@ import { CompetitionCardComponent } from './competition-card/competition-card.co
     MatSelectModule,
     MatFormFieldModule,
     MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
   ],
 })
 export class CompetitionsComponent {
   public competitionsStore = inject(CompetitionsStore);
+  public userStore = inject(UserStore);
   private router = inject(Router);
 
   public statusFilter = signal<CompetitionStatus | 'all' | null>(null);
@@ -87,5 +93,9 @@ export class CompetitionsComponent {
 
   public onSeasonFilterChange(season: number | null): void {
     this.seasonFilter.set(season);
+  }
+
+  public onAddCompetitionClick(): void {
+    this.router.navigate(['/admin/competiciones/add']);
   }
 }

@@ -21,10 +21,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
+import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Team } from '@shared/models/team';
 import { imageUrlRegex } from '@shared/utils/utils';
 import { firstValueFrom } from 'rxjs';
-import { TeamsService } from '../../services/teams.service';
+import { AdminTeamsService } from '../../services/admin-teams.service';
 import { adminTeamsEvent } from '../../store/admin-teams-events';
 import { AdminTeamsStore } from '../../store/admin-teams-store';
 
@@ -40,12 +41,14 @@ import { AdminTeamsStore } from '../../store/admin-teams-store';
     ReactiveFormsModule,
     MatSlideToggleModule,
     FullSpinnerComponent,
+    NotFoundComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [AdminTeamsService, AdminTeamsStore],
 })
 export class AddTeamComponent {
   public teamsStore = inject(AdminTeamsStore);
-  private teamsService = inject(TeamsService);
+  private teamsService = inject(AdminTeamsService);
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
@@ -95,19 +98,25 @@ export class AddTeamComponent {
     return {
       id: 0,
       name: form.get('name')!.value,
-      shortName: form.get('shortName')?.value,
-      description: form.get('description')?.value,
-      location: form.get('location')?.value,
-      imageUrl: form.get('imageUrl')?.value,
+      shortName: this.parseEmptyStringToNull(form.get('shortName')?.value),
+      description: this.parseEmptyStringToNull(form.get('description')?.value),
+      location: this.parseEmptyStringToNull(form.get('location')?.value),
+      imageUrl: this.parseEmptyStringToNull(form.get('imageUrl')?.value),
       active: form.get('active')?.value || false,
     };
+  }
+
+  private parseEmptyStringToNull(value: string | null): string | null {
+    return value === '' ? null : value;
   }
 
   private async handleAddTeam(team: Team): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      const addedTeam = await firstValueFrom(this.teamsService.addTeam(team));
-      this.dispatcher.dispatch(adminTeamsEvent.addTeam(addedTeam));
+      const teamId = await firstValueFrom(this.teamsService.addTeam(team));
+      this.dispatcher.dispatch(
+        adminTeamsEvent.addTeam({ ...team, id: teamId }),
+      );
       this.form.reset();
       this.router.navigate(['/admin/teams']);
     } catch (error) {

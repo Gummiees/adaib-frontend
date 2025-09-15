@@ -63,6 +63,5 @@ export class NavbarComponent {
     }
 
     this.dispatcher.dispatch(userEvent.logout());
-    this.router.navigate(['/inicio']);
   }
 }

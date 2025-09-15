@@ -6,9 +6,12 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
+import { on, withReducer } from '@ngrx/signals/events';
 import { Competition } from '@shared/models/competition';
+import { getErrorMessage } from '@shared/utils/utils';
 import { firstValueFrom } from 'rxjs';
 import { CompetitionsService } from '../services/competitions.service';
+import { adminCompetitionsEvent } from './admin-competitions-events';
 
 type CompetitionsState = {
   competitions: Competition[] | null;
@@ -18,12 +21,28 @@ type CompetitionsState = {
 
 const initialState: CompetitionsState = {
   competitions: null,
-  isLoading: false,
+  isLoading: true,
   error: null,
 };
 
 export const CompetitionsStore = signalStore(
   withState(initialState),
+  withReducer(
+    on(
+      adminCompetitionsEvent.addCompetition,
+      ({ payload: competition }, state) => ({
+        competitions: [...(state.competitions ?? []), competition],
+      }),
+    ),
+    on(
+      adminCompetitionsEvent.updateCompetition,
+      ({ payload: competition }, state) => ({
+        competitions: state.competitions?.map((c) =>
+          c.id === competition.id ? competition : c,
+        ),
+      }),
+    ),
+  ),
   withMethods((store) => ({
     getCompetitionsSuccess: (competitions: Competition[]) => {
       patchState(store, () => ({
@@ -45,10 +64,14 @@ export const CompetitionsStore = signalStore(
       store,
       competitionsService = inject(CompetitionsService),
     ) => {
-      const competitions = await firstValueFrom(
-        competitionsService.getAllCompetitions(),
-      );
-      store.getCompetitionsSuccess(competitions);
+      try {
+        const competitions = await firstValueFrom(
+          competitionsService.getAllCompetitions(),
+        );
+        store.getCompetitionsSuccess(competitions);
+      } catch (error) {
+        store.getCompetitionsFailure(getErrorMessage(error));
+      }
     },
   }),
 );

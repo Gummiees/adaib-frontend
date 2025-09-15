@@ -1,4 +1,6 @@
 import { inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { User, UserLogin } from '@features/user/models/user';
 import {
   patchState,
@@ -12,6 +14,7 @@ import { getErrorMessage } from '@shared/utils/utils';
 import { of } from 'rxjs';
 import { catchError, filter, switchMap } from 'rxjs/operators';
 import { DeviceStorageService } from '../services/device-storage.service';
+import { TokenRefreshService } from '../services/token-refresh.service';
 import { UserStorageService } from '../services/user-storage.service';
 import { UserService } from '../services/user.service';
 import { userApiEvent } from './user-api-events';
@@ -62,6 +65,10 @@ export const UserStore = signalStore(
       isLoading: true,
       error: null,
     })),
+    on(userEvent.tokenRefreshRequired, () => ({
+      isLoading: true,
+      error: null,
+    })),
     on(userApiEvent.loginSuccess, ({ payload: user }) => ({
       user,
       userLogin: null,
@@ -79,6 +86,16 @@ export const UserStore = signalStore(
       isLoading: false,
     })),
     on(userApiEvent.logoutFailure, ({ payload: error }) => ({
+      isLoading: false,
+      error: error,
+    })),
+    on(userApiEvent.tokenRefreshSuccess, ({ payload: user }) => ({
+      user,
+      isLoading: false,
+      error: null,
+    })),
+    on(userApiEvent.tokenRefreshFailure, ({ payload: error }) => ({
+      user: null,
       isLoading: false,
       error: error,
     })),
@@ -100,6 +117,9 @@ export const UserStore = signalStore(
       userService = inject(UserService),
       userStorage = inject(UserStorageService),
       deviceStorage = inject(DeviceStorageService),
+      tokenRefreshService = inject(TokenRefreshService),
+      router = inject(Router),
+      snackbar = inject(MatSnackBar),
     ) => ({
       login$: events.on(userEvent.login).pipe(
         filter(() => !!store.userLogin()),
@@ -111,11 +131,12 @@ export const UserStore = signalStore(
             })
             .pipe(
               switchMap(async (user) => {
-                // Store user data after successful login
                 await userStorage.storeUser(user);
+                router.navigate(['/inicio']);
                 return userApiEvent.loginSuccess(user);
               }),
               catchError((error) => {
+                snackbar.open(getErrorMessage(error), 'Cerrar');
                 return of(userApiEvent.loginFailure(getErrorMessage(error)));
               }),
             ),
@@ -123,14 +144,38 @@ export const UserStore = signalStore(
       ),
       logout$: events.on(userEvent.logout).pipe(
         switchMap(() =>
-          userService.logout().pipe(
+          userService.logout(deviceStorage.getDeviceId()).pipe(
             switchMap(async () => {
               userStorage.clearUser();
+              router.navigate(['/inicio']);
               return userApiEvent.logoutSuccess();
             }),
             catchError((error) => {
               userStorage.clearUser();
+              snackbar.open(getErrorMessage(error), 'Cerrar');
               return of(userApiEvent.logoutFailure(getErrorMessage(error)));
+            }),
+          ),
+        ),
+      ),
+      tokenRefresh$: events.on(userEvent.tokenRefreshRequired).pipe(
+        filter(() => !!store.user()),
+        switchMap(() =>
+          tokenRefreshService.refreshTokenIfNeeded(store.user()!).pipe(
+            switchMap((refreshedUser) => {
+              return of(userApiEvent.tokenRefreshSuccess(refreshedUser));
+            }),
+            catchError((error) => {
+              // On refresh failure, logout the user
+              userStorage.clearUser();
+              router.navigate(['/inicio']);
+              snackbar.open(
+                'Sesión expirada. Por favor, inicia sesión nuevamente.',
+                'Cerrar',
+              );
+              return of(
+                userApiEvent.tokenRefreshFailure(getErrorMessage(error)),
+              );
             }),
           ),
         ),

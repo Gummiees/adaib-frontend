@@ -7,5 +7,6 @@ export const userEvent = eventGroup({
   events: {
     login: type<UserLogin>(),
     logout: type<void>(),
+    tokenRefreshRequired: type<void>(),
   },
 });
