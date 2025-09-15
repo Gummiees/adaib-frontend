@@ -1,4 +1,5 @@
 import { computed, inject } from '@angular/core';
+import { adminMatchesEvent } from '@features/competition/store/admin-matches-events';
 import { mapResponse } from '@ngrx/operators';
 import { signalStore, withComputed, withState } from '@ngrx/signals';
 import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
@@ -82,6 +83,35 @@ export const CompetitionStore = signalStore(
         },
       }),
     ),
+    on(
+      adminMatchesEvent.addMatch,
+      ({ payload: { match, phase, group } }, state) => {
+        if (!state.competition) {
+          return state;
+        }
+
+        return {
+          competition: {
+            ...state.competition,
+            phases: state.competition.phases.map((p) =>
+              p.id === phase.id
+                ? {
+                    ...p,
+                    groups: phase.groups.map((g) =>
+                      g.id === group.id
+                        ? {
+                            ...g,
+                            matches: [...(group.matches ?? []), match],
+                          }
+                        : g,
+                    ),
+                  }
+                : p,
+            ),
+          },
+        };
+      },
+    ),
   ),
   withComputed((store) => ({
     filteredCompetition: computed<DetailedCompetition | null>(() => {
@@ -144,7 +174,7 @@ export const CompetitionStore = signalStore(
       events = inject(Events),
       competitionService = inject(CompetitionService),
     ) => ({
-      login$: events.on(competitionEvents.getCompetition).pipe(
+      getCompetition$: events.on(competitionEvents.getCompetition).pipe(
         filter(() => !!store.competitionId()),
         switchMap(() =>
           competitionService.getCompetitionById(store.competitionId()!).pipe(

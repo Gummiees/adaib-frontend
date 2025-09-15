@@ -21,7 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CompetitionsService } from '@features/competitions/services/competitions.service';
 import { adminCompetitionsEvent } from '@features/competitions/store/admin-competitions-events';
 import { CompetitionsStore } from '@features/competitions/store/competitions-store';
@@ -31,11 +31,11 @@ import { NotFoundComponent } from '@shared/components/not-found/not-found.compon
 import { Competition, CompetitionStatus } from '@shared/models/competition';
 import { imageUrlRegex } from '@shared/utils/utils';
 import { firstValueFrom } from 'rxjs';
-import { AdminCompetitionService } from '../../services/admin-competition.service';
+import { AdminCompetitionService } from '../services/admin-competition.service';
 
 @Component({
-  selector: 'app-add-competition',
-  templateUrl: './add-competition.component.html',
+  selector: 'app-competition-form',
+  templateUrl: './competition-form.component.html',
   standalone: true,
   imports: [
     CommonModule,
@@ -54,14 +54,23 @@ import { AdminCompetitionService } from '../../services/admin-competition.servic
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [CompetitionsService, CompetitionsStore, AdminCompetitionService],
 })
-export class AddCompetitionComponent {
+export class CompetitionFormComponent {
   public competitionsStore = inject(CompetitionsStore);
   private adminCompetitionService = inject(AdminCompetitionService);
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
+  private competition = signal<Competition | null>(null);
   private isLoadingResponse = signal(false);
+
+  // Determine if we're in edit mode based on route params
+  public isEditMode = computed(() => {
+    const competitionId = this.activatedRoute.snapshot.params['id'];
+    return competitionId && !isNaN(Number(competitionId));
+  });
+
   public form = new FormGroup({
     sportName: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required]),
@@ -91,6 +100,14 @@ export class AddCompetitionComponent {
     () => this.competitionsStore.isLoading() || this.isLoadingResponse(),
   );
 
+  public get pageTitle(): string {
+    return this.isEditMode() ? 'Editar Competición' : 'Crear Competición';
+  }
+
+  public get submitButtonText(): string {
+    return this.isEditMode() ? 'Guardar' : 'Crear';
+  }
+
   constructor() {
     effect(() => {
       if (this.isLoading()) {
@@ -98,13 +115,48 @@ export class AddCompetitionComponent {
       } else {
         this.form.enable();
       }
+      if (this.isEditMode()) {
+        this.searchCompetition();
+      }
     });
+  }
+
+  private searchCompetition(): void {
+    const competitions = this.competitionsStore.competitions();
+    const competitionId = this.activatedRoute.snapshot.params['id'];
+    if (competitions && competitionId) {
+      const parsedId = Number(competitionId);
+      if (isNaN(parsedId)) {
+        return;
+      }
+
+      const competition = competitions.find(
+        (competition) => competition.id === parsedId,
+      );
+      this.competition.set(competition ?? null);
+      if (competition) {
+        this.form.patchValue({
+          sportName: competition.sportName,
+          name: competition.name,
+          description: competition.description,
+          imageUrl: competition.imageUrl,
+          active: competition.active,
+          status: competition.status,
+          startDate: competition.startDate,
+          endDate: competition.endDate,
+        });
+      }
+    }
   }
 
   public async onSubmit(): Promise<void> {
     if (this.form.valid && !this.isLoading()) {
       const competition = this.formToCompetition(this.form);
-      await this.handleAddCompetition(competition);
+      if (this.isEditMode()) {
+        await this.handleUpdateCompetition(competition);
+      } else {
+        await this.handleAddCompetition(competition);
+      }
     } else {
       this.form.markAllAsTouched();
     }
@@ -112,7 +164,7 @@ export class AddCompetitionComponent {
 
   private formToCompetition(form: FormGroup): Competition {
     return {
-      id: 0,
+      id: this.isEditMode() ? (this.competition()?.id ?? 0) : 0,
       sportName: form.get('sportName')!.value,
       name: form.get('name')!.value,
       description: this.parseEmptyStringToNull(form.get('description')?.value),
@@ -144,6 +196,29 @@ export class AddCompetitionComponent {
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir la competición', 'Cerrar');
+    } finally {
+      this.isLoadingResponse.set(false);
+    }
+  }
+
+  private async handleUpdateCompetition(
+    competition: Competition,
+  ): Promise<void> {
+    this.isLoadingResponse.set(true);
+    try {
+      await firstValueFrom(
+        this.adminCompetitionService.updateCompetition(competition),
+      );
+      this.dispatcher.dispatch(
+        adminCompetitionsEvent.updateCompetition(competition),
+      );
+      this.router.navigate(['/competiciones']);
+    } catch (error) {
+      console.error(error);
+      this.snackBar.open(
+        'Hubo un error al actualizar la competición',
+        'Cerrar',
+      );
     } finally {
       this.isLoadingResponse.set(false);
     }

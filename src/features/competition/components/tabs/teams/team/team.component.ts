@@ -14,7 +14,7 @@ import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinn
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { DetailedCompetition } from '@shared/models/competition';
-import { DetailedMatch } from '@shared/models/match';
+import { DetailedMatch, Match } from '@shared/models/match';
 import { DetailedTeam, Team } from '@shared/models/team';
 import { sortMatches } from '@shared/utils/utils';
 import { TeamInfoComponent } from './components/team-info.component';
@@ -108,5 +108,14 @@ export class TeamComponent {
     this.router.navigate(['/competiciones', this.competition().id], {
       queryParams: { tab: 'equipos', equipo: team.id.toString() },
     });
+  }
+
+  public onMatchEditClicked(match: Match): void {
+    this.router.navigate([
+      '/admin/competicion',
+      this.competition().id,
+      'partido',
+      match.id,
+    ]);
   }
 }

@@ -31,10 +31,10 @@ export class AdminTeamsComponent {
   private router = inject(Router);
 
   public onTeamClick(teamId: number): void {
-    this.router.navigate(['/admin/teams', teamId]);
+    this.router.navigate(['/admin/equipo', teamId]);
   }
 
   public onAddTeamClick(): void {
-    this.router.navigate(['/admin/teams/add']);
+    this.router.navigate(['/admin/equipo']);
   }
 }

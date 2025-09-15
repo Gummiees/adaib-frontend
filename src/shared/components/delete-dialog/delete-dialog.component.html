@@ -1,0 +1,9 @@
+<mat-dialog-content>
+  <p class="text-center text-lg">¿Seguro que quieres eliminar este {{title()}}?</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="flex flex-row gap-2 text-lg">
+    <button matButton cdkFocusInitial (click)="onDelete()">Cancelar</button>
+    <button  matButton [mat-dialog-close]="true">Eliminar</button>
+  </div>
+</mat-dialog-actions>

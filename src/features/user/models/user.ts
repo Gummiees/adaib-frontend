@@ -2,8 +2,7 @@ export interface User {
   id: number;
   username: string;
   authToken: string;
-  // FIXME: this should be mandatory
-  refreshToken?: string | null;
+  refreshToken: string;
   expiresAt: Date;
 }
 

@@ -96,6 +96,6 @@ export class CompetitionsComponent {
   }
 
   public onAddCompetitionClick(): void {
-    this.router.navigate(['/admin/competiciones/add']);
+    this.router.navigate(['/admin/competicion']);
   }
 }

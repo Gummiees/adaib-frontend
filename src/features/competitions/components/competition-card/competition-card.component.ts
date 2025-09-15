@@ -37,6 +37,6 @@ export class CompetitionCardComponent {
     event.preventDefault();
     event.stopPropagation();
 
-    this.router.navigate(['/admin/competiciones', this.competition().id]);
+    this.router.navigate(['/admin/competicion', this.competition().id]);
   }
 }

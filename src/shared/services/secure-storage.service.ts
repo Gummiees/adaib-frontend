@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { EncryptionService } from './encryption.service';
 
-export type StorageStrategy = 'session' | 'local' | 'cookie';
+export type StorageStrategy = 'session' | 'local';
 
 export interface StorageOptions {
   strategy?: StorageStrategy;
@@ -22,7 +22,7 @@ export class SecureStorageService {
    * Store data securely using the specified strategy
    */
   setItem(key: string, value: string, options: StorageOptions = {}): void {
-    const { strategy = 'local', expires } = options;
+    const { strategy = 'local' } = options;
 
     const processedValue = value;
 
@@ -46,11 +46,6 @@ export class SecureStorageService {
           );
           this.memoryStorage.set(key, processedValue);
         }
-        break;
-      case 'cookie':
-        this.setCookie(key, processedValue, {
-          expires,
-        });
         break;
     }
   }
@@ -78,9 +73,6 @@ export class SecureStorageService {
           console.warn('LocalStorage not available, trying memory storage');
           value = this.memoryStorage.get(key) || null;
         }
-        break;
-      case 'cookie':
-        value = this.getCookie(key);
         break;
     }
 
@@ -113,9 +105,6 @@ export class SecureStorageService {
           );
           this.memoryStorage.delete(key);
         }
-        break;
-      case 'cookie':
-        this.deleteCookie(key);
         break;
     }
   }
@@ -186,45 +175,5 @@ export class SecureStorageService {
   async decryptAsync(encryptedText: string, key?: string): Promise<string> {
     const encryptionKey = key || this.encryptionKey;
     return await this.encryptionService.decrypt(encryptedText, encryptionKey);
-  }
-
-  private setCookie(
-    name: string,
-    value: string,
-    options: {
-      expires?: Date;
-    } = {},
-  ): void {
-    const { expires } = options;
-
-    let cookieString = `${name}=${encodeURIComponent(value)}; secure; sameSite=strict; HttpOnly`;
-
-    if (expires) {
-      cookieString += `; expires=${expires.toUTCString()}`;
-    }
-
-    cookieString += '; Path=/';
-
-    document.cookie = cookieString;
-  }
-
-  private getCookie(name: string): string | null {
-    const nameEQ = name + '=';
-    const ca = document.cookie.split(';');
-
-    for (const cookie of ca) {
-      let c = cookie;
-      while (c.charAt(0) === ' ') {
-        c = c.substring(1, c.length);
-      }
-      if (c.indexOf(nameEQ) === 0) {
-        return decodeURIComponent(c.substring(nameEQ.length, c.length));
-      }
-    }
-    return null;
-  }
-
-  private deleteCookie(name: string): void {
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
   }
 }

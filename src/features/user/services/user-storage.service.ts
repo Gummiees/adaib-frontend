@@ -47,7 +47,7 @@ export class UserStorageService {
       strategy: 'session',
     });
 
-    // Store refresh token in httpOnly cookie (most secure for web)
+    // Store refresh token in sessionStorage (encrypted, persists across page refreshes)
     if (user.refreshToken) {
       const encryptedRefreshToken = await this.secureStorage.encryptAsync(
         user.refreshToken,
@@ -57,8 +57,7 @@ export class UserStorageService {
         this.REFRESH_TOKEN_KEY,
         encryptedRefreshToken,
         {
-          strategy: 'cookie',
-          expires: user.expiresAt,
+          strategy: 'session',
         },
       );
     }
@@ -135,7 +134,12 @@ export class UserStorageService {
         strategy: 'session',
       });
 
-      if (!token) {
+      // Get and decrypt refresh token
+      const refreshToken = this.secureStorage.getItem(this.REFRESH_TOKEN_KEY, {
+        strategy: 'session',
+      });
+
+      if (!token || !refreshToken) {
         return null;
       }
 
@@ -145,28 +149,17 @@ export class UserStorageService {
         userKey,
       );
 
-      // Check if token is expired
-      const expiresAt = new Date(userData.expiresAt);
-      if (expiresAt < new Date()) {
-        // FIXME: refresh token
-        this.clearUser();
-        return null;
-      }
-
-      // Get and decrypt refresh token
-      const refreshToken = this.secureStorage.getItem(this.REFRESH_TOKEN_KEY, {
-        strategy: 'cookie',
-      });
-      const decryptedRefreshToken = refreshToken
-        ? await this.secureStorage.decryptAsync(refreshToken, userKey)
-        : null;
+      const decryptedRefreshToken = await this.secureStorage.decryptAsync(
+        refreshToken,
+        userKey,
+      );
 
       return {
         id: userData.id,
         username: userData.name,
         authToken: decryptedToken,
         refreshToken: decryptedRefreshToken,
-        expiresAt: expiresAt,
+        expiresAt: new Date(userData.expiresAt),
       };
     } catch (error) {
       console.error('❌ Failed to retrieve user data:', error);
@@ -223,7 +216,7 @@ export class UserStorageService {
    */
   async getRefreshToken(): Promise<string | null> {
     const refreshToken = this.secureStorage.getItem(this.REFRESH_TOKEN_KEY, {
-      strategy: 'cookie',
+      strategy: 'session',
     });
 
     if (!refreshToken) {
@@ -292,7 +285,7 @@ export class UserStorageService {
     this.secureStorage.removeItem(this.USER_KEY, { strategy: 'local' });
     this.secureStorage.removeItem(this.TOKEN_KEY, { strategy: 'session' });
     this.secureStorage.removeItem(this.REFRESH_TOKEN_KEY, {
-      strategy: 'cookie',
+      strategy: 'session',
     });
     // Clear user data used for key generation
     this.secureStorage.removeItem('user_id', { strategy: 'session' });

@@ -1,7 +1,11 @@
 <div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
-  <h1 class="text-4xl font-bold">Editar equipo</h1>
+  <h1 class="text-4xl font-bold">{{ pageTitle }}</h1>
   @if(teamsStore.error()) {
-    <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al editar o borrar el equipo. Inténtelo más tarde." [hideButton]="true"></app-not-found>
+    <app-not-found
+      title="Hubo un error"
+      subtitle="Lo sentimos, hubo un error al {{ isEditMode() ? 'actualizar' : 'añadir' }} el equipo. Inténtelo más tarde."
+      [hideButton]="true">
+    </app-not-found>
   } @else if(isLoading()) {
     <app-full-spinner></app-full-spinner>
   } @else {
@@ -37,7 +41,9 @@
           <mat-label>Activo</mat-label>
           <mat-slide-toggle formControlName="active" />
         </div>
-        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">Guardar</button>
+        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
+          {{ submitButtonText }}
+        </button>
       </div>
     </form>
   }

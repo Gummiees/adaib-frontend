@@ -22,6 +22,12 @@
       } @else {
         <p class="flex-1 text-base italic text-gray-500 text-right mr-[2px]">Descansa</p>
       }
+
+      @if(!!userStore.user()) {
+        <button mat-icon-button aria-label="Editar partido" matTooltip="Editar partido" matTooltipPosition="right" type="button" (click)="onEditMatch()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
     </div>
   </div>
   <div class="bg-transparent h-full w-[5px]"></div>

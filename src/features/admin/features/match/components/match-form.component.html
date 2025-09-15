@@ -1,0 +1,125 @@
+<div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
+  @if(isMatchNotFound()) {
+    <app-not-found title="Partido no encontrado" subtitle="Lo sentimos, el partido no se encontró. Inténtelo más tarde." [hideButton]="true"></app-not-found>
+  } @else {
+    <div class="flex flex-row gap-2 items-center justify-center gap-4">
+      <h1 class="text-4xl font-bold">{{ isEditMode() ? 'Editar partido' : 'Crear partido' }}</h1>
+      @if(isEditMode()) {
+        <button mat-mini-fab aria-label="Eliminar partido" matTooltip="Eliminar partido" matTooltipPosition="right" type="button" (click)="onDelete()" [disabled]="isLoading()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      }
+    </div>
+    @if(competitionStore.error()) {
+      <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al crear la competición. Inténtelo más tarde." [hideButton]="true"></app-not-found>
+    } @else if(isLoading()) {
+      <app-full-spinner></app-full-spinner>
+    } @else {
+      <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-lg" (ngSubmit)="onSubmit()">
+        <mat-form-field class="w-full">
+          <mat-label>Fase</mat-label>
+          <mat-select formControlName="phase">
+            @for(phase of phases(); track phase.id) {
+              <mat-option [value]="phase">{{ phase.name }}</mat-option>
+            }
+          </mat-select>
+          @if(form.get('phase')?.errors?.['required']) {
+            <mat-error>La fase es requerida</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Grupo</mat-label>
+          <mat-select formControlName="group">
+            @for(group of groups(); track group.id) {
+              <mat-option [value]="group">{{ group.name }}</mat-option>
+            }
+          </mat-select>
+          @if(form.get('group')?.errors?.['required']) {
+            <mat-error>El grupo es requerido</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Ronda</mat-label>
+          <mat-select formControlName="round">
+            @for(round of rounds(); track round.id) {
+              <mat-option [value]="round">{{ round.name }}</mat-option>
+            }
+          </mat-select>
+          @if(form.get('round')?.errors?.['required']) {
+            <mat-error>La ronda es requerida</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Equipo local</mat-label>
+          <mat-select formControlName="homeTeam">
+            @for(team of teams(); track team.id) {
+              <mat-option [value]="team">{{ team.name }}</mat-option>
+            }
+          </mat-select>
+          @if(form.get('homeTeam')?.errors?.['required']) {
+            <mat-error>El equipo local es requerido</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Equipo visitante*</mat-label>
+          <mat-select formControlName="awayTeam">
+            @for(team of teams(); track team.id) {
+              <mat-option [value]="team">{{ team.name }}</mat-option>
+            }
+          </mat-select>
+          @if(form.get('awayTeam')?.errors?.['awayTeamRequired']) {
+            <mat-error>El equipo visitante es requerido</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Ganador</mat-label>
+          <mat-select formControlName="result">
+            <mat-option value="Home">Local</mat-option>
+            <mat-option value="Away">Visitante</mat-option>
+            <mat-option value="Draw">Empate</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="NotStarted">No iniciado</mat-option>
+            <mat-option value="Ongoing">En curso</mat-option>
+            <mat-option value="Cancelled">Cancelado</mat-option>
+            <mat-option value="Rest">Descanso</mat-option>
+            <mat-option value="Finished">Finalizado</mat-option>
+          </mat-select>
+          @if(form.get('status')?.errors?.['required']) {
+            <mat-error>El estado es requerido</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Ubicación</mat-label>
+          <input matInput type="text" formControlName="location" />
+        </mat-form-field>
+        <div class="flex flex-row gap-2 items-center w-full">
+          <mat-form-field class="w-full">
+            <mat-label>Fecha del partido</mat-label>
+            <input matInput [matDatepicker]="datepicker" formControlName="date">
+            <mat-hint>DD/MM/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
+            <mat-datepicker #datepicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="w-full">
+            <mat-label>Hora del partido</mat-label>
+            <input matInput [matTimepicker]="timepicker" formControlName="time">
+            <mat-timepicker-toggle matIconSuffix [for]="timepicker"></mat-timepicker-toggle>
+            <mat-timepicker interval="15min" #timepicker></mat-timepicker>
+            @if(form.get('time')?.errors?.['required']) {
+              <mat-error>La hora es requerida</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
+          <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
+            {{ isEditMode() ? 'Guardar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    }
+  }
+</div>

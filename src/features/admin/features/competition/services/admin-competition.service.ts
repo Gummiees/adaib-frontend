@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { Competition } from '@shared/models/competition';
+import { format } from 'date-fns';
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -26,9 +27,11 @@ export class AdminCompetitionService {
     return JSON.stringify({
       ...competition,
       startDate: competition.startDate
-        ? competition.startDate.toISOString()
+        ? format(competition.startDate, 'yyyy-MM-dd')
         : null,
-      endDate: competition.endDate ? competition.endDate.toISOString() : null,
+      endDate: competition.endDate
+        ? format(competition.endDate, 'yyyy-MM-dd')
+        : null,
     });
   }
 }
