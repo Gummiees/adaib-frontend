@@ -1,13 +1,14 @@
 import { inject } from '@angular/core';
-import { mapResponse } from '@ngrx/operators';
-import { signalStore, withState } from '@ngrx/signals';
-import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
+import {
+  patchState,
+  signalStore,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { Competition } from '@shared/models/competition';
-import { getErrorMessage } from '@shared/utils/utils';
-import { switchMap } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 import { CompetitionsService } from '../services/competitions.service';
-import { competitionsApiEvent } from './competitions-api-events';
-import { getCompetitionsEvent } from './competitions-events';
 
 type CompetitionsState = {
   competitions: Competition[] | null;
@@ -23,44 +24,31 @@ const initialState: CompetitionsState = {
 
 export const CompetitionsStore = signalStore(
   withState(initialState),
-  withReducer(
-    on(getCompetitionsEvent, () => ({
-      isLoading: true,
-      error: null,
-    })),
-    on(
-      competitionsApiEvent.getCompetitionsSuccess,
-      ({ payload: competitions }) => ({
-        isLoading: false,
+  withMethods((store) => ({
+    getCompetitionsSuccess: (competitions: Competition[]) => {
+      patchState(store, () => ({
         competitions: competitions,
-      }),
-    ),
-    on(competitionsApiEvent.getCompetitionsFailure, ({ payload: error }) => ({
-      competitions: null,
-      isLoading: false,
-      error: error,
-    })),
-  ),
-  withEffects(
-    (
-      _,
-      events = inject(Events),
+        isLoading: false,
+        error: null,
+      }));
+    },
+    getCompetitionsFailure: (error: string) => {
+      patchState(store, () => ({
+        competitions: null,
+        isLoading: false,
+        error: error,
+      }));
+    },
+  })),
+  withHooks({
+    onInit: async (
+      store,
       competitionsService = inject(CompetitionsService),
-    ) => ({
-      getCompetitions$: events.on(getCompetitionsEvent).pipe(
-        switchMap(() =>
-          competitionsService.getAllCompetitions().pipe(
-            mapResponse({
-              next: (competitions) =>
-                competitionsApiEvent.getCompetitionsSuccess(competitions),
-              error: (error) =>
-                competitionsApiEvent.getCompetitionsFailure(
-                  getErrorMessage(error),
-                ),
-            }),
-          ),
-        ),
-      ),
-    }),
-  ),
+    ) => {
+      const competitions = await firstValueFrom(
+        competitionsService.getAllCompetitions(),
+      );
+      store.getCompetitionsSuccess(competitions);
+    },
+  }),
 );

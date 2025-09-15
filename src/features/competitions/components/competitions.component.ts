@@ -10,11 +10,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
-import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { CompetitionStatus } from '@shared/models/competition';
-import { getCompetitionsEvent } from '../store/competitions-events';
 import { CompetitionsStore } from '../store/competitions-store';
 import { CompetitionCardComponent } from './competition-card/competition-card.component';
 
@@ -36,11 +34,6 @@ import { CompetitionCardComponent } from './competition-card/competition-card.co
 export class CompetitionsComponent {
   public competitionsStore = inject(CompetitionsStore);
   private router = inject(Router);
-  private dispatcher = inject(Dispatcher);
-
-  constructor() {
-    this.getCompetitions();
-  }
 
   public statusFilter = signal<CompetitionStatus | 'all' | null>(null);
   public seasonFilter = signal<number | null>(null);
@@ -94,17 +87,5 @@ export class CompetitionsComponent {
 
   public onSeasonFilterChange(season: number | null): void {
     this.seasonFilter.set(season);
-  }
-
-  public reloadCompetitions(): void {
-    this.getCompetitions();
-  }
-
-  private getCompetitions(): void {
-    if (this.competitionsStore.competitions()) {
-      return;
-    }
-
-    this.dispatcher.dispatch(getCompetitionsEvent());
   }
 }

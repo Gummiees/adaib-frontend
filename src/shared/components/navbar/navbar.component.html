@@ -22,6 +22,9 @@
           <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Inicio</a>
           <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Noticias</a>
           <a routerLink="/competiciones" routerLinkActive #competitionsRla="routerLinkActive" [ngClass]="competitionsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="competitionsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Competiciones</a>
+          @if(!!user) {
+            <a routerLink="/admin/teams" routerLinkActive #adminRla="routerLinkActive" [ngClass]="adminRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="adminRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Admin teams</a>
+          }
         </div>
       </div>
       <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">

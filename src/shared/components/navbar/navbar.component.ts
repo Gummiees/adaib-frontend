@@ -47,7 +47,7 @@ export class NavbarComponent {
 
   public async onUserButtonClick(): Promise<void> {
     if (this.user) {
-      await this.onLogout();
+      this.onLogout();
     } else {
       this.onLoginClick();
     }
@@ -57,11 +57,12 @@ export class NavbarComponent {
     this.router.navigate(['/login']);
   }
 
-  private async onLogout(): Promise<void> {
+  private onLogout(): void {
     if (!this.user) {
       return;
     }
 
     this.dispatcher.dispatch(userEvent.logout());
+    this.router.navigate(['/inicio']);
   }
 }

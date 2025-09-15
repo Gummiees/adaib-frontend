@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  output,
+} from '@angular/core';
 import { CompetitionStore } from '@features/competition/store/competition-store';
 import { Classification } from '@shared/models/classification';
 import { Group } from '@shared/models/group';
@@ -14,6 +20,7 @@ import { NotFoundComponent } from '../not-found/not-found.component';
   templateUrl: './classification-table.component.html',
   standalone: true,
   imports: [CommonModule, NotFoundComponent, ClassificationTableGroupComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClassificationTableComponent {
   public competitionStore = inject(CompetitionStore);

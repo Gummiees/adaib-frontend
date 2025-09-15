@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { CompetitionStore } from '@features/competition/store/competition-store';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Group } from '@shared/models/group';
@@ -12,6 +18,7 @@ import { GroupSummaryComponent } from '../group-summary/group-summary.component'
   templateUrl: './phase-summary.component.html',
   standalone: true,
   imports: [CommonModule, NotFoundComponent, GroupSummaryComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PhaseSummaryComponent {
   public store = inject(CompetitionStore);

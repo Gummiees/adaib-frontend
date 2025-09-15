@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Team } from '@shared/models/team';
 
@@ -7,9 +12,14 @@ import { Team } from '@shared/models/team';
   selector: 'app-team-card',
   templateUrl: './team-card.component.html',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeamCardComponent {
   team = input.required<Team>();
+  public teamClick = output<void>();
+
+  public onTeamClick(): void {
+    this.teamClick.emit();
+  }
 }

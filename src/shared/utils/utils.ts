@@ -2,6 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DetailedMatch, MatchStatus } from '@shared/models/match';
 import { Classification } from '../models/classification';
 
+export const imageUrlRegex =
+  '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?';
+
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }

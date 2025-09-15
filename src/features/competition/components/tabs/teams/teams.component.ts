@@ -6,8 +6,8 @@ import {
   input,
   output,
 } from '@angular/core';
-import { TeamCardComponent } from '@features/competition/components/tabs/teams/team-card/team-card.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
+import { TeamCardComponent } from '@shared/components/team-card/team-card.component';
 import { Team } from '@shared/models/team';
 
 @Component({

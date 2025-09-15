@@ -1,0 +1,13 @@
+<div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
+  <h1 class="text-4xl font-bold">Admin teams</h1>
+  @if(adminTeamsStore.isLoading()) {
+    <app-full-spinner></app-full-spinner>
+  } @else if(adminTeamsStore.teams()) {
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      @for (team of adminTeamsStore.teams()!; track team.id) {
+        <app-team-card [team]="team" (teamClick)="onTeamClick(team.id)"></app-team-card>
+      }
+    </div>
+  }
+  <button matButton="filled" type="button" (click)="onAddTeamClick()">Añadir equipo</button>
+</div>

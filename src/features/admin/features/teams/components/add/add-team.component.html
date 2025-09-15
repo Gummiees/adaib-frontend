@@ -1,0 +1,38 @@
+<div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
+  <h1 class="text-4xl font-bold">Añadir equipo</h1>
+  @if(isLoading()) {
+    <app-full-spinner></app-full-spinner>
+  } @else {
+    <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-lg" (ngSubmit)="onSubmit()">
+      <mat-form-field class="w-full">
+        <mat-label>Nombre</mat-label>
+        <input matInput type="text" formControlName="name" />
+        @if(name.errors?.['required']) {
+          <mat-error>El nombre es requerido</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Nombre corto</mat-label>
+        <input matInput type="text" formControlName="shortName" />
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Descripción</mat-label>
+        <input matInput type="text" formControlName="description" />
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Ubicación</mat-label>
+        <input matInput type="text" formControlName="location" />
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>URL de la imagen</mat-label>
+        <input matInput type="text" formControlName="imageUrl" />
+        @if(imageUrl.errors?.['pattern']) {
+          <mat-error>La URL de la imagen no es válida</mat-error>
+        }
+      </mat-form-field>
+      <mat-label>Activo</mat-label>
+      <mat-slide-toggle formControlName="active" />
+      <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">Añadir equipo</button>
+    </form>
+  }
+</div>

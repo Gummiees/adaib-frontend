@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { CompetitionStore } from '@features/competition/store/competition-store';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Group } from '@shared/models/group';
@@ -17,6 +23,7 @@ import { GroupResultsComponent } from '../group-results/group-results.component'
     GroupClassificationComponent,
     NotFoundComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupSummaryComponent {
   public group = input<Group | null>(null);

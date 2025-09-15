@@ -14,6 +14,7 @@ import { provideStore } from '@ngrx/store';
 import * as Sentry from '@sentry/angular';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
 import { retryInterceptor } from '@shared/interceptors/retry.interceptor';
+import { unauthorizedInterceptor } from '@shared/interceptors/unauthorized.interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -21,7 +22,11 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'es-ES' },
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(
-      withInterceptors([retryInterceptor, credentialsInterceptor]),
+      withInterceptors([
+        retryInterceptor,
+        credentialsInterceptor,
+        unauthorizedInterceptor,
+      ]),
     ),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideStore(),

@@ -1,6 +1,6 @@
 <div class="relative">
   @if(competitionsStore.error()) {
-    <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al cargar las competiciones. Inténtelo más tarde." buttonText="Volver a cargar" (buttonClicked)="reloadCompetitions()"></app-not-found>
+    <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al cargar las competiciones. Inténtelo más tarde." [hideButton]="true"></app-not-found>
   } @else if(competitionsStore.isLoading()) {
     <app-full-spinner></app-full-spinner>
   } @else if(competitionsStore.competitions() && competitionsStore.competitions()!.length > 0) {
