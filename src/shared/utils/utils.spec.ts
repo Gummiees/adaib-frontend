@@ -21,7 +21,7 @@ describe('getErrorMessage', () => {
   });
 
   it('should return the default error message from an error without a message', () => {
-    expect(getErrorMessage(new Error())).toBe('Failed to load pets');
+    expect(getErrorMessage(new Error())).toBe('Failed to load data');
   });
 
   it('should return the error message from HTTP error response', () => {
@@ -32,11 +32,11 @@ describe('getErrorMessage', () => {
 
   it('should return the default error message from an HTTP error with a message', () => {
     expect(getErrorMessage(new HttpErrorResponse({ error: {} }))).toBe(
-      'Failed to load pets',
+      'Failed to load data',
     );
   });
 
   it('should return the default error message if the error is another type', () => {
-    expect(getErrorMessage(123)).toBe('Failed to load pets');
+    expect(getErrorMessage(123)).toBe('Failed to load data');
   });
 });
