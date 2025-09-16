@@ -9,7 +9,11 @@ import { AdminGuard } from '@shared/guards/admin.guard';
 import { AnonymousGuard } from '@shared/guards/anonymous.guard';
 
 export const routes: Routes = [
-  { path: 'inicio', component: LandingComponent },
+  {
+    path: 'inicio',
+    component: LandingComponent,
+    data: { title: 'Inicio' },
+  },
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
   {
     path: 'noticias',
@@ -17,6 +21,7 @@ export const routes: Routes = [
       import('@features/articles/components/all/articles.component').then(
         (m) => m.ArticlesComponent,
       ),
+    data: { title: 'Noticias' },
   },
   {
     path: 'noticias/:id',
@@ -24,6 +29,7 @@ export const routes: Routes = [
       import('@features/articles/components/individual/article.component').then(
         (m) => m.ArticleComponent,
       ),
+    data: { title: 'Noticia' },
   },
   {
     path: 'login',
@@ -32,6 +38,7 @@ export const routes: Routes = [
         (m) => m.LoginComponent,
       ),
     canActivate: [AnonymousGuard],
+    data: { title: 'Iniciar Sesión' },
   },
   {
     path: 'competiciones',
@@ -40,6 +47,7 @@ export const routes: Routes = [
         (m) => m.CompetitionsComponent,
       ),
     providers: [CompetitionsService, CompetitionsStore],
+    data: { title: 'Competiciones' },
   },
   {
     path: 'competiciones/:id',
@@ -48,12 +56,18 @@ export const routes: Routes = [
         (m) => m.CompetitionComponent,
       ),
     providers: [CompetitionService, CompetitionStore],
+    data: { title: 'Competición' },
   },
   {
     path: 'admin',
     loadChildren: () =>
       import('@features/admin/admin.routes').then((m) => m.adminRoutes),
     canActivate: [AdminGuard],
+    data: { title: 'Administración' },
   },
-  { path: '**', component: NotFoundComponent },
+  {
+    path: '**',
+    component: NotFoundComponent,
+    data: { title: 'Página No Encontrada' },
+  },
 ];

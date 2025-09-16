@@ -19,6 +19,7 @@ import { NotFoundComponent } from '@shared/components/not-found/not-found.compon
 import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
+import { TitleService } from '@shared/services/title.service';
 import { map } from 'rxjs';
 import {
   competitionEvents,
@@ -56,6 +57,7 @@ export class CompetitionComponent {
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router);
   private dispatcher = inject(Dispatcher);
+  private titleService = inject(TitleService);
 
   constructor() {
     this.getCompetition();
@@ -70,6 +72,14 @@ export class CompetitionComponent {
       }
 
       this.dispatchRoundChange();
+    });
+
+    // Update title when competition changes
+    effect(() => {
+      const competition = this.competitionStore.competition();
+      if (competition?.name) {
+        this.titleService.setDynamicTitle(competition.name);
+      }
     });
   }
 

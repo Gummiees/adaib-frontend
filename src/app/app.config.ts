@@ -9,17 +9,20 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 
+import { Title } from '@angular/platform-browser';
 import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import * as Sentry from '@sentry/angular';
 import { contentTypeInterceptor } from '@shared/interceptors/content-type.interceptor';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
 import { retryInterceptor } from '@shared/interceptors/retry.interceptor';
+import { TitleService } from '@shared/services/title.service';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: LOCALE_ID, useValue: 'es-ES' },
+    Title,
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(
       withInterceptors([
@@ -44,6 +47,10 @@ export const appConfig: ApplicationConfig = {
     },
     provideAppInitializer(() => {
       inject(Sentry.TraceService);
+    }),
+    provideAppInitializer(() => {
+      const titleService = inject(TitleService);
+      titleService.init();
     }),
   ],
 };

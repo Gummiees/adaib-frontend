@@ -12,7 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { articles } from '@features/articles/content/articles';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
-import { map, Observable, of, startWith } from 'rxjs';
+import { TitleService } from '@shared/services/title.service';
+import { map, Observable, of, startWith, tap } from 'rxjs';
 import { Article } from '../../models/article';
 
 @Component({
@@ -28,6 +29,7 @@ export class ArticleComponent {
   private activatedRoute = inject(ActivatedRoute);
   private sanitizer = inject(DomSanitizer);
   private router = inject(Router);
+  private titleService = inject(TitleService);
   public articleWithLoading$ = this.getArticle();
 
   public onNotFoundButtonClick(): void {
@@ -63,6 +65,11 @@ export class ArticleComponent {
             ) as SafeHtml)
           : null;
         return { article, safeContent, isLoading: false };
+      }),
+      tap(({ article }) => {
+        if (article) {
+          this.titleService.setDynamicTitle(article.title);
+        }
       }),
       startWith({ article: null, safeContent: null, isLoading: true }),
     );

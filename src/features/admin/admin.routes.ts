@@ -18,6 +18,7 @@ export const adminRoutes: Routes = [
         '@features/admin/features/teams/components/list/admin-teams.component'
       ).then((m) => m.AdminTeamsComponent),
     providers: [AdminTeamsStore, AdminTeamsService],
+    data: { title: 'Gestión de Equipos' },
   },
   {
     path: 'equipo',
@@ -26,6 +27,7 @@ export const adminRoutes: Routes = [
         '@features/admin/features/teams/components/team-form/team-form.component'
       ).then((m) => m.TeamFormComponent),
     providers: [AdminTeamsStore, AdminTeamsService],
+    data: { title: 'Crear Equipo' },
   },
   {
     path: 'equipo/:id',
@@ -34,6 +36,7 @@ export const adminRoutes: Routes = [
         '@features/admin/features/teams/components/team-form/team-form.component'
       ).then((m) => m.TeamFormComponent),
     providers: [AdminTeamsStore, AdminTeamsService],
+    data: { title: 'Editar Equipo' },
   },
   {
     path: 'competicion',
@@ -46,6 +49,7 @@ export const adminRoutes: Routes = [
       CompetitionsService,
       AdminCompetitionService,
     ],
+    data: { title: 'Crear Competición' },
   },
   {
     path: 'competicion/:id',
@@ -58,6 +62,7 @@ export const adminRoutes: Routes = [
       CompetitionsService,
       AdminCompetitionService,
     ],
+    data: { title: 'Editar Competición' },
   },
   {
     path: 'competicion/:id/fase',
@@ -66,6 +71,7 @@ export const adminRoutes: Routes = [
         '@features/admin/features/phase/components/phase-form.component'
       ).then((m) => m.PhaseFormComponent),
     providers: [CompetitionsService, CompetitionsStore, AdminPhaseService],
+    data: { title: 'Crear Fase' },
   },
   {
     path: 'competicion/:id/fase/:phaseId',
@@ -74,6 +80,7 @@ export const adminRoutes: Routes = [
         '@features/admin/features/phase/components/phase-form.component'
       ).then((m) => m.PhaseFormComponent),
     providers: [CompetitionsService, CompetitionsStore, AdminPhaseService],
+    data: { title: 'Editar Fase' },
   },
   {
     path: 'competicion/:id/grupo',
@@ -88,6 +95,7 @@ export const adminRoutes: Routes = [
       AdminTeamsService,
       AdminTeamsStore,
     ],
+    data: { title: 'Crear Grupo' },
   },
   {
     path: 'competicion/:id/grupo/:groupId',
@@ -102,6 +110,7 @@ export const adminRoutes: Routes = [
       AdminTeamsService,
       AdminTeamsStore,
     ],
+    data: { title: 'Editar Grupo' },
   },
   {
     path: 'competicion/:id/jornada',
@@ -110,6 +119,7 @@ export const adminRoutes: Routes = [
         '@features/admin/features/round/components/round-form.component'
       ).then((m) => m.RoundFormComponent),
     providers: [CompetitionsService, CompetitionsStore, AdminRoundService],
+    data: { title: 'Crear Jornada' },
   },
   {
     path: 'competicion/:id/jornada/:roundId',
@@ -118,6 +128,7 @@ export const adminRoutes: Routes = [
         '@features/admin/features/round/components/round-form.component'
       ).then((m) => m.RoundFormComponent),
     providers: [CompetitionsService, CompetitionsStore, AdminRoundService],
+    data: { title: 'Editar Jornada' },
   },
   {
     path: 'competicion/:id/partido',
@@ -126,6 +137,7 @@ export const adminRoutes: Routes = [
         '@features/admin/features/match/components/match-form.component'
       ).then((m) => m.MatchFormComponent),
     providers: [CompetitionsService, CompetitionsStore, AdminMatchService],
+    data: { title: 'Crear Partido' },
   },
   {
     path: 'competicion/:id/partido/:matchId',
@@ -134,14 +146,16 @@ export const adminRoutes: Routes = [
         '@features/admin/features/match/components/match-form.component'
       ).then((m) => m.MatchFormComponent),
     providers: [CompetitionsService, CompetitionsStore, AdminMatchService],
+    data: { title: 'Editar Partido' },
   },
   {
     path: '',
-    redirectTo: 'teams',
+    redirectTo: 'equipos',
     pathMatch: 'full',
   },
   {
     path: '**',
     component: NotFoundComponent,
+    data: { title: 'Página No Encontrada' },
   },
 ];
