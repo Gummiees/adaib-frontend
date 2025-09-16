@@ -10,7 +10,9 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { competitionNavEvents } from '@features/competition/store/competition-nav-events';
 import { UserStore } from '@features/user/store/user-store';
+import { Dispatcher } from '@ngrx/signals/events';
 import { CompactTeamComponent } from '@shared/components/compacted-team/compact-team.component';
 import { MatchInfoComponent } from '@shared/components/match/components/match-info/match-info.component';
 import { MatchScoreComponent } from '@shared/components/match/components/match-score/match-score.component';
@@ -36,11 +38,12 @@ import { MatchExtraInfoComponent } from './components/match-extra-info/match-ext
 })
 export class MatchComponent {
   public userStore = inject(UserStore);
+  public dispatcher = inject(Dispatcher);
+
   public match = input.required<Match>();
   public showExtraInfo = input<boolean>(false);
   public compactView = input<boolean>(false);
   public matchTeamClicked = output<Team>();
-  public matchEditClicked = output<Match>();
 
   public isDetailedMatch = computed<boolean>(() => {
     return 'phaseName' in this.match();
@@ -67,6 +70,6 @@ export class MatchComponent {
   }
 
   public onEditMatch(): void {
-    this.matchEditClicked.emit(this.match());
+    this.dispatcher.dispatch(competitionNavEvents.toEditMatch(this.match().id));
   }
 }

@@ -19,6 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompetitionService } from '@features/competition/services/competition.service';
 import { competitionEvents } from '@features/competition/store/competition-events';
@@ -47,6 +48,7 @@ import { AdminPhaseService } from '../services/admin-phase.service';
     MatInputModule,
     MatIconModule,
     MatDialogModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
@@ -116,7 +118,7 @@ export class PhaseFormComponent {
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
       data: {
         title: 'Eliminar fase',
-        text: 'Se eliminarán todos los grupos, rondas y partidos asociados a esta fase. Esta acción no se puede deshacer.',
+        text: 'Se eliminarán todos los grupos, jornadas y partidos asociados a esta fase. Esta acción no se puede deshacer.',
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -261,5 +263,27 @@ export class PhaseFormComponent {
       return;
     }
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
+  }
+
+  public onAddGroup(): void {
+    const phaseId = this.phaseId();
+    if (!phaseId) {
+      return;
+    }
+    this.router.navigate(
+      ['/admin/competicion', this.competitionStore.competition()?.id, 'grupo'],
+      { queryParams: { fase: phaseId } },
+    );
+  }
+
+  public onAddRound(): void {
+    const competition = this.competitionStore.competition();
+    const phaseId = this.phaseId();
+    if (!phaseId || !competition) {
+      return;
+    }
+    this.router.navigate(['/admin/competicion', competition.id, 'jornada'], {
+      queryParams: { fase: phaseId },
+    });
   }
 }

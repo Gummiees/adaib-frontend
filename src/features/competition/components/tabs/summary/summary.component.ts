@@ -25,30 +25,42 @@ import { PhaseSummaryComponent } from './components/phase-summary/phase-summary.
 })
 export class SummaryComponent {
   private router = inject(Router);
-  public store = inject(CompetitionStore);
+  public competitionStore = inject(CompetitionStore);
 
   public onTeamClicked(team: Team): void {
-    this.router.navigate(['/competiciones', this.store.competition()!.id], {
-      queryParams: { tab: 'equipos', equipo: team.id.toString() },
-    });
+    this.router.navigate(
+      ['/competiciones', this.competitionStore.competition()!.id],
+      {
+        queryParams: { tab: 'equipos', equipo: team.id.toString() },
+      },
+    );
   }
 
   public onPhaseMoreInfoClicked(): void {
-    this.router.navigate(['/competiciones', this.store.competition()!.id], {
-      queryParams: { tab: 'resultados' },
-    });
+    this.router.navigate(
+      ['/competiciones', this.competitionStore.competition()!.id],
+      {
+        queryParams: { tab: 'resultados' },
+      },
+    );
   }
 
   public onMoreInfoClassificationClicked(): void {
-    this.router.navigate(['/competiciones', this.store.competition()!.id], {
-      queryParams: { tab: 'clasificacion' },
-    });
+    this.router.navigate(
+      ['/competiciones', this.competitionStore.competition()!.id],
+      {
+        queryParams: { tab: 'clasificacion' },
+      },
+    );
   }
 
   public onMoreInfoResultsClicked(): void {
-    this.router.navigate(['/competiciones', this.store.competition()!.id], {
-      queryParams: { tab: 'resultados' },
-    });
+    this.router.navigate(
+      ['/competiciones', this.competitionStore.competition()!.id],
+      {
+        queryParams: { tab: 'resultados' },
+      },
+    );
   }
 
   public getPhase(phase: Phase | 'all'): Phase | null {

@@ -3,6 +3,8 @@ import { ApiPhase, Phase } from './phase';
 
 export type CompetitionStatus = 'NotStarted' | 'Ongoing' | 'Finished';
 
+export const DEFAULT_SPORT_NAME = 'Baloncesto';
+
 export interface ApiCompetition {
   id: number;
   sportName: string;

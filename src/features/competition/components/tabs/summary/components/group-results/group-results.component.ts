@@ -8,8 +8,12 @@ import {
   output,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { competitionEvents } from '@features/competition/store/competition-events';
+import { competitionNavEvents } from '@features/competition/store/competition-nav-events';
 import { CompetitionStore } from '@features/competition/store/competition-store';
+import { UserStore } from '@features/user/store/user-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
@@ -31,12 +35,15 @@ import { sortMatches } from '@shared/utils/utils';
     NotFoundComponent,
     MatButtonModule,
     RoundButtonComponent,
+    MatIconModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupResultsComponent {
   public store = inject(CompetitionStore);
   private dispatcher = inject(Dispatcher);
+  public userStore = inject(UserStore);
 
   public moreInfoClick = output<void>();
   public teamClick = output<Team>();
@@ -172,5 +179,9 @@ export class GroupResultsComponent {
       return currentRound === 'all';
     }
     return currentRound !== 'all' && round.id === currentRound.id;
+  }
+
+  public onAddMatchClicked(): void {
+    this.dispatcher.dispatch(competitionNavEvents.toAddMatch());
   }
 }

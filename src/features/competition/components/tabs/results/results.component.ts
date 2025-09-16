@@ -14,11 +14,12 @@ import { Router } from '@angular/router';
 import { GroupFilterComponent } from '@features/competition/components/filters/group/group-filter.component';
 import { PhaseFilterComponent } from '@features/competition/components/filters/phase/phase-filter.component';
 import { RoundFilterComponent } from '@features/competition/components/filters/round/round-filter.component';
+import { competitionNavEvents } from '@features/competition/store/competition-nav-events';
 import { UserStore } from '@features/user/store/user-store';
+import { Dispatcher } from '@ngrx/signals/events';
 import { MatchComponent } from '@shared/components/match/match.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Group } from '@shared/models/group';
-import { Match } from '@shared/models/match';
 import { Phase } from '@shared/models/phase';
 import { Round, RoundWithMatches } from '@shared/models/round';
 import { Team } from '@shared/models/team';
@@ -47,6 +48,8 @@ export class ResultsComponent {
   public competitionStore = inject(CompetitionStore);
   public userStore = inject(UserStore);
   private router = inject(Router);
+
+  public dispatcher = inject(Dispatcher);
 
   public groupByRound = signal<boolean>(false);
   public allMatchesSorted = computed(() => {
@@ -126,11 +129,7 @@ export class ResultsComponent {
   }
 
   public onAddMatchClick(): void {
-    this.router.navigate([
-      '/admin/competicion',
-      this.competitionStore.competition()!.id,
-      'partido',
-    ]);
+    this.dispatcher.dispatch(competitionNavEvents.toAddMatch());
   }
 
   public onMatchTeamClicked(team: Team): void {
@@ -140,14 +139,5 @@ export class ResultsComponent {
         queryParams: { tab: 'equipos', equipo: team.id.toString() },
       },
     );
-  }
-
-  public onMatchEditClicked(match: Match): void {
-    this.router.navigate([
-      '/admin/competicion',
-      this.competitionStore.competition()!.id,
-      'partido',
-      match.id,
-    ]);
   }
 }

@@ -1,10 +1,22 @@
-
-<mat-form-field class="w-full">
-  <mat-label>Fase</mat-label>
-  <mat-select [value]="store.phase()" (selectionChange)="onPhaseFilterChange($event.value)">
-    <mat-option value="all">Todas</mat-option>
-    @for (phase of store.competition()!.phases; track phase.id) {
-      <mat-option [value]="phase">{{ phase.name }}</mat-option>
+<div class="flex flex-row gap-2 items-center">
+  <mat-form-field class="w-full">
+    <mat-label>Fase</mat-label>
+    <mat-select [value]="competitionStore.phase()" (selectionChange)="onPhaseFilterChange($event.value)">
+      <mat-option value="all">Todas</mat-option>
+      @for (phase of competitionStore.competition()!.phases; track phase.id) {
+        <mat-option [value]="phase">{{ phase.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  @if(!!userStore.user()) {
+    @if(competitionStore.phase() === 'all') {
+      <button mat-mini-fab aria-label="Crear fase" matTooltip="Crear fase" matTooltipPosition="above" type="button" (click)="onCreatePhaseClick()">
+        <mat-icon>add</mat-icon>
+      </button>
+    } @else {
+      <button mat-mini-fab aria-label="Editar fase" matTooltip="Editar fase" matTooltipPosition="above" type="button" (click)="onEditPhaseClick()">
+        <mat-icon>edit</mat-icon>
+      </button>
     }
-  </mat-select>
-</mat-form-field>
+  }
+</div>

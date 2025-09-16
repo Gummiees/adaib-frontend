@@ -10,7 +10,7 @@
         <div class="flex flex-col gap-2">
           @if(pastMatches() && pastMatches().length > 0) {
             @for (match of pastMatches(); track 'past-' + match.id) {
-              <app-match class="w-full flex justify-center" [match]="match" [showExtraInfo]="true" (matchTeamClicked)="onMatchTeamClicked($event)" (matchEditClicked)="onMatchEditClicked($event)"></app-match>
+              <app-match class="w-full flex justify-center" [match]="match" [showExtraInfo]="true" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
             }
           } @else {
             <div class="text-center py-8 text-gray-500">
@@ -24,7 +24,7 @@
         <div class="flex flex-col gap-2">
           @if(futureMatches() && futureMatches().length > 0) {
             @for (match of futureMatches(); track 'future-' + match.id) {
-              <app-match class="w-full flex justify-center" [match]="match" [showExtraInfo]="true" (matchTeamClicked)="onMatchTeamClicked($event)" (matchEditClicked)="onMatchEditClicked($event)"></app-match>
+              <app-match class="w-full flex justify-center" [match]="match" [showExtraInfo]="true" (matchTeamClicked)="onMatchTeamClicked($event)"></app-match>
             }
           } @else {
             <div class="text-center py-8 text-gray-500">

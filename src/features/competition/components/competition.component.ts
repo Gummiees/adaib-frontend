@@ -12,17 +12,20 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TeamComponent } from '@features/competition/components/tabs/teams/team/team.component';
 import { TeamsComponent } from '@features/competition/components/tabs/teams/teams.component';
+import { UserStore } from '@features/user/store/user-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
+import { Round } from '@shared/models/round';
 import { map } from 'rxjs';
 import {
   competitionEvents,
   RoundWithGroup,
   RoundWithPhase,
 } from '../store/competition-events';
+import { competitionNavEvents } from '../store/competition-nav-events';
 import { CompetitionStore } from '../store/competition-store';
 import { ClassificationComponent } from './tabs/classification/classification.component';
 import { ResultsComponent } from './tabs/results/results.component';
@@ -49,6 +52,7 @@ import { SummaryComponent } from './tabs/summary/summary.component';
 })
 export class CompetitionComponent {
   public competitionStore = inject(CompetitionStore);
+  public userStore = inject(UserStore);
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router);
   private dispatcher = inject(Dispatcher);
@@ -239,5 +243,69 @@ export class CompetitionComponent {
     }
 
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
+  }
+
+  public shouldShowAnyEditButtons = computed(() => {
+    return (
+      !!this.userStore.user() &&
+      (this.competitionStore.phase() !== 'all' ||
+        this.competitionStore.group() !== 'all')
+    );
+  });
+
+  public shouldShowEditRoundButton = computed(() => {
+    return this.currentRound() !== 'all';
+  });
+
+  private currentRound = computed<Round | 'all'>(() => {
+    if (!this.userStore.user()) {
+      return 'all';
+    }
+    const phase = this.competitionStore.phase();
+    const group = this.competitionStore.group();
+    if (phase === 'all' && group === 'all') {
+      return 'all';
+    }
+    let round: Round | 'all' = 'all';
+    if (phase !== 'all') {
+      round = this.competitionStore.roundByPhaseId()[phase.id];
+    }
+    if (group !== 'all') {
+      round = this.competitionStore.roundByGroupId()[group.id];
+    }
+
+    return round;
+  });
+
+  public onAddPhaseClicked(): void {
+    this.dispatcher.dispatch(competitionNavEvents.toAddPhase());
+  }
+
+  public onAddGroupClicked(): void {
+    this.dispatcher.dispatch(competitionNavEvents.toAddGroup());
+  }
+
+  public onAddRoundClicked(): void {
+    this.dispatcher.dispatch(competitionNavEvents.toAddRound());
+  }
+
+  public onAddMatchClicked(): void {
+    this.dispatcher.dispatch(competitionNavEvents.toAddMatch());
+  }
+
+  public onEditPhaseClicked(): void {
+    this.dispatcher.dispatch(competitionNavEvents.toEditPhase());
+  }
+
+  public onEditGroupClicked(): void {
+    this.dispatcher.dispatch(competitionNavEvents.toEditGroup());
+  }
+
+  public onEditRoundClicked(): void {
+    const round = this.currentRound();
+    if (round === 'all') {
+      return;
+    }
+    this.dispatcher.dispatch(competitionNavEvents.toEditRound(round.id));
   }
 }

@@ -1,8 +1,8 @@
 <div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
   <div class="flex flex-row gap-2 items-center justify-center gap-4">
-    <h1 class="text-4xl font-bold">{{ isEditMode() ? 'Editar ronda' : 'Crear ronda' }}</h1>
+    <h1 class="text-4xl font-bold">{{ isEditMode() ? 'Editar jornada' : 'Crear jornada' }}</h1>
     @if(isEditMode()) {
-      <button mat-mini-fab aria-label="Eliminar ronda" matTooltip="Eliminar ronda" matTooltipPosition="right" type="button" (click)="onDelete()" [disabled]="isLoading()">
+      <button mat-mini-fab aria-label="Eliminar jornada" matTooltip="Eliminar jornada" matTooltipPosition="right" type="button" (click)="onDelete()" [disabled]="isLoading()">
         <mat-icon>delete</mat-icon>
       </button>
     }
@@ -25,13 +25,16 @@
         }
       </mat-form-field>
       <mat-form-field class="w-full">
-        <mat-label>Nombre de la ronda</mat-label>
+        <mat-label>Nombre de la jornada</mat-label>
         <input matInput type="text" formControlName="name" />
         @if(form.get('name')?.errors?.['required']) {
           <mat-error>El nombre es requerido</mat-error>
         }
       </mat-form-field>
       <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
+        @if(isEditMode()) {
+          <button matButton="outlined" type="button" (click)="onAddMatch()" matTooltip="Crear nuevo partido asociado a este grupo" matTooltipPosition="below" [disabled]="isLoading()">Crear nuevo partido</button>
+        }
         <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
           {{ isEditMode() ? 'Guardar' : 'Crear' }}
         </button>

@@ -7,7 +7,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -22,6 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminTeamsService } from '@features/admin/features/teams/services/admin-teams.service';
 import { AdminTeamsStore } from '@features/admin/features/teams/store/admin-teams-store';
@@ -30,13 +30,13 @@ import { competitionEvents } from '@features/competition/store/competition-event
 import { CompetitionStore } from '@features/competition/store/competition-store';
 import { CompetitionsService } from '@features/competitions/services/competitions.service';
 import { CompetitionsStore } from '@features/competitions/store/competitions-store';
+import { UserStore } from '@features/user/store/user-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { DeleteDialogComponent } from '@shared/components/delete-dialog/delete-dialog.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { ApiFormGroup, Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
-import { Round } from '@shared/models/round';
 import { Team } from '@shared/models/team';
 import { firstValueFrom } from 'rxjs';
 import { AdminGroupService } from '../services/admin-group.service';
@@ -57,6 +57,7 @@ import { AdminGroupService } from '../services/admin-group.service';
     MatOptionModule,
     MatIconModule,
     MatDialogModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
@@ -72,6 +73,7 @@ import { AdminGroupService } from '../services/admin-group.service';
 export class GroupFormComponent {
   public competitionStore = inject(CompetitionStore);
   public teamsStore = inject(AdminTeamsStore);
+  public userStore = inject(UserStore);
   private adminGroupService = inject(AdminGroupService);
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
@@ -81,13 +83,6 @@ export class GroupFormComponent {
 
   public phases = computed<Phase[]>(() => {
     return this.competitionStore.competition()?.phases ?? [];
-  });
-  public rounds = computed<Round[]>(() => {
-    const phase = this.selectedPhase();
-    if (!phase) {
-      return [];
-    }
-    return phase.rounds ?? [];
   });
   public teams = computed<Team[]>(() => {
     return this.teamsStore.teams() ?? [];
@@ -116,13 +111,11 @@ export class GroupFormComponent {
     this.form = new FormGroup({
       phase: new FormControl<Phase | null>(null, [Validators.required]),
       name: new FormControl<string | null>(null, [Validators.required]),
-      actualRound: new FormControl<Round | null>(null),
       teamIds: new FormControl<number[]>([]),
     });
 
     this.getCompetition();
     this.checkForEditMode();
-    this.setupFormControlDisabling();
     this.setupFormPopulation();
     this.setupPhasePreSelection();
   }
@@ -225,23 +218,6 @@ export class GroupFormComponent {
     }
   }
 
-  private setupFormControlDisabling(): void {
-    this.form.get('actualRound')?.disable();
-    this.form
-      .get('phase')
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((phase: Phase | null) => {
-        const actualRoundControl = this.form.get('actualRound');
-        this.selectedPhase.set(phase);
-        if (phase) {
-          actualRoundControl?.enable();
-        } else {
-          actualRoundControl?.setValue(null);
-          actualRoundControl?.disable();
-        }
-      });
-  }
-
   private checkForEditMode(): void {
     const groupId = this.activatedRoute.snapshot.params['groupId'];
     if (groupId) {
@@ -325,7 +301,6 @@ export class GroupFormComponent {
       this.form.patchValue({
         phase: foundPhase,
         name: foundGroup.name,
-        actualRound: foundGroup.actualRound,
         teamIds: foundGroup.teams.map((team) => team.id),
       });
     }
@@ -351,5 +326,16 @@ export class GroupFormComponent {
       return;
     }
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
+  }
+
+  public onAddMatch(): void {
+    const competition = this.competitionStore.competition();
+    const groupId = this.groupId();
+    if (!groupId || !competition) {
+      return;
+    }
+    this.router.navigate(['/admin/competicion', competition.id, 'partido'], {
+      queryParams: { grupo: groupId },
+    });
   }
 }

@@ -1,9 +1,22 @@
-<mat-form-field class="w-full">
-  <mat-label>Jornada</mat-label>
-  <mat-select [value]="selectedRound()" (selectionChange)="onRoundFilterChange($event.value)">
-    <mat-option value="all">Todas</mat-option>
-    @for (round of availableRounds(); track round.id) {
-      <mat-option [value]="round">{{ round.name }}</mat-option>
+<div class="flex flex-row gap-2 items-center">
+  <mat-form-field class="w-full">
+    <mat-label>Jornada</mat-label>
+    <mat-select [value]="selectedRoundId()" (selectionChange)="onRoundFilterChange($event.value)">
+      <mat-option value="all">Todas</mat-option>
+      @for (round of availableRounds(); track round.id) {
+        <mat-option [value]="round.id">{{ round.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  @if(!!userStore.user()) {
+    @if(selectedRoundId() === 'all') {
+      <button mat-mini-fab aria-label="Crear jornada" matTooltip="Crear jornada" matTooltipPosition="above" type="button" (click)="onCreateRoundClick()">
+        <mat-icon>add</mat-icon>
+      </button>
+    } @else {
+      <button mat-mini-fab aria-label="Editar jornada" matTooltip="Editar jornada" matTooltipPosition="above" type="button" (click)="onEditRoundClick()">
+        <mat-icon>edit</mat-icon>
+      </button>
     }
-  </mat-select>
-</mat-form-field>
+  }
+</div>

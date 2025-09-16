@@ -32,7 +32,11 @@ import { Dispatcher } from '@ngrx/signals/events';
 import { DeleteDialogComponent } from '@shared/components/delete-dialog/delete-dialog.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
-import { Competition, CompetitionStatus } from '@shared/models/competition';
+import {
+  Competition,
+  CompetitionStatus,
+  DEFAULT_SPORT_NAME,
+} from '@shared/models/competition';
 import { imageUrlRegex } from '@shared/utils/utils';
 import { firstValueFrom } from 'rxjs';
 import { AdminCompetitionService } from '../services/admin-competition.service';
@@ -80,7 +84,6 @@ export class CompetitionFormComponent {
   });
 
   public form = new FormGroup({
-    sportName: new FormControl<string | null>(null, [Validators.required]),
     name: new FormControl<string | null>(null, [Validators.required]),
     description: new FormControl<string | null>(null),
     imageUrl: new FormControl<string | null>(null, [
@@ -93,10 +96,6 @@ export class CompetitionFormComponent {
     startDate: new FormControl<Date | null>(null),
     endDate: new FormControl<Date | null>(null),
   });
-
-  public get sportName(): FormControl {
-    return this.form.get('sportName') as FormControl;
-  }
 
   public get name(): FormControl {
     return this.form.get('name') as FormControl;
@@ -146,7 +145,6 @@ export class CompetitionFormComponent {
       this.competition.set(competition ?? null);
       if (competition) {
         this.form.patchValue({
-          sportName: competition.sportName,
           name: competition.name,
           description: competition.description,
           imageUrl: competition.imageUrl,
@@ -180,7 +178,7 @@ export class CompetitionFormComponent {
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
       data: {
         title: 'Eliminar competición',
-        text: 'Se eliminarán todas las fases, grupos, rondas y partidos asociados a esta competición. Recuerda que puedes desactivar la competición en su lugar. Esta acción no se puede deshacer.',
+        text: 'Se eliminarán todas las fases, grupos, jornadas y partidos asociados a esta competición. Recuerda que puedes desactivar la competición en su lugar. Esta acción no se puede deshacer.',
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -193,7 +191,7 @@ export class CompetitionFormComponent {
   private formToCompetition(form: FormGroup): Competition {
     return {
       id: this.isEditMode() ? (this.competition()?.id ?? 0) : 0,
-      sportName: form.get('sportName')!.value,
+      sportName: DEFAULT_SPORT_NAME,
       name: form.get('name')!.value,
       description: this.parseEmptyStringToNull(form.get('description')?.value),
       imageUrl: this.parseEmptyStringToNull(form.get('imageUrl')?.value),
@@ -272,5 +270,13 @@ export class CompetitionFormComponent {
     } finally {
       this.isLoadingResponse.set(false);
     }
+  }
+
+  public onAddPhase(): void {
+    const competitionId = this.competition()?.id;
+    if (!competitionId) {
+      return;
+    }
+    this.router.navigate(['/admin/competicion', competitionId, 'fase']);
   }
 }

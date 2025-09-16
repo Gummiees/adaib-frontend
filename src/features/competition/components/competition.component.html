@@ -12,6 +12,37 @@
           </div>
         }
         <h1 class="text-4xl font-bold text-center">{{ competitionStore.competition()!.name }}</h1>
+        @if(!!userStore.user()) {
+          <div class="flex flex-row gap-2 flex-wrap items-center justify-center w-full">
+            <button matButton="outlined" aria-label="Crear fase" type="button" (click)="onAddPhaseClicked()">
+              Crear fase
+            </button>
+            <button matButton="outlined" aria-label="Crear grupo" type="button" (click)="onAddGroupClicked()">
+              Crear grupo
+            </button>
+            <button matButton="outlined" aria-label="Crear jornada" type="button" (click)="onAddRoundClicked()">
+              Crear jornada
+            </button>
+            <button matButton="outlined" aria-label="Añadir partido" type="button" (click)="onAddMatchClicked()">
+                Añadir partido
+            </button>
+          </div>
+          @if(shouldShowAnyEditButtons()) {
+            <div class="flex flex-row gap-2 flex-wrap items-center justify-center w-full">
+              <button matButton="outlined" aria-label="Editar fase" type="button" (click)="onEditPhaseClicked()">
+                Editar fase
+              </button>
+              <button matButton="outlined" aria-label="Editar grupo" type="button" (click)="onEditGroupClicked()">
+                Editar grupo
+              </button>
+              @if(shouldShowEditRoundButton()) {
+                <button matButton="outlined" aria-label="Editar jornada" type="button" (click)="onEditRoundClicked()">
+                  Editar jornada
+                </button>
+              }
+            </div>
+          }
+        }
       </div>
       <mat-tab-group class="w-full" [selectedIndex]="currentTab()" (selectedTabChange)="onTabChange($event.index)" [animationDuration]="'350ms'">
         <mat-tab label="Resumen">

@@ -21,12 +21,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompetitionService } from '@features/competition/services/competition.service';
 import { competitionEvents } from '@features/competition/store/competition-events';
 import { CompetitionStore } from '@features/competition/store/competition-store';
 import { CompetitionsService } from '@features/competitions/services/competitions.service';
 import { CompetitionsStore } from '@features/competitions/store/competitions-store';
+import { UserStore } from '@features/user/store/user-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { DeleteDialogComponent } from '@shared/components/delete-dialog/delete-dialog.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
@@ -52,6 +54,7 @@ import { AdminRoundService } from '../services/admin-round.service';
     MatOptionModule,
     MatIconModule,
     MatDialogModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
@@ -64,6 +67,7 @@ import { AdminRoundService } from '../services/admin-round.service';
 })
 export class RoundFormComponent {
   public competitionStore = inject(CompetitionStore);
+  public userStore = inject(UserStore);
   private adminRoundService = inject(AdminRoundService);
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
@@ -132,8 +136,8 @@ export class RoundFormComponent {
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
       data: {
-        title: 'Eliminar ronda',
-        text: 'Se eliminarán todos los datos asociados a esta ronda. Esta acción no se puede deshacer.',
+        title: 'Eliminar jornada',
+        text: 'Se eliminarán todos los datos asociados a esta jornada. Esta acción no se puede deshacer.',
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -155,7 +159,7 @@ export class RoundFormComponent {
       this.navigateToCompetition();
     } catch (error) {
       console.error(error);
-      this.snackBar.open('Hubo un error al eliminar la ronda', 'Cerrar');
+      this.snackBar.open('Hubo un error al eliminar la jornada', 'Cerrar');
     } finally {
       this.isLoadingResponse.set(false);
     }
@@ -183,7 +187,7 @@ export class RoundFormComponent {
       this.navigateToCompetition();
     } catch (error) {
       console.error(error);
-      this.snackBar.open('Hubo un error al añadir la ronda', 'Cerrar');
+      this.snackBar.open('Hubo un error al añadir la jornada', 'Cerrar');
     } finally {
       this.isLoadingResponse.set(false);
     }
@@ -197,7 +201,7 @@ export class RoundFormComponent {
       this.navigateToCompetition();
     } catch (error) {
       console.error(error);
-      this.snackBar.open('Hubo un error al actualizar la ronda', 'Cerrar');
+      this.snackBar.open('Hubo un error al actualizar la jornada', 'Cerrar');
     } finally {
       this.isLoadingResponse.set(false);
     }
@@ -310,5 +314,16 @@ export class RoundFormComponent {
       return;
     }
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
+  }
+
+  public onAddMatch(): void {
+    const competition = this.competitionStore.competition();
+    const roundId = this.roundId();
+    if (!roundId || !competition) {
+      return;
+    }
+    this.router.navigate(['/admin/competicion', competition.id, 'partido'], {
+      queryParams: { round: roundId },
+    });
   }
 }

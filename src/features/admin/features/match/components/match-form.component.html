@@ -39,14 +39,14 @@
           }
         </mat-form-field>
         <mat-form-field class="w-full">
-          <mat-label>Ronda</mat-label>
+          <mat-label>Jornada</mat-label>
           <mat-select formControlName="round">
             @for(round of rounds(); track round.id) {
               <mat-option [value]="round">{{ round.name }}</mat-option>
             }
           </mat-select>
           @if(form.get('round')?.errors?.['required']) {
-            <mat-error>La ronda es requerida</mat-error>
+            <mat-error>La jornada es requerida</mat-error>
           }
         </mat-form-field>
         <mat-form-field class="w-full">

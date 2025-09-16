@@ -1,6 +1,11 @@
 <div class="flex flex-col pt-2 gap-2 rounded-md shadow-sm bg-white border border-gray-300">
   <div class="flex justify-center items-center gap-4">
     <h5 class="text-2xl font-bold text-center">Resultados</h5>
+    @if(!!userStore.user()) {
+      <button mat-mini-fab aria-label="Añadir partido" matTooltip="Añadir partido" matTooltipPosition="above" type="button" (click)="onAddMatchClicked()">
+        <mat-icon>add</mat-icon>
+      </button>
+    }
     <a matButton="tonal" (click)="onMoreInfoClicked()" (keydown.enter)="onMoreInfoClicked()" (keydown.space)="onMoreInfoClicked()" tabindex="0" ariaLabel="Más información de este grupo">Más info</a>
   </div>
   @if(filteredMatches().length > 0) {

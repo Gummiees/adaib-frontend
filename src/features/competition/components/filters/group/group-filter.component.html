@@ -1,9 +1,22 @@
-<mat-form-field class="w-full">
-  <mat-label>Grupo</mat-label>
-  <mat-select [value]="store.group()" (selectionChange)="onGroupFilterChange($event.value)">
-    <mat-option value="all">Todos</mat-option>
-    @for (group of availableGroups(); track group.id) {
-      <mat-option [value]="group">{{ group.name }}</mat-option>
+<div class="flex flex-row gap-2 items-center">
+  <mat-form-field class="w-full">
+    <mat-label>Grupo</mat-label>
+    <mat-select [value]="competitionStore.group()" (selectionChange)="onGroupFilterChange($event.value)">
+      <mat-option value="all">Todos</mat-option>
+      @for (group of availableGroups(); track group.id) {
+        <mat-option [value]="group">{{ group.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  @if(!!userStore.user()) {
+    @if(competitionStore.group() === 'all') {
+      <button mat-mini-fab aria-label="Crear grupo" matTooltip="Crear grupo" matTooltipPosition="above" type="button" (click)="onCreateGroupClick()">
+        <mat-icon>add</mat-icon>
+      </button>
+    } @else {
+      <button mat-mini-fab aria-label="Editar grupo" matTooltip="Editar grupo" matTooltipPosition="above" type="button" (click)="onEditGroupClick()">
+        <mat-icon>edit</mat-icon>
+      </button>
     }
-  </mat-select>
-</mat-form-field>
+  }
+</div>

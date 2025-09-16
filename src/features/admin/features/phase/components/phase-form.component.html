@@ -21,6 +21,10 @@
         }
       </mat-form-field>
       <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
+        @if(isEditMode()) {
+          <button matButton="outlined" type="button" (click)="onAddGroup()" matTooltip="Crear nuevo grupo asociado a esta fase" matTooltipPosition="below" [disabled]="isLoading()">Crear nuevo grupo</button>
+          <button matButton="outlined" type="button" (click)="onAddRound()" matTooltip="Crear nueva jornada asociada a esta fase" matTooltipPosition="below" [disabled]="isLoading()">Crear nueva jornada</button>
+        }
         <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
           {{ isEditMode() ? 'Guardar' : 'Crear' }}
         </button>

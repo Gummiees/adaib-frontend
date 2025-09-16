@@ -18,13 +18,6 @@
   } @else {
     <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-lg" (ngSubmit)="onSubmit()">
       <mat-form-field class="w-full">
-        <mat-label>Deporte</mat-label>
-        <input matInput type="text" formControlName="sportName" />
-        @if(sportName.errors?.['required']) {
-          <mat-error>El deporte es requerido</mat-error>
-        }
-      </mat-form-field>
-      <mat-form-field class="w-full">
         <mat-label>Nombre</mat-label>
         <input matInput type="text" formControlName="name" />
         @if(name.errors?.['required']) {
@@ -69,6 +62,9 @@
           <mat-label>Activo</mat-label>
           <mat-slide-toggle formControlName="active" />
         </div>
+        @if(isEditMode()) {
+          <button matButton="outlined" type="button" (click)="onAddPhase()" matTooltip="Crear nueva fase asociada a esta competición" matTooltipPosition="below" [disabled]="isLoading()">Crear nueva fase</button>
+        }
         <div class="flex flex-row gap-2 items-center">
           <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
             {{ submitButtonText }}

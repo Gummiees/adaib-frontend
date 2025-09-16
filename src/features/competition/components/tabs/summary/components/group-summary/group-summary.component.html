@@ -5,7 +5,7 @@
       <app-group-classification class="flex-1" [group]="group()!" (moreInfoClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-group-classification>
     }
     @if(hasMatches(group()!)) {
-      <app-group-results class="flex-1" [group]="group()!" (moreInfoClick)="onMoreInfoResultsClicked()" (teamClick)="onTeamClicked($event)"></app-group-results>
+      <app-group-results class="flex-1 max-w-200" [group]="group()!" (moreInfoClick)="onMoreInfoResultsClicked()" (teamClick)="onTeamClicked($event)"></app-group-results>
     }
   </div>
 } @else if(!!getGroup(store.group())) {
@@ -15,7 +15,7 @@
       <app-group-classification class="flex-1" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-group-classification>
     }
     @if(hasMatches(getGroup(store.group())!)) {
-      <app-group-results class="flex-1" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoResultsClicked()" (teamClick)="onTeamClicked($event)"></app-group-results>
+      <app-group-results class="flex-1 max-w-200" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoResultsClicked()" (teamClick)="onTeamClicked($event)"></app-group-results>
     }
   </div>
 } @else {
