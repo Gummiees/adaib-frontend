@@ -64,12 +64,14 @@ export class TeamFormComponent {
   });
 
   public form = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    shortName: new FormControl(''),
-    description: new FormControl(''),
-    location: new FormControl(''),
-    imageUrl: new FormControl('', [Validators.pattern(imageUrlRegex)]),
-    active: new FormControl(true, [Validators.required]),
+    name: new FormControl<string | null>(null, [Validators.required]),
+    shortName: new FormControl<string | null>(null),
+    description: new FormControl<string | null>(null),
+    location: new FormControl<string | null>(null),
+    imageUrl: new FormControl<string | null>(null, [
+      Validators.pattern(imageUrlRegex),
+    ]),
+    active: new FormControl<boolean>(false, [Validators.required]),
   });
 
   public get name(): FormControl {
@@ -155,7 +157,7 @@ export class TeamFormComponent {
   }
 
   private parseEmptyStringToNull(value: string | null): string | null {
-    return value === '' ? null : value;
+    return !!value && value.trim() === '' ? null : value;
   }
 
   private async handleAddTeam(team: Team): Promise<void> {

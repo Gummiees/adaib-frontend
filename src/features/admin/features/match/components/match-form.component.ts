@@ -27,8 +27,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdminTeamsService } from '@features/admin/features/teams/services/admin-teams.service';
-import { AdminTeamsStore } from '@features/admin/features/teams/store/admin-teams-store';
 import { CompetitionService } from '@features/competition/services/competition.service';
 import { competitionEvents } from '@features/competition/store/competition-events';
 import { CompetitionStore } from '@features/competition/store/competition-store';
@@ -76,17 +74,10 @@ import { timeValidator } from '../validators/time.validator';
     MatDialogModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    CompetitionService,
-    CompetitionStore,
-    AdminMatchService,
-    AdminTeamsService,
-    AdminTeamsStore,
-  ],
+  providers: [CompetitionService, CompetitionStore, AdminMatchService],
 })
 export class MatchFormComponent {
   public competitionStore = inject(CompetitionStore);
-  public teamsStore = inject(AdminTeamsStore);
   private adminMatchService = inject(AdminMatchService);
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
@@ -94,7 +85,10 @@ export class MatchFormComponent {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
-  public teams = computed<Team[]>(() => this.teamsStore.teams() ?? []);
+  public teams = computed<Team[]>(() => {
+    const group = this.selectedGroup();
+    return group?.teams ?? [];
+  });
   public phases = computed<Phase[]>(() => {
     return this.competitionStore.competition()?.phases ?? [];
   });
@@ -114,6 +108,7 @@ export class MatchFormComponent {
   });
 
   private selectedPhase = signal<Phase | null>(null);
+  private selectedGroup = signal<Group | null>(null);
   private matchId = signal<number | null>(null);
   public isEditMode = computed(() => !!this.matchId());
   public isMatchNotFound = signal(false);
@@ -130,27 +125,27 @@ export class MatchFormComponent {
   private shouldPopulateForm = computed(() => {
     const competition = this.competitionStore.competition();
     const matchId = this.matchId();
-    const teams = this.teamsStore.teams();
-    return !!(
-      competition &&
-      matchId &&
-      !this.competitionStore.isLoading() &&
-      teams
-    );
+    return !!(competition && matchId && !this.competitionStore.isLoading());
   });
 
   constructor() {
     this.form = new FormGroup({
       phase: new FormControl<Phase | null>(null, [Validators.required]),
-      group: new FormControl<Group | null>(null, [Validators.required]),
-      round: new FormControl<Round | null>(null, [Validators.required]),
-      homeTeam: new FormControl<Team | null>(null, [Validators.required]),
-      awayTeam: new FormControl<Team | null>(null),
+      group: new FormControl<Group | null>({ value: null, disabled: true }, [
+        Validators.required,
+      ]),
+      round: new FormControl<Round | null>({ value: null, disabled: true }, [
+        Validators.required,
+      ]),
+      homeTeam: new FormControl<Team | null>({ value: null, disabled: true }, [
+        Validators.required,
+      ]),
+      awayTeam: new FormControl<Team | null>({ value: null, disabled: true }),
       date: new FormControl<Date | null>(null),
       time: new FormControl<string | null>(null),
       homeTeamScore: new FormControl<number | null>(null),
       awayTeamScore: new FormControl<number | null>(null),
-      location: new FormControl(''),
+      location: new FormControl<string | null>(null),
       result: new FormControl<MatchResult | null>(null),
       status: new FormControl<MatchStatus>('NotStarted', [Validators.required]),
     });
@@ -168,6 +163,7 @@ export class MatchFormComponent {
     this.setupAwayTeamValidator();
     this.setupTimeValidator();
     this.setupQueryParameterPreSelection();
+    this.setupGroupChangeEffect();
   }
 
   public async onSubmit(): Promise<void> {
@@ -263,7 +259,7 @@ export class MatchFormComponent {
   }
 
   private parseEmptyStringToNull(value: string | null): string | null {
-    return value === '' ? null : value;
+    return !!value && value.trim() === '' ? null : value;
   }
 
   private async handleAddMatch(match: ApiMatch): Promise<void> {
@@ -313,9 +309,6 @@ export class MatchFormComponent {
   }
 
   private setupFormControlDisabling(): void {
-    this.form.get('group')?.disable();
-    this.form.get('round')?.disable();
-    this.form.get('time')?.disable();
     this.form
       .get('phase')
       ?.valueChanges.pipe(takeUntilDestroyed())
@@ -413,13 +406,9 @@ export class MatchFormComponent {
           foundPhase = phase;
           foundGroup = group;
           foundAwayTeam =
-            this.teamsStore
-              .teams()
-              ?.find((t: Team) => t.id === match.awayTeam?.id) ?? null;
+            group.teams?.find((t: Team) => t.id === match.awayTeam?.id) ?? null;
           foundHomeTeam =
-            this.teamsStore
-              .teams()
-              ?.find((t: Team) => t.id === match.homeTeam.id) ?? null;
+            group.teams?.find((t: Team) => t.id === match.homeTeam.id) ?? null;
           break;
         }
         if (foundMatch) break;
@@ -429,6 +418,7 @@ export class MatchFormComponent {
 
     if (foundMatch && foundPhase && foundGroup) {
       this.selectedPhase.set(foundPhase);
+      this.selectedGroup.set(foundGroup);
       this.form.patchValue({
         phase: foundPhase,
         group: foundGroup,
@@ -538,6 +528,7 @@ export class MatchFormComponent {
     const group = phase.groups.find((g: Group) => g.id === parsedGrupoId);
     if (group) {
       this.form.patchValue({ group });
+      this.selectedGroup.set(group);
     } else {
       console.warn('Group with ID', parsedGrupoId, 'not found in phase groups');
     }
@@ -579,5 +570,33 @@ export class MatchFormComponent {
       return;
     }
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
+  }
+
+  private setupGroupChangeEffect(): void {
+    // Subscribe to group form control changes
+    this.form
+      .get('group')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((group: Group | null) => {
+        // Update the selectedGroup signal
+        this.selectedGroup.set(group);
+
+        const homeTeamControl = this.form.get('homeTeam');
+        const awayTeamControl = this.form.get('awayTeam');
+
+        if (!group) {
+          // Disable team selects and clear selections when no group is selected
+          homeTeamControl?.disable();
+          awayTeamControl?.disable();
+          this.form.patchValue({
+            homeTeam: null,
+            awayTeam: null,
+          });
+        } else {
+          // Enable team selects when a group is selected
+          homeTeamControl?.enable();
+          awayTeamControl?.enable();
+        }
+      });
   }
 }

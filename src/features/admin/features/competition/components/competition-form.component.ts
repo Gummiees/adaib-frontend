@@ -72,11 +72,13 @@ export class CompetitionFormComponent {
   });
 
   public form = new FormGroup({
-    sportName: new FormControl('', [Validators.required]),
-    name: new FormControl('', [Validators.required]),
-    description: new FormControl(''),
-    imageUrl: new FormControl('', [Validators.pattern(imageUrlRegex)]),
-    active: new FormControl(true, [Validators.required]),
+    sportName: new FormControl<string | null>(null, [Validators.required]),
+    name: new FormControl<string | null>(null, [Validators.required]),
+    description: new FormControl<string | null>(null),
+    imageUrl: new FormControl<string | null>(null, [
+      Validators.pattern(imageUrlRegex),
+    ]),
+    active: new FormControl<boolean>(false, [Validators.required]),
     status: new FormControl<CompetitionStatus>('NotStarted', [
       Validators.required,
     ]),
@@ -177,7 +179,7 @@ export class CompetitionFormComponent {
   }
 
   private parseEmptyStringToNull(value: string | null): string | null {
-    return value === '' ? null : value;
+    return !!value && value.trim() === '' ? null : value;
   }
 
   private async handleAddCompetition(competition: Competition): Promise<void> {

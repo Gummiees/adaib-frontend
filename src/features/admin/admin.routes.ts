@@ -125,13 +125,7 @@ export const adminRoutes: Routes = [
       import(
         '@features/admin/features/match/components/match-form.component'
       ).then((m) => m.MatchFormComponent),
-    providers: [
-      CompetitionsService,
-      CompetitionsStore,
-      AdminMatchService,
-      AdminTeamsService,
-      AdminTeamsStore,
-    ],
+    providers: [CompetitionsService, CompetitionsStore, AdminMatchService],
   },
   {
     path: 'competicion/:id/partido/:matchId',
@@ -139,13 +133,7 @@ export const adminRoutes: Routes = [
       import(
         '@features/admin/features/match/components/match-form.component'
       ).then((m) => m.MatchFormComponent),
-    providers: [
-      CompetitionsService,
-      CompetitionsStore,
-      AdminMatchService,
-      AdminTeamsService,
-      AdminTeamsStore,
-    ],
+    providers: [CompetitionsService, CompetitionsStore, AdminMatchService],
   },
   {
     path: '',

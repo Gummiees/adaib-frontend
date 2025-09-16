@@ -1,6 +1,7 @@
 import { Classification, ClassificationApi } from './classification';
 import { ApiMatch, DetailedMatch } from './match';
 import { Round } from './round';
+import { Team } from './team';
 
 export interface ApiGroup {
   id: number;
@@ -16,7 +17,7 @@ export interface Group {
   name: string;
   actualRound?: Round | null;
   matches: DetailedMatch[];
-  teamIds: number[];
+  teams: Team[];
   classification: Classification[];
 }
 

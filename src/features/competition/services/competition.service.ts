@@ -78,6 +78,7 @@ export class CompetitionService {
         phaseName: phaseName,
         groupName: group.name,
       }),
+      teams: teams.filter((team) => group.teamIds.includes(team.id)),
     }));
   }
 

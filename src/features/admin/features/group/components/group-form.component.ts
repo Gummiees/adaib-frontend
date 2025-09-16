@@ -323,7 +323,7 @@ export class GroupFormComponent {
         phase: foundPhase,
         name: foundGroup.name,
         actualRound: foundGroup.actualRound,
-        teamIds: foundGroup.teamIds,
+        teamIds: foundGroup.teams.map((team) => team.id),
       });
     }
   }
