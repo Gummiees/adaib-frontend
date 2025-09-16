@@ -30,7 +30,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AdminTeamsService } from '@features/admin/features/teams/services/admin-teams.service';
 import { AdminTeamsStore } from '@features/admin/features/teams/store/admin-teams-store';
 import { CompetitionService } from '@features/competition/services/competition.service';
-import { adminMatchesEvent } from '@features/competition/store/admin-matches-events';
 import { competitionEvents } from '@features/competition/store/competition-events';
 import { CompetitionStore } from '@features/competition/store/competition-store';
 import { Dispatcher } from '@ngrx/signals/events';
@@ -168,6 +167,7 @@ export class MatchFormComponent {
     this.setupFormPopulation();
     this.setupAwayTeamValidator();
     this.setupTimeValidator();
+    this.setupQueryParameterPreSelection();
   }
 
   public async onSubmit(): Promise<void> {
@@ -177,17 +177,11 @@ export class MatchFormComponent {
       return;
     }
     if (this.form.valid && !this.isLoading()) {
-      const match = this.formToMatch(this.form);
-      const phase = this.selectedPhase();
-      const group = this.form.get('group')?.value;
-      if (!phase || !group) {
-        return;
-      }
-
+      const match = this.formToApiMatch(this.form);
       if (this.isEditMode()) {
-        await this.handleUpdateMatch(match, phase, group);
+        await this.handleUpdateMatch(match);
       } else {
-        await this.handleAddMatch(match, phase, group);
+        await this.handleAddMatch(match);
       }
     } else {
       this.form.markAllAsTouched();
@@ -217,15 +211,8 @@ export class MatchFormComponent {
     this.isLoadingResponse.set(true);
     try {
       await firstValueFrom(this.adminMatchService.deleteMatch(matchId));
-      this.dispatcher.dispatch(adminMatchesEvent.deleteMatch(matchId));
-      this.router.navigate(
-        ['/competiciones', this.competitionStore.competition()?.id],
-        {
-          queryParams: {
-            tab: 'resultados',
-          },
-        },
-      );
+      this.refreshCompetition();
+      this.navigateToCompetition();
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al eliminar el partido', 'Cerrar');
@@ -240,9 +227,16 @@ export class MatchFormComponent {
     return status === 'Rest' || !!awayTeam;
   }
 
-  private formToMatch(form: FormGroup): DetailedMatch {
-    const date = form.get('date')?.value;
-    const time = form.get('time')?.value;
+  private refreshCompetition(): void {
+    const competitionId = this.competitionStore.competition()?.id;
+    if (competitionId) {
+      this.dispatcher.dispatch(competitionEvents.getCompetition(competitionId));
+    }
+  }
+
+  private formToApiMatch(form: FormGroup): ApiMatch {
+    const date = form.get('date')?.value as Date | null;
+    const time = form.get('time')?.value as string | null;
     let combinedDate = date;
 
     if (date && time) {
@@ -251,17 +245,15 @@ export class MatchFormComponent {
 
     return {
       id: this.isEditMode() ? this.matchId()! : 0,
-      round: form.get('round')?.value,
-      homeTeam: form.get('homeTeam')?.value,
-      awayTeam: form.get('awayTeam')?.value,
+      roundId: form.get('round')?.value?.id,
+      homeTeamId: form.get('homeTeam')?.value?.id,
+      awayTeamId: form.get('awayTeam')?.value?.id,
       status: form.get('status')?.value ?? 'NotStarted',
-      date: combinedDate,
+      date: combinedDate ? combinedDate.toISOString() : null,
       homeTeamScore: form.get('homeTeamScore')?.value,
       awayTeamScore: form.get('awayTeamScore')?.value,
       location: this.parseEmptyStringToNull(form.get('location')?.value),
       result: form.get('result')?.value,
-      phaseName: form.get('phase')?.value?.name ?? '',
-      groupName: form.get('group')?.value?.name ?? '',
     };
   }
 
@@ -274,35 +266,12 @@ export class MatchFormComponent {
     return value === '' ? null : value;
   }
 
-  private async handleAddMatch(
-    match: DetailedMatch,
-    phase: Phase,
-    group: Group,
-  ): Promise<void> {
+  private async handleAddMatch(match: ApiMatch): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      const apiMatch = this.matchToApiMatch(match);
-      const matchId = await firstValueFrom(
-        this.adminMatchService.addMatch(apiMatch),
-      );
-      this.dispatcher.dispatch(
-        adminMatchesEvent.addMatch({
-          match: {
-            ...match,
-            id: matchId,
-          },
-          phase,
-          group,
-        }),
-      );
-      this.router.navigate(
-        ['/competiciones', this.competitionStore.competition()?.id],
-        {
-          queryParams: {
-            tab: 'resultados',
-          },
-        },
-      );
+      await firstValueFrom(this.adminMatchService.addMatch(match));
+      this.refreshCompetition();
+      this.navigateToCompetition();
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir la competición', 'Cerrar');
@@ -311,57 +280,18 @@ export class MatchFormComponent {
     }
   }
 
-  private async handleUpdateMatch(
-    match: DetailedMatch,
-    phase: Phase,
-    group: Group,
-  ): Promise<void> {
+  private async handleUpdateMatch(match: ApiMatch): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      const apiMatch = this.matchToApiMatch({
-        ...match,
-        id: this.matchId()!,
-      });
-      await firstValueFrom(this.adminMatchService.updateMatch(apiMatch));
-      this.dispatcher.dispatch(
-        adminMatchesEvent.updateMatch({
-          match: {
-            ...match,
-            id: this.matchId()!,
-          },
-          phase,
-          group,
-        }),
-      );
-      this.router.navigate(
-        ['/competiciones', this.competitionStore.competition()?.id],
-        {
-          queryParams: {
-            tab: 'resultados',
-          },
-        },
-      );
+      await firstValueFrom(this.adminMatchService.updateMatch(match));
+      this.refreshCompetition();
+      this.navigateToCompetition();
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al actualizar el partido', 'Cerrar');
     } finally {
       this.isLoadingResponse.set(false);
     }
-  }
-
-  private matchToApiMatch(match: Match): ApiMatch {
-    return {
-      id: match.id,
-      homeTeamId: match.homeTeam.id,
-      awayTeamId: match.awayTeam?.id,
-      roundId: match.round.id,
-      date: match.date ? new Date(match.date) : null,
-      homeTeamScore: match.homeTeamScore,
-      awayTeamScore: match.awayTeamScore,
-      location: match.location,
-      result: match.result,
-      status: match.status,
-    };
   }
 
   private setupAwayTeamValidator(): void {
@@ -513,6 +443,126 @@ export class MatchFormComponent {
         result: foundMatch.result,
         status: foundMatch.status,
       });
+    }
+  }
+
+  private setupQueryParameterPreSelection(): void {
+    // Watch for competition changes and pre-select from query params
+    effect(() => {
+      const competition = this.competitionStore.competition();
+      if (competition && !this.isEditMode()) {
+        this.preSelectFromQueryParams(competition);
+      }
+    });
+  }
+
+  private navigateToCompetition(): void {
+    const competitionId = this.competitionStore.competition()?.id;
+    if (competitionId) {
+      this.router.navigate(['/competiciones', competitionId], {
+        queryParams: { tab: 'resultados' },
+      });
+    }
+  }
+
+  private preSelectFromQueryParams(competition: { phases: Phase[] }): void {
+    const queryParams = this.activatedRoute.snapshot.queryParams;
+    const faseId = queryParams['fase'];
+    const grupoId = queryParams['grupo'];
+    const jornadaId = queryParams['jornada'];
+
+    // Phase is required to populate groups and rounds
+    if (!faseId) {
+      this.handleMissingPhaseQueryParam(grupoId, jornadaId);
+      return;
+    }
+
+    const phase = this.findAndSelectPhase(competition, faseId);
+    if (!phase) {
+      return;
+    }
+
+    // Pre-select group and round if provided
+    this.preSelectGroup(phase, grupoId);
+    this.preSelectRound(phase, jornadaId);
+  }
+
+  private handleMissingPhaseQueryParam(
+    grupoId: string,
+    jornadaId: string,
+  ): void {
+    if (grupoId || jornadaId) {
+      console.warn(
+        'Ignoring grupo/jornada query params because fase is required but not provided',
+      );
+    }
+  }
+
+  private findAndSelectPhase(
+    competition: { phases: Phase[] },
+    faseId: string,
+  ): Phase | null {
+    const parsedFaseId = Number(faseId);
+    if (isNaN(parsedFaseId)) {
+      console.warn('Invalid fase ID in query params:', faseId);
+      return null;
+    }
+
+    const phase = competition.phases.find((p: Phase) => p.id === parsedFaseId);
+    if (!phase) {
+      console.warn(
+        'Phase with ID',
+        parsedFaseId,
+        'not found in competition phases',
+      );
+      return null;
+    }
+
+    // Pre-select phase
+    this.form.patchValue({ phase });
+    this.selectedPhase.set(phase);
+    return phase;
+  }
+
+  private preSelectGroup(phase: Phase, grupoId: string | undefined): void {
+    if (!grupoId) {
+      return;
+    }
+
+    const parsedGrupoId = Number(grupoId);
+    if (isNaN(parsedGrupoId)) {
+      console.warn('Invalid grupo ID in query params:', grupoId);
+      return;
+    }
+
+    const group = phase.groups.find((g: Group) => g.id === parsedGrupoId);
+    if (group) {
+      this.form.patchValue({ group });
+    } else {
+      console.warn('Group with ID', parsedGrupoId, 'not found in phase groups');
+    }
+  }
+
+  private preSelectRound(phase: Phase, jornadaId: string | undefined): void {
+    if (!jornadaId) {
+      return;
+    }
+
+    const parsedJornadaId = Number(jornadaId);
+    if (isNaN(parsedJornadaId)) {
+      console.warn('Invalid jornada ID in query params:', jornadaId);
+      return;
+    }
+
+    const round = phase.rounds.find((r: Round) => r.id === parsedJornadaId);
+    if (round) {
+      this.form.patchValue({ round });
+    } else {
+      console.warn(
+        'Round with ID',
+        parsedJornadaId,
+        'not found in phase rounds',
+      );
     }
   }
 

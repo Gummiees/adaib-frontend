@@ -15,7 +15,7 @@ export interface ApiMatch {
   homeTeamId: number;
   awayTeamId?: number;
   roundId?: number;
-  date?: Date | null;
+  date?: string | null;
   homeTeamScore?: number | null;
   awayTeamScore?: number | null;
   location?: string | null;

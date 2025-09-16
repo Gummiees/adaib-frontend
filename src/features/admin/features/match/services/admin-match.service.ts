@@ -27,9 +27,6 @@ export class AdminMatchService {
   }
 
   private matchToJson(match: ApiMatch): string {
-    return JSON.stringify({
-      ...match,
-      date: match.date ? match.date.toISOString() : null,
-    });
+    return JSON.stringify(match);
   }
 }

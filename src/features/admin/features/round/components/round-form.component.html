@@ -1,0 +1,41 @@
+<div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
+  <div class="flex flex-row gap-2 items-center justify-center gap-4">
+    <h1 class="text-4xl font-bold">{{ isEditMode() ? 'Editar ronda' : 'Crear ronda' }}</h1>
+    @if(isEditMode()) {
+      <button mat-mini-fab aria-label="Eliminar ronda" matTooltip="Eliminar ronda" matTooltipPosition="right" type="button" (click)="onDelete()" [disabled]="isLoading()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    }
+  </div>
+  @if(competitionStore.error()) {
+    <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al cargar la competición. Inténtelo más tarde." [hideButton]="true"></app-not-found>
+  } @else if(isLoading()) {
+    <app-full-spinner></app-full-spinner>
+  } @else {
+    <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-lg" (ngSubmit)="onSubmit()">
+      <mat-form-field class="w-full">
+        <mat-label>Fase</mat-label>
+        <mat-select formControlName="phase">
+          @for(phase of phases(); track phase.id) {
+            <mat-option [value]="phase">{{ phase.name }}</mat-option>
+          }
+        </mat-select>
+        @if(form.get('phase')?.errors?.['required']) {
+          <mat-error>La fase es requerida</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Nombre de la ronda</mat-label>
+        <input matInput type="text" formControlName="name" />
+        @if(form.get('name')?.errors?.['required']) {
+          <mat-error>El nombre es requerido</mat-error>
+        }
+      </mat-form-field>
+      <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
+        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
+          {{ isEditMode() ? 'Guardar' : 'Crear' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

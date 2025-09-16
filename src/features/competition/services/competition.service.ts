@@ -14,6 +14,7 @@ import { ApiMatch, DetailedMatch } from '@shared/models/match';
 import { ApiPhase, Phase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
 import { Team } from '@shared/models/team';
+import { parseISO } from 'date-fns';
 import { map, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -32,8 +33,8 @@ export class CompetitionService {
   ): DetailedCompetition {
     return {
       ...competition,
-      startDate: competition.startDate ? new Date(competition.startDate) : null,
-      endDate: competition.endDate ? new Date(competition.endDate) : null,
+      startDate: competition.startDate ? parseISO(competition.startDate) : null,
+      endDate: competition.endDate ? parseISO(competition.endDate) : null,
       phases: this.parsePhases(competition.phases, competition.teams),
     };
   }
@@ -125,7 +126,7 @@ export class CompetitionService {
         round: round,
         phaseName: phaseName,
         groupName: groupName,
-        date: match.date ? new Date(match.date) : null,
+        date: match.date ? parseISO(match.date) : null,
       };
     });
   }

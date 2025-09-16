@@ -19,3 +19,9 @@ export interface Group {
   teamIds: number[];
   classification: Classification[];
 }
+
+export interface ApiFormGroup {
+  id: number;
+  name: string;
+  teamIds: number[];
+}

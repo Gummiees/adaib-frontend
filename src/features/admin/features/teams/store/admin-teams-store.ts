@@ -28,23 +28,12 @@ const initialState: AdminTeamsState = {
 export const AdminTeamsStore = signalStore(
   withState(initialState),
   withReducer(
-    on(adminTeamsEvent.addTeam, ({ payload: team }, state) => {
-      console.log('teams', state.teams);
-      const newTeams = [...(state.teams ?? []), team];
-      console.log('newTeams', newTeams);
-      return {
-        teams: newTeams,
-      };
-    }),
+    on(adminTeamsEvent.addTeam, ({ payload: team }, state) => ({
+      teams: [...(state.teams ?? []), team],
+    })),
     on(adminTeamsEvent.updateTeam, ({ payload: team }, state) => {
-      console.log('teams', state.teams);
-      const updatedTeams = state.teams?.map((t) =>
-        t.id === team.id ? team : t,
-      );
-      console.log('updatedTeams', updatedTeams);
-      return {
-        teams: updatedTeams,
-      };
+      const teams = state.teams?.map((t) => (t.id === team.id ? team : t));
+      return { teams };
     }),
   ),
   withMethods((store) => ({
