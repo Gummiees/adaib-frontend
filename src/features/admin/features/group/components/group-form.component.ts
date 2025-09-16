@@ -90,7 +90,8 @@ export class GroupFormComponent {
 
   private selectedPhase = signal<Phase | null>(null);
   private groupId = signal<number | null>(null);
-  public isEditMode = computed(() => !!this.groupId());
+  private group = signal<Group | null>(null);
+  public isEditMode = computed(() => !!this.groupId() || !!this.group()?.id);
 
   private isLoadingResponse = signal(false);
 
@@ -104,7 +105,12 @@ export class GroupFormComponent {
   private shouldPopulateForm = computed(() => {
     const competition = this.competitionStore.competition();
     const groupId = this.groupId();
-    return !!(competition && groupId && !this.competitionStore.isLoading());
+    return !!(
+      competition &&
+      groupId &&
+      !this.competitionStore.isLoading() &&
+      !this.group()
+    );
   });
 
   constructor() {
@@ -193,9 +199,31 @@ export class GroupFormComponent {
   private async handleAddGroup(group: ApiFormGroup): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminGroupService.addGroup(group));
+      const groupId = await firstValueFrom(
+        this.adminGroupService.addGroup(group),
+      );
+      const newGroup: Group = {
+        id: groupId,
+        name: group.name,
+        teams: [],
+        matches: [],
+        classification: [],
+      };
+      this.group.set(newGroup);
+      this.groupId.set(groupId);
       this.refreshCompetition();
-      this.navigateToCompetition();
+      this.snackBar.open('Grupo añadido correctamente', 'Cerrar', {
+        duration: 3000,
+      });
+      // Update the browser URL without navigation to reflect edit mode
+      const competitionId = this.competitionStore.competition()?.id;
+      if (competitionId) {
+        window.history.replaceState(
+          {},
+          '',
+          `/admin/competicion/${competitionId}/grupo/${groupId}`,
+        );
+      }
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir el grupo', 'Cerrar');
@@ -208,8 +236,18 @@ export class GroupFormComponent {
     this.isLoadingResponse.set(true);
     try {
       await firstValueFrom(this.adminGroupService.updateGroup(group));
+      const updatedGroup: Group = {
+        id: group.id,
+        name: group.name,
+        teams: this.group()?.teams || [],
+        matches: this.group()?.matches || [],
+        classification: this.group()?.classification || [],
+      };
+      this.group.set(updatedGroup);
       this.refreshCompetition();
-      this.navigateToCompetition();
+      this.snackBar.open('Grupo actualizado correctamente', 'Cerrar', {
+        duration: 3000,
+      });
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al actualizar el grupo', 'Cerrar');
@@ -297,6 +335,7 @@ export class GroupFormComponent {
     }
 
     if (foundGroup && foundPhase) {
+      this.group.set(foundGroup);
       this.selectedPhase.set(foundPhase);
       this.form.patchValue({
         phase: foundPhase,

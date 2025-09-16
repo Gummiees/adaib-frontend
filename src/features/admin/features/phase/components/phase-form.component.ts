@@ -69,7 +69,8 @@ export class PhaseFormComponent {
   private activatedRoute = inject(ActivatedRoute);
 
   private phaseId = signal<number | null>(null);
-  public isEditMode = computed(() => !!this.phaseId());
+  private phase = signal<Phase | null>(null);
+  public isEditMode = computed(() => !!this.phaseId() || !!this.phase()?.id);
 
   private isLoadingResponse = signal(false);
 
@@ -83,7 +84,12 @@ export class PhaseFormComponent {
   private shouldPopulateForm = computed(() => {
     const competition = this.competitionStore.competition();
     const phaseId = this.phaseId();
-    return !!(competition && phaseId && !this.competitionStore.isLoading());
+    return !!(
+      competition &&
+      phaseId &&
+      !this.competitionStore.isLoading() &&
+      !this.phase()
+    );
   });
 
   constructor() {
@@ -166,9 +172,25 @@ export class PhaseFormComponent {
     this.isLoadingResponse.set(true);
     try {
       const apiPhase = this.phaseToApiPhase(phase);
-      await firstValueFrom(this.adminPhaseService.addPhase(apiPhase));
+      const phaseId = await firstValueFrom(
+        this.adminPhaseService.addPhase(apiPhase),
+      );
+      const newPhase = { ...phase, id: phaseId };
+      this.phase.set(newPhase);
+      this.phaseId.set(phaseId);
       this.refreshCompetition();
-      this.navigateToCompetition();
+      this.snackBar.open('Fase añadida correctamente', 'Cerrar', {
+        duration: 3000,
+      });
+      // Update the browser URL without navigation to reflect edit mode
+      const competitionId = this.competitionStore.competition()?.id;
+      if (competitionId) {
+        window.history.replaceState(
+          {},
+          '',
+          `/admin/competicion/${competitionId}/fase/${phaseId}`,
+        );
+      }
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir la fase', 'Cerrar');
@@ -180,13 +202,14 @@ export class PhaseFormComponent {
   private async handleUpdatePhase(phase: Phase): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      const apiPhase = this.phaseToApiPhase({
-        ...phase,
-        id: this.phaseId()!,
-      });
+      const updatedPhase = { ...phase, id: this.phaseId()! };
+      const apiPhase = this.phaseToApiPhase(updatedPhase);
       await firstValueFrom(this.adminPhaseService.updatePhase(apiPhase));
+      this.phase.set(updatedPhase);
       this.refreshCompetition();
-      this.navigateToCompetition();
+      this.snackBar.open('Fase actualizada correctamente', 'Cerrar', {
+        duration: 3000,
+      });
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al actualizar la fase', 'Cerrar');
@@ -237,6 +260,7 @@ export class PhaseFormComponent {
     const foundPhase = competition.phases.find((p: Phase) => p.id === phaseId);
 
     if (foundPhase) {
+      this.phase.set(foundPhase);
       this.form.patchValue({
         name: foundPhase.name,
       });

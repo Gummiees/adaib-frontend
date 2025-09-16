@@ -77,10 +77,13 @@ export class CompetitionFormComponent {
   private competition = signal<Competition | null>(null);
   private isLoadingResponse = signal(false);
 
-  // Determine if we're in edit mode based on route params
+  // Determine if we're in edit mode based on route params or if we have a competition with an ID
   public isEditMode = computed(() => {
     const competitionId = this.activatedRoute.snapshot.params['id'];
-    return competitionId && !isNaN(Number(competitionId));
+    const hasCompetitionWithId = this.competition()?.id;
+    return (
+      (competitionId && !isNaN(Number(competitionId))) || !!hasCompetitionWithId
+    );
   });
 
   public form = new FormGroup({
@@ -124,7 +127,7 @@ export class CompetitionFormComponent {
       } else {
         this.form.enable();
       }
-      if (this.isEditMode()) {
+      if (this.isEditMode() && !this.competition()) {
         this.searchCompetition();
       }
     });
@@ -212,13 +215,20 @@ export class CompetitionFormComponent {
       const competitionId = await firstValueFrom(
         this.adminCompetitionService.addCompetition(competition),
       );
+      const newCompetition = { ...competition, id: competitionId };
       this.dispatcher.dispatch(
-        adminCompetitionsEvent.addCompetition({
-          ...competition,
-          id: competitionId,
-        }),
+        adminCompetitionsEvent.addCompetition(newCompetition),
       );
-      this.router.navigate(['/competiciones']);
+      this.competition.set(newCompetition);
+      this.snackBar.open('Competición añadida correctamente', 'Cerrar', {
+        duration: 3000,
+      });
+      // Update the browser URL without navigation to reflect edit mode
+      window.history.replaceState(
+        {},
+        '',
+        `/admin/competicion/${competitionId}`,
+      );
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir la competición', 'Cerrar');
@@ -238,7 +248,10 @@ export class CompetitionFormComponent {
       this.dispatcher.dispatch(
         adminCompetitionsEvent.updateCompetition(competition),
       );
-      this.router.navigate(['/competiciones']);
+      this.competition.set(competition);
+      this.snackBar.open('Competición actualizada correctamente', 'Cerrar', {
+        duration: 3000,
+      });
     } catch (error) {
       console.error(error);
       this.snackBar.open(

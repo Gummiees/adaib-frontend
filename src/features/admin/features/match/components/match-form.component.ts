@@ -110,7 +110,8 @@ export class MatchFormComponent {
   private selectedPhase = signal<Phase | null>(null);
   private selectedGroup = signal<Group | null>(null);
   private matchId = signal<number | null>(null);
-  public isEditMode = computed(() => !!this.matchId());
+  private match = signal<DetailedMatch | null>(null);
+  public isEditMode = computed(() => !!this.matchId() || !!this.match()?.id);
   public isMatchNotFound = signal(false);
 
   private isLoadingResponse = signal(false);
@@ -125,7 +126,12 @@ export class MatchFormComponent {
   private shouldPopulateForm = computed(() => {
     const competition = this.competitionStore.competition();
     const matchId = this.matchId();
-    return !!(competition && matchId && !this.competitionStore.isLoading());
+    return !!(
+      competition &&
+      matchId &&
+      !this.competitionStore.isLoading() &&
+      !this.match()
+    );
   });
 
   constructor() {
@@ -268,12 +274,41 @@ export class MatchFormComponent {
   private async handleAddMatch(match: ApiMatch): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminMatchService.addMatch(match));
+      const matchId = await firstValueFrom(
+        this.adminMatchService.addMatch(match),
+      );
+      const newMatch: DetailedMatch = {
+        id: matchId,
+        homeTeam: this.form.get('homeTeam')?.value,
+        awayTeam: this.form.get('awayTeam')?.value,
+        date: match.date ? new Date(match.date) : null,
+        homeTeamScore: match.homeTeamScore,
+        awayTeamScore: match.awayTeamScore,
+        location: match.location,
+        result: match.result,
+        status: match.status,
+        round: this.form.get('round')?.value,
+        phaseName: this.selectedPhase()?.name || '',
+        groupName: this.selectedGroup()?.name || '',
+      };
+      this.match.set(newMatch);
+      this.matchId.set(matchId);
       this.refreshCompetition();
-      this.navigateToCompetition();
+      this.snackBar.open('Partido añadido correctamente', 'Cerrar', {
+        duration: 3000,
+      });
+      // Update the browser URL without navigation to reflect edit mode
+      const competitionId = this.competitionStore.competition()?.id;
+      if (competitionId) {
+        window.history.replaceState(
+          {},
+          '',
+          `/admin/competicion/${competitionId}/partido/${matchId}`,
+        );
+      }
     } catch (error) {
       console.error(error);
-      this.snackBar.open('Hubo un error al añadir la competición', 'Cerrar');
+      this.snackBar.open('Hubo un error al añadir el partido', 'Cerrar');
     } finally {
       this.isLoadingResponse.set(false);
     }
@@ -283,8 +318,25 @@ export class MatchFormComponent {
     this.isLoadingResponse.set(true);
     try {
       await firstValueFrom(this.adminMatchService.updateMatch(match));
+      const updatedMatch: DetailedMatch = {
+        id: match.id,
+        homeTeam: this.form.get('homeTeam')?.value,
+        awayTeam: this.form.get('awayTeam')?.value,
+        date: match.date ? new Date(match.date) : null,
+        homeTeamScore: match.homeTeamScore,
+        awayTeamScore: match.awayTeamScore,
+        location: match.location,
+        result: match.result,
+        status: match.status,
+        round: this.form.get('round')?.value,
+        phaseName: this.selectedPhase()?.name || '',
+        groupName: this.selectedGroup()?.name || '',
+      };
+      this.match.set(updatedMatch);
       this.refreshCompetition();
-      this.navigateToCompetition();
+      this.snackBar.open('Partido actualizado correctamente', 'Cerrar', {
+        duration: 3000,
+      });
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al actualizar el partido', 'Cerrar');
@@ -420,6 +472,7 @@ export class MatchFormComponent {
     }
 
     if (foundMatch && foundPhase && foundGroup) {
+      this.match.set(foundMatch);
       this.selectedPhase.set(foundPhase);
       this.selectedGroup.set(foundGroup);
       this.form.patchValue({

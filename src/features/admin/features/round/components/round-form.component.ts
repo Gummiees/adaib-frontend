@@ -81,7 +81,8 @@ export class RoundFormComponent {
 
   private selectedPhase = signal<Phase | null>(null);
   private roundId = signal<number | null>(null);
-  public isEditMode = computed(() => !!this.roundId());
+  private round = signal<Round | null>(null);
+  public isEditMode = computed(() => !!this.roundId() || !!this.round()?.id);
 
   private isLoadingResponse = signal(false);
 
@@ -95,7 +96,12 @@ export class RoundFormComponent {
   private shouldPopulateForm = computed(() => {
     const competition = this.competitionStore.competition();
     const roundId = this.roundId();
-    return !!(competition && roundId && !this.competitionStore.isLoading());
+    return !!(
+      competition &&
+      roundId &&
+      !this.competitionStore.isLoading() &&
+      !this.round()
+    );
   });
 
   constructor() {
@@ -182,9 +188,25 @@ export class RoundFormComponent {
   private async handleAddRound(round: Round, _phase: Phase): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminRoundService.addRound(round));
+      const roundId = await firstValueFrom(
+        this.adminRoundService.addRound(round),
+      );
+      const newRound = { ...round, id: roundId };
+      this.round.set(newRound);
+      this.roundId.set(roundId);
       this.refreshCompetition();
-      this.navigateToCompetition();
+      this.snackBar.open('Jornada añadida correctamente', 'Cerrar', {
+        duration: 3000,
+      });
+      // Update the browser URL without navigation to reflect edit mode
+      const competitionId = this.competitionStore.competition()?.id;
+      if (competitionId) {
+        window.history.replaceState(
+          {},
+          '',
+          `/admin/competicion/${competitionId}/jornada/${roundId}`,
+        );
+      }
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir la jornada', 'Cerrar');
@@ -196,9 +218,13 @@ export class RoundFormComponent {
   private async handleUpdateRound(round: Round, _phase: Phase): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminRoundService.updateRound(round));
+      const updatedRound = { ...round, id: this.roundId()! };
+      await firstValueFrom(this.adminRoundService.updateRound(updatedRound));
+      this.round.set(updatedRound);
       this.refreshCompetition();
-      this.navigateToCompetition();
+      this.snackBar.open('Jornada actualizada correctamente', 'Cerrar', {
+        duration: 3000,
+      });
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al actualizar la jornada', 'Cerrar');
@@ -286,6 +312,7 @@ export class RoundFormComponent {
     }
 
     if (foundRound && foundPhase) {
+      this.round.set(foundRound);
       this.selectedPhase.set(foundPhase);
       this.form.patchValue({
         phase: foundPhase,

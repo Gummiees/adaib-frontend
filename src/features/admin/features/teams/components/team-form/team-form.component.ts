@@ -65,10 +65,11 @@ export class TeamFormComponent {
   private team = signal<Team | null>(null);
   private isLoadingResponse = signal(false);
 
-  // Determine if we're in edit mode based on route params
+  // Determine if we're in edit mode based on route params or if we have a team with an ID
   public isEditMode = computed(() => {
     const teamId = this.activatedRoute.snapshot.params['id'];
-    return teamId && !isNaN(Number(teamId));
+    const hasTeamWithId = this.team()?.id;
+    return (teamId && !isNaN(Number(teamId))) || !!hasTeamWithId;
   });
 
   public form = new FormGroup({
@@ -109,7 +110,7 @@ export class TeamFormComponent {
       } else {
         this.form.enable();
       }
-      if (this.isEditMode()) {
+      if (this.isEditMode() && !this.team()) {
         this.searchTeam();
       }
     });
@@ -190,11 +191,14 @@ export class TeamFormComponent {
     this.isLoadingResponse.set(true);
     try {
       const teamId = await firstValueFrom(this.teamsService.addTeam(team));
-      this.dispatcher.dispatch(
-        adminTeamsEvent.addTeam({ ...team, id: teamId }),
-      );
-      this.form.reset();
-      this.router.navigate(['/admin/equipos']);
+      const newTeam = { ...team, id: teamId };
+      this.dispatcher.dispatch(adminTeamsEvent.addTeam(newTeam));
+      this.team.set(newTeam);
+      this.snackBar.open('Equipo añadido correctamente', 'Cerrar', {
+        duration: 3000,
+      });
+      // Update the browser URL without navigation to reflect edit mode
+      window.history.replaceState({}, '', `/admin/equipos/${teamId}`);
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir el equipo', 'Cerrar');
@@ -208,8 +212,10 @@ export class TeamFormComponent {
     try {
       await firstValueFrom(this.teamsService.updateTeam(team));
       this.dispatcher.dispatch(adminTeamsEvent.updateTeam(team));
-      this.form.reset();
-      this.router.navigate(['/admin/equipos']);
+      this.team.set(team);
+      this.snackBar.open('Equipo actualizado correctamente', 'Cerrar', {
+        duration: 3000,
+      });
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al actualizar el equipo', 'Cerrar');
