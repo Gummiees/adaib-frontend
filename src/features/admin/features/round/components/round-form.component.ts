@@ -22,7 +22,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { CompetitionService } from '@features/competition/services/competition.service';
 import { competitionEvents } from '@features/competition/store/competition-events';
 import { CompetitionStore } from '@features/competition/store/competition-store';
@@ -322,8 +322,13 @@ export class RoundFormComponent {
     if (!roundId || !competition) {
       return;
     }
+    const queryParams: Params = { jornada: roundId };
+    const phase = this.selectedPhase();
+    if (phase) {
+      queryParams['fase'] = phase.id.toString();
+    }
     this.router.navigate(['/admin/competicion', competition.id, 'partido'], {
-      queryParams: { round: roundId },
+      queryParams,
     });
   }
 }

@@ -22,7 +22,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AdminTeamsService } from '@features/admin/features/teams/services/admin-teams.service';
 import { AdminTeamsStore } from '@features/admin/features/teams/store/admin-teams-store';
 import { CompetitionService } from '@features/competition/services/competition.service';
@@ -334,8 +334,13 @@ export class GroupFormComponent {
     if (!groupId || !competition) {
       return;
     }
+    const queryParams: Params = { grupo: groupId };
+    const phase = this.selectedPhase();
+    if (phase) {
+      queryParams['fase'] = phase.id.toString();
+    }
     this.router.navigate(['/admin/competicion', competition.id, 'partido'], {
-      queryParams: { grupo: groupId },
+      queryParams,
     });
   }
 }

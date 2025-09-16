@@ -464,30 +464,75 @@ export class MatchFormComponent {
     const grupoId = queryParams['grupo'];
     const jornadaId = queryParams['jornada'];
 
-    // Phase is required to populate groups and rounds
-    if (!faseId) {
-      this.handleMissingPhaseQueryParam(grupoId, jornadaId);
+    // If all three parameters are provided, use existing logic
+    if (faseId) {
+      const phase = this.findAndSelectPhase(competition, faseId);
+      if (!phase) {
+        return;
+      }
+      // Pre-select group and round if provided
+      this.preSelectGroup(phase, grupoId);
+      this.preSelectRound(phase, jornadaId);
       return;
     }
 
-    const phase = this.findAndSelectPhase(competition, faseId);
-    if (!phase) {
-      return;
+    // If no phase but group and/or round are provided, search for them
+    if (grupoId || jornadaId) {
+      this.handleMissingPhaseQueryParam(competition, grupoId, jornadaId);
     }
-
-    // Pre-select group and round if provided
-    this.preSelectGroup(phase, grupoId);
-    this.preSelectRound(phase, jornadaId);
   }
 
   private handleMissingPhaseQueryParam(
-    grupoId: string,
-    jornadaId: string,
+    competition: { phases: Phase[] },
+    grupoId: string | undefined,
+    jornadaId: string | undefined,
   ): void {
-    if (grupoId || jornadaId) {
-      console.warn(
-        'Ignoring grupo/jornada query params because fase is required but not provided',
+    // Parse IDs if provided
+    const parsedGrupoId = grupoId ? Number(grupoId) : null;
+    const parsedJornadaId = jornadaId ? Number(jornadaId) : null;
+
+    // Validate parsed IDs
+    if (grupoId && (isNaN(parsedGrupoId!) || parsedGrupoId === null)) {
+      console.warn('Invalid grupo ID in query params:', grupoId);
+      return;
+    }
+    if (jornadaId && (isNaN(parsedJornadaId!) || parsedJornadaId === null)) {
+      console.warn('Invalid jornada ID in query params:', jornadaId);
+      return;
+    }
+
+    // Case 1: Both group and round are provided - find phase that contains both
+    if (parsedGrupoId !== null && parsedJornadaId !== null) {
+      const foundPhase = this.findPhaseWithGroupAndRound(
+        competition,
+        parsedGrupoId,
+        parsedJornadaId,
       );
+      if (foundPhase) {
+        this.selectPhaseGroupAndRound(
+          foundPhase.phase,
+          foundPhase.group,
+          foundPhase.round,
+        );
+      }
+      return;
+    }
+
+    // Case 2: Only group is provided - find phase that contains this group
+    if (parsedGrupoId !== null) {
+      const foundPhase = this.findPhaseWithGroup(competition, parsedGrupoId);
+      if (foundPhase) {
+        this.selectPhaseAndGroup(foundPhase.phase, foundPhase.group);
+      }
+      return;
+    }
+
+    // Case 3: Only round is provided - find phase that contains this round
+    if (parsedJornadaId !== null) {
+      const foundPhase = this.findPhaseWithRound(competition, parsedJornadaId);
+      if (foundPhase) {
+        this.selectPhaseAndRound(foundPhase.phase, foundPhase.round);
+      }
     }
   }
 
@@ -601,5 +646,82 @@ export class MatchFormComponent {
           awayTeamControl?.enable();
         }
       });
+  }
+
+  // Helper methods for finding phases that contain specific groups and rounds
+
+  private findPhaseWithGroupAndRound(
+    competition: { phases: Phase[] },
+    groupId: number,
+    roundId: number,
+  ): { phase: Phase; group: Group; round: Round } | null {
+    for (const phase of competition.phases) {
+      const group = phase.groups.find((g: Group) => g.id === groupId);
+      const round = phase.rounds.find((r: Round) => r.id === roundId);
+
+      if (group && round) {
+        return { phase, group, round };
+      }
+    }
+    return null;
+  }
+
+  private findPhaseWithGroup(
+    competition: { phases: Phase[] },
+    groupId: number,
+  ): { phase: Phase; group: Group } | null {
+    for (const phase of competition.phases) {
+      const group = phase.groups.find((g: Group) => g.id === groupId);
+      if (group) {
+        return { phase, group };
+      }
+    }
+    return null;
+  }
+
+  private findPhaseWithRound(
+    competition: { phases: Phase[] },
+    roundId: number,
+  ): { phase: Phase; round: Round } | null {
+    for (const phase of competition.phases) {
+      const round = phase.rounds.find((r: Round) => r.id === roundId);
+      if (round) {
+        return { phase, round };
+      }
+    }
+    return null;
+  }
+
+  // Helper methods for selecting found phase/group/round combinations
+
+  private selectPhaseGroupAndRound(
+    phase: Phase,
+    group: Group,
+    round: Round,
+  ): void {
+    this.selectedPhase.set(phase);
+    this.selectedGroup.set(group);
+    this.form.patchValue({
+      phase,
+      group,
+      round,
+    });
+  }
+
+  private selectPhaseAndGroup(phase: Phase, group: Group): void {
+    this.selectedPhase.set(phase);
+    this.selectedGroup.set(group);
+    this.form.patchValue({
+      phase,
+      group,
+    });
+  }
+
+  private selectPhaseAndRound(phase: Phase, round: Round): void {
+    this.selectedPhase.set(phase);
+    this.form.patchValue({
+      phase,
+      round,
+    });
   }
 }
