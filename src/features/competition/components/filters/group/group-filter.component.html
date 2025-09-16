@@ -10,13 +10,13 @@
   </mat-form-field>
   @if(!!userStore.user()) {
     @if(competitionStore.group() === 'all') {
-      <button mat-mini-fab aria-label="Crear grupo" matTooltip="Crear grupo" matTooltipPosition="above" type="button" (click)="onCreateGroupClick()">
+      <a mat-mini-fab aria-label="Crear grupo" matTooltip="Crear grupo" matTooltipPosition="above" tabindex="0" (click)="onCreateGroupClick()" (keyup)="onCreateGroupClick()" (keypress)="onCreateGroupClick()">
         <mat-icon>add</mat-icon>
-      </button>
+      </a>
     } @else {
-      <button mat-mini-fab aria-label="Editar grupo" matTooltip="Editar grupo" matTooltipPosition="above" type="button" (click)="onEditGroupClick()">
+      <a mat-mini-fab aria-label="Editar grupo" matTooltip="Editar grupo" matTooltipPosition="above" tabindex="0" (click)="onEditGroupClick()" (keyup)="onEditGroupClick()" (keypress)="onEditGroupClick()">
         <mat-icon>edit</mat-icon>
-      </button>
+      </a>
     }
   }
 </div>

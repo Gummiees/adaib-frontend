@@ -24,9 +24,9 @@
       }
 
       @if(!!userStore.user()) {
-        <button mat-icon-button aria-label="Editar partido" matTooltip="Editar partido" matTooltipPosition="right" type="button" (click)="onEditMatch()">
+        <a mat-icon-button aria-label="Editar partido" matTooltip="Editar partido" matTooltipPosition="right" tabindex="0" (click)="onEditMatch()" (keyup)="onEditMatch()" (keypress)="onEditMatch()">
           <mat-icon>edit</mat-icon>
-        </button>
+        </a>
       }
     </div>
   </div>

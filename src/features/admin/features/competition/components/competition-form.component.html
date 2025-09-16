@@ -2,9 +2,9 @@
   <div class="flex flex-row gap-2 items-center justify-center gap-4">
     <h1 class="text-4xl font-bold">{{ pageTitle }}</h1>
     @if(isEditMode()) {
-      <button mat-mini-fab aria-label="Eliminar competición" matTooltip="Eliminar competición" matTooltipPosition="right" type="button" (click)="onDelete()" [disabled]="isLoading()">
+      <a mat-mini-fab aria-label="Eliminar competición" matTooltip="Eliminar competición" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onDelete()" (keyup)="onDelete()" (keypress)="onDelete()">
         <mat-icon>delete</mat-icon>
-      </button>
+      </a>
     }
   </div>
   @if(competitionsStore.error()) {
@@ -63,7 +63,9 @@
           <mat-slide-toggle formControlName="active" />
         </div>
         @if(isEditMode()) {
-          <button matButton="outlined" type="button" (click)="onAddPhase()" matTooltip="Crear nueva fase asociada a esta competición" matTooltipPosition="below" [disabled]="isLoading()">Crear nueva fase</button>
+          <a matButton="outlined" matTooltip="Crear nueva fase asociada a esta competición" matTooltipPosition="below" tabindex="0" [disabled]="isLoading()" (click)="onAddPhase()" (keyup)="onAddPhase()" (keypress)="onAddPhase()">
+            Crear nueva fase
+          </a>
         }
         <div class="flex flex-row gap-2 items-center">
           <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">

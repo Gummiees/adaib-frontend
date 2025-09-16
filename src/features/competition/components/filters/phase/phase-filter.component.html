@@ -10,13 +10,13 @@
   </mat-form-field>
   @if(!!userStore.user()) {
     @if(competitionStore.phase() === 'all') {
-      <button mat-mini-fab aria-label="Crear fase" matTooltip="Crear fase" matTooltipPosition="above" type="button" (click)="onCreatePhaseClick()">
+      <a mat-mini-fab aria-label="Crear fase" matTooltip="Crear fase" matTooltipPosition="above" tabindex="0" (click)="onCreatePhaseClick()" (keyup)="onCreatePhaseClick()" (keypress)="onCreatePhaseClick()">
         <mat-icon>add</mat-icon>
-      </button>
+      </a>
     } @else {
-      <button mat-mini-fab aria-label="Editar fase" matTooltip="Editar fase" matTooltipPosition="above" type="button" (click)="onEditPhaseClick()">
+      <a mat-mini-fab aria-label="Editar fase" matTooltip="Editar fase" matTooltipPosition="above" tabindex="0" (click)="onEditPhaseClick()" (keyup)="onEditPhaseClick()" (keypress)="onEditPhaseClick()">
         <mat-icon>edit</mat-icon>
-      </button>
+      </a>
     }
   }
 </div>

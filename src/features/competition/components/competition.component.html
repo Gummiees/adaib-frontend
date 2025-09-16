@@ -14,31 +14,31 @@
         <h1 class="text-4xl font-bold text-center">{{ competitionStore.competition()!.name }}</h1>
         @if(!!userStore.user()) {
           <div class="flex flex-row gap-2 flex-wrap items-center justify-center w-full">
-            <button matButton="outlined" aria-label="Crear fase" type="button" (click)="onAddPhaseClicked()">
+            <a matButton="outlined" aria-label="Crear fase" tabindex="0" (click)="onAddPhaseClicked()" (keyup)="onAddPhaseClicked()" (keypress)="onAddPhaseClicked()">
               Crear fase
-            </button>
-            <button matButton="outlined" aria-label="Crear grupo" type="button" (click)="onAddGroupClicked()">
+            </a>
+            <a matButton="outlined" aria-label="Crear grupo" tabindex="0" (click)="onAddGroupClicked()" (keyup)="onAddGroupClicked()" (keypress)="onAddGroupClicked()">
               Crear grupo
-            </button>
-            <button matButton="outlined" aria-label="Crear jornada" type="button" (click)="onAddRoundClicked()">
+            </a>
+            <a matButton="outlined" aria-label="Crear jornada" tabindex="0" (click)="onAddRoundClicked()" (keyup)="onAddRoundClicked()" (keypress)="onAddRoundClicked()">
               Crear jornada
-            </button>
-            <button matButton="outlined" aria-label="Añadir partido" type="button" (click)="onAddMatchClicked()">
+            </a>
+            <a matButton="outlined" aria-label="Añadir partido" tabindex="0" (click)="onAddMatchClicked()" (keyup)="onAddMatchClicked()" (keypress)="onAddMatchClicked()">
                 Añadir partido
-            </button>
+            </a>
           </div>
           @if(shouldShowAnyEditButtons()) {
             <div class="flex flex-row gap-2 flex-wrap items-center justify-center w-full">
-              <button matButton="outlined" aria-label="Editar fase" type="button" (click)="onEditPhaseClicked()">
+              <a matButton="outlined" aria-label="Editar fase" tabindex="0" (click)="onEditPhaseClicked()" (keyup)="onEditPhaseClicked()" (keypress)="onEditPhaseClicked()">
                 Editar fase
-              </button>
-              <button matButton="outlined" aria-label="Editar grupo" type="button" (click)="onEditGroupClicked()">
+              </a>
+              <a matButton="outlined" aria-label="Editar grupo" tabindex="0" (click)="onEditGroupClicked()" (keyup)="onEditGroupClicked()" (keypress)="onEditGroupClicked()">
                 Editar grupo
-              </button>
+              </a>
               @if(shouldShowEditRoundButton()) {
-                <button matButton="outlined" aria-label="Editar jornada" type="button" (click)="onEditRoundClicked()">
+                <a matButton="outlined" aria-label="Editar jornada" tabindex="0" (click)="onEditRoundClicked()" (keyup)="onEditRoundClicked()" (keypress)="onEditRoundClicked()">
                   Editar jornada
-                </button>
+                </a>
               }
             </div>
           }

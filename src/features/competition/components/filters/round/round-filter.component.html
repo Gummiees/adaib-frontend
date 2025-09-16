@@ -10,13 +10,13 @@
   </mat-form-field>
   @if(!!userStore.user()) {
     @if(selectedRoundId() === 'all') {
-      <button mat-mini-fab aria-label="Crear jornada" matTooltip="Crear jornada" matTooltipPosition="above" type="button" (click)="onCreateRoundClick()">
+      <a mat-mini-fab aria-label="Crear jornada" matTooltip="Crear jornada" matTooltipPosition="above" tabindex="0" (click)="onCreateRoundClick()" (keyup)="onCreateRoundClick()" (keypress)="onCreateRoundClick()">
         <mat-icon>add</mat-icon>
-      </button>
+      </a>
     } @else {
-      <button mat-mini-fab aria-label="Editar jornada" matTooltip="Editar jornada" matTooltipPosition="above" type="button" (click)="onEditRoundClick()">
+      <a mat-mini-fab aria-label="Editar jornada" matTooltip="Editar jornada" matTooltipPosition="above" tabindex="0" (click)="onEditRoundClick()" (keyup)="onEditRoundClick()" (keypress)="onEditRoundClick()">
         <mat-icon>edit</mat-icon>
-      </button>
+      </a>
     }
   }
 </div>

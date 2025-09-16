@@ -2,9 +2,9 @@
   <div class="w-full flex gap-4 items-center justify-center">
     <h2 class="text-4xl font-bold text-center">Resultados</h2>
     @if(!!userStore.user()) {
-      <button mat-mini-fab aria-label="Añadir partido" matTooltip="Añadir partido" matTooltipPosition="right" type="button" (click)="onAddMatchClick()">
+      <a mat-mini-fab aria-label="Añadir partido" matTooltip="Añadir partido" matTooltipPosition="right" tabindex="0" (click)="onAddMatchClick()" (keyup)="onAddMatchClick()" (keypress)="onAddMatchClick()">
         <mat-icon>add</mat-icon>
-      </button>
+      </a>
     }
   </div>
   @if(competitionStore.competition()!.phases.length > 0) {
