@@ -23,6 +23,12 @@ export class AdminCompetitionService {
     );
   }
 
+  deleteCompetition(competitionId: number): Observable<void> {
+    return this.http.delete<void>(
+      `${environment.apiUrl}/Competition/${competitionId}`,
+    );
+  }
+
   private competitionToJson(competition: Competition): string {
     return JSON.stringify({
       ...competition,

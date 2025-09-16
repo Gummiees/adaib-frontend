@@ -190,7 +190,10 @@ export class MatchFormComponent {
       return;
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: 'partido',
+      data: {
+        title: 'Eliminar partido',
+        text: 'Se eliminarán todos los datos asociados a este partido. Esta acción no se puede deshacer.',
+      },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {

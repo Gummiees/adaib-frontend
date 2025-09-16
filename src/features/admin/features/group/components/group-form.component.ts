@@ -152,7 +152,10 @@ export class GroupFormComponent {
       return;
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: 'grupo',
+      data: {
+        title: 'Eliminar grupo',
+        text: 'Se eliminarán todos los partidos asociados a este grupo. Esta acción no se puede deshacer.',
+      },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {

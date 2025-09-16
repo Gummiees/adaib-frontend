@@ -42,6 +42,9 @@ export const CompetitionsStore = signalStore(
         ),
       }),
     ),
+    on(adminCompetitionsEvent.deleteCompetition, ({ payload: id }, state) => ({
+      competitions: state.competitions?.filter((c) => c.id !== id),
+    })),
   ),
   withMethods((store) => ({
     getCompetitionsSuccess: (competitions: Competition[]) => {

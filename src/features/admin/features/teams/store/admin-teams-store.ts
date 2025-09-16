@@ -35,6 +35,9 @@ export const AdminTeamsStore = signalStore(
       const teams = state.teams?.map((t) => (t.id === team.id ? team : t));
       return { teams };
     }),
+    on(adminTeamsEvent.deleteTeam, ({ payload: id }, state) => ({
+      teams: state.teams?.filter((t) => t.id !== id),
+    })),
   ),
   withMethods((store) => ({
     getTeamsSuccess: (teams: Team[]) => {

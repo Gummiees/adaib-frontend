@@ -19,4 +19,8 @@ export class AdminTeamsService {
   updateTeam(team: Team): Observable<void> {
     return this.http.put<void>(`${environment.apiUrl}/Team`, team);
   }
+
+  deleteTeam(teamId: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/Team/${teamId}`);
+  }
 }

@@ -131,7 +131,10 @@ export class RoundFormComponent {
       return;
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: 'ronda',
+      data: {
+        title: 'Eliminar ronda',
+        text: 'Se eliminarán todos los datos asociados a esta ronda. Esta acción no se puede deshacer.',
+      },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {

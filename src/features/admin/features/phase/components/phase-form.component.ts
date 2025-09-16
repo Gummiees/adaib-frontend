@@ -114,7 +114,10 @@ export class PhaseFormComponent {
       return;
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: 'fase',
+      data: {
+        title: 'Eliminar fase',
+        text: 'Se eliminarán todos los grupos, rondas y partidos asociados a esta fase. Esta acción no se puede deshacer.',
+      },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {

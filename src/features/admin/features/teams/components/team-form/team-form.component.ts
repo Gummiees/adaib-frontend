@@ -14,12 +14,16 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dispatcher } from '@ngrx/signals/events';
+import { DeleteDialogComponent } from '@shared/components/delete-dialog/delete-dialog.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Team } from '@shared/models/team';
@@ -39,6 +43,9 @@ import { AdminTeamsStore } from '../../store/admin-teams-store';
     MatInputModule,
     MatButtonModule,
     MatSlideToggleModule,
+    MatIconModule,
+    MatDialogModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     FullSpinnerComponent,
     NotFoundComponent,
@@ -51,6 +58,7 @@ export class TeamFormComponent {
   private teamsService = inject(AdminTeamsService);
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -144,6 +152,24 @@ export class TeamFormComponent {
     }
   }
 
+  public async onDelete(): Promise<void> {
+    const team = this.team();
+    if (!team) {
+      return;
+    }
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      data: {
+        title: 'Eliminar equipo',
+        text: 'Se eliminarán todos los datos asociados a este equipo. Esta acción no se puede deshacer.',
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.onConfirmDelete(team.id);
+      }
+    });
+  }
+
   private formToTeam(form: FormGroup): Team {
     return {
       id: this.isEditMode() ? (this.team()?.id ?? 0) : 0,
@@ -187,6 +213,24 @@ export class TeamFormComponent {
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al actualizar el equipo', 'Cerrar');
+    } finally {
+      this.isLoadingResponse.set(false);
+    }
+  }
+
+  private async onConfirmDelete(teamId: number): Promise<void> {
+    if (!teamId) {
+      return;
+    }
+
+    this.isLoadingResponse.set(true);
+    try {
+      await firstValueFrom(this.teamsService.deleteTeam(teamId));
+      this.dispatcher.dispatch(adminTeamsEvent.deleteTeam(teamId));
+      this.router.navigate(['/admin/equipos']);
+    } catch (error) {
+      console.error(error);
+      this.snackBar.open('Hubo un error al eliminar el equipo', 'Cerrar');
     } finally {
       this.isLoadingResponse.set(false);
     }

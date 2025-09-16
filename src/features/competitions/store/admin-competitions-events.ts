@@ -7,5 +7,6 @@ export const adminCompetitionsEvent = eventGroup({
   events: {
     addCompetition: type<Competition>(),
     updateCompetition: type<Competition>(),
+    deleteCompetition: type<number>(),
   },
 });

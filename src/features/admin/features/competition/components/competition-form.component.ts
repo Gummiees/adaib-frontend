@@ -16,16 +16,20 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompetitionsService } from '@features/competitions/services/competitions.service';
 import { adminCompetitionsEvent } from '@features/competitions/store/admin-competitions-events';
 import { CompetitionsStore } from '@features/competitions/store/competitions-store';
 import { Dispatcher } from '@ngrx/signals/events';
+import { DeleteDialogComponent } from '@shared/components/delete-dialog/delete-dialog.component';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Competition, CompetitionStatus } from '@shared/models/competition';
@@ -50,6 +54,9 @@ import { AdminCompetitionService } from '../services/admin-competition.service';
     MatSelectModule,
     MatOptionModule,
     MatSlideToggleModule,
+    MatIconModule,
+    MatDialogModule,
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [CompetitionsService, CompetitionsStore, AdminCompetitionService],
@@ -59,6 +66,7 @@ export class CompetitionFormComponent {
   private adminCompetitionService = inject(AdminCompetitionService);
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -164,6 +172,24 @@ export class CompetitionFormComponent {
     }
   }
 
+  public async onDelete(): Promise<void> {
+    const competition = this.competition();
+    if (!competition) {
+      return;
+    }
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      data: {
+        title: 'Eliminar competición',
+        text: 'Se eliminarán todas las fases, grupos, rondas y partidos asociados a esta competición. Recuerda que puedes desactivar la competición en su lugar. Esta acción no se puede deshacer.',
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.onConfirmDelete(competition.id);
+      }
+    });
+  }
+
   private formToCompetition(form: FormGroup): Competition {
     return {
       id: this.isEditMode() ? (this.competition()?.id ?? 0) : 0,
@@ -221,6 +247,28 @@ export class CompetitionFormComponent {
         'Hubo un error al actualizar la competición',
         'Cerrar',
       );
+    } finally {
+      this.isLoadingResponse.set(false);
+    }
+  }
+
+  private async onConfirmDelete(competitionId: number): Promise<void> {
+    if (!competitionId) {
+      return;
+    }
+
+    this.isLoadingResponse.set(true);
+    try {
+      await firstValueFrom(
+        this.adminCompetitionService.deleteCompetition(competitionId),
+      );
+      this.dispatcher.dispatch(
+        adminCompetitionsEvent.deleteCompetition(competitionId),
+      );
+      this.router.navigate(['/competiciones']);
+    } catch (error) {
+      console.error(error);
+      this.snackBar.open('Hubo un error al eliminar la competición', 'Cerrar');
     } finally {
       this.isLoadingResponse.set(false);
     }
