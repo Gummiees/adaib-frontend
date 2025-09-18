@@ -14,52 +14,33 @@ export class UserStorageService {
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
 
   /**
-   * Store user data securely
-   * Uses different storage strategies based on data sensitivity
+   * Store user data securely in localStorage
+   * All data is encrypted and persists across browser tabs
    */
   async storeUser(user: User): Promise<void> {
-    // Set user data for key derivation (persists across page refreshes)
-    this.secureStorage.setUserDataForEncryption(
-      user.id.toString(),
-      user.username,
-    );
+    // Store user data in localStorage for key derivation
+    this.secureStorage.setItem('user_id', user.id.toString());
+    this.secureStorage.setItem('user_name', user.username);
 
-    // Also store user data in localStorage as backup (non-sensitive data)
-    this.secureStorage.setItem('user_id', user.id.toString(), {
-      strategy: 'local',
-    });
-    this.secureStorage.setItem('user_name', user.username, {
-      strategy: 'local',
-    });
-
-    // Generate user-specific key for this session
     const userKey = await this.secureStorage.generateUserSpecificKey(
       user.id.toString(),
       user.username,
     );
 
-    // Store sensitive token data in sessionStorage (persists across page refreshes)
+    // Store sensitive token data in localStorage (encrypted, persists across tabs)
     const encryptedToken = await this.secureStorage.encryptAsync(
       user.authToken,
       userKey,
     );
-    this.secureStorage.setItem(this.TOKEN_KEY, encryptedToken, {
-      strategy: 'session',
-    });
+    this.secureStorage.setItem(this.TOKEN_KEY, encryptedToken);
 
-    // Store refresh token in sessionStorage (encrypted, persists across page refreshes)
+    // Store refresh token in localStorage (encrypted, persists across tabs)
     if (user.refreshToken) {
       const encryptedRefreshToken = await this.secureStorage.encryptAsync(
         user.refreshToken,
         userKey,
       );
-      this.secureStorage.setItem(
-        this.REFRESH_TOKEN_KEY,
-        encryptedRefreshToken,
-        {
-          strategy: 'session',
-        },
-      );
+      this.secureStorage.setItem(this.REFRESH_TOKEN_KEY, encryptedRefreshToken);
     }
 
     // Store non-sensitive user data in encrypted localStorage
@@ -73,9 +54,7 @@ export class UserStorageService {
       JSON.stringify(userData),
       userKey,
     );
-    this.secureStorage.setItem(this.USER_KEY, encryptedUserData, {
-      strategy: 'local',
-    });
+    this.secureStorage.setItem(this.USER_KEY, encryptedUserData);
   }
 
   /**
@@ -83,31 +62,15 @@ export class UserStorageService {
    */
   async getUser(): Promise<User | null> {
     try {
-      const userDataStr = this.secureStorage.getItem(this.USER_KEY, {
-        strategy: 'local',
-      });
+      const userDataStr = this.secureStorage.getItem(this.USER_KEY);
 
       if (!userDataStr) {
         return null;
       }
 
-      // Get user data from sessionStorage first, fallback to localStorage
-      let userId = this.secureStorage.getItem('user_id', {
-        strategy: 'session',
-      });
-      let username = this.secureStorage.getItem('user_name', {
-        strategy: 'session',
-      });
-
-      // Fallback to localStorage if not found in sessionStorage
-      if (!userId || !username) {
-        userId = this.secureStorage.getItem('user_id', {
-          strategy: 'local',
-        });
-        username = this.secureStorage.getItem('user_name', {
-          strategy: 'local',
-        });
-      }
+      // Get user data from localStorage
+      const userId = this.secureStorage.getItem('user_id');
+      const username = this.secureStorage.getItem('user_name');
 
       if (!userId || !username) {
         // User data not available, clear everything
@@ -129,15 +92,11 @@ export class UserStorageService {
 
       const userData = JSON.parse(decryptedUserDataStr);
 
-      // Get and decrypt auth token from sessionStorage
-      const token = this.secureStorage.getItem(this.TOKEN_KEY, {
-        strategy: 'session',
-      });
+      // Get and decrypt auth token from localStorage
+      const token = this.secureStorage.getItem(this.TOKEN_KEY);
 
-      // Get and decrypt refresh token
-      const refreshToken = this.secureStorage.getItem(this.REFRESH_TOKEN_KEY, {
-        strategy: 'session',
-      });
+      // Get and decrypt refresh token from localStorage
+      const refreshToken = this.secureStorage.getItem(this.REFRESH_TOKEN_KEY);
 
       if (!token || !refreshToken) {
         return null;
@@ -180,22 +139,16 @@ export class UserStorageService {
    * Get only the auth token
    */
   async getAuthToken(): Promise<string | null> {
-    // Get token from sessionStorage
-    const token = this.secureStorage.getItem(this.TOKEN_KEY, {
-      strategy: 'session',
-    });
+    // Get token from localStorage
+    const token = this.secureStorage.getItem(this.TOKEN_KEY);
 
     if (!token) {
       return null;
     }
 
-    // Get user data for key generation
-    const userId = this.secureStorage.getItem('user_id', {
-      strategy: 'session',
-    });
-    const username = this.secureStorage.getItem('user_name', {
-      strategy: 'session',
-    });
+    // Get user data for key generation from localStorage
+    const userId = this.secureStorage.getItem('user_id');
+    const username = this.secureStorage.getItem('user_name');
 
     if (!userId || !username) {
       return null;
@@ -215,21 +168,16 @@ export class UserStorageService {
    * Get refresh token
    */
   async getRefreshToken(): Promise<string | null> {
-    const refreshToken = this.secureStorage.getItem(this.REFRESH_TOKEN_KEY, {
-      strategy: 'session',
-    });
+    // Get refresh token from localStorage
+    const refreshToken = this.secureStorage.getItem(this.REFRESH_TOKEN_KEY);
 
     if (!refreshToken) {
       return null;
     }
 
-    // Get user data for key generation
-    const userId = this.secureStorage.getItem('user_id', {
-      strategy: 'session',
-    });
-    const username = this.secureStorage.getItem('user_name', {
-      strategy: 'session',
-    });
+    // Get user data for key generation from localStorage
+    const userId = this.secureStorage.getItem('user_id');
+    const username = this.secureStorage.getItem('user_name');
 
     if (!userId || !username) {
       return null;
@@ -249,13 +197,9 @@ export class UserStorageService {
    * Update auth token (useful for token refresh)
    */
   async updateAuthToken(token: string): Promise<void> {
-    // Get user data for key generation
-    const userId = this.secureStorage.getItem('user_id', {
-      strategy: 'session',
-    });
-    const username = this.secureStorage.getItem('user_name', {
-      strategy: 'session',
-    });
+    // Get user data for key generation from localStorage
+    const userId = this.secureStorage.getItem('user_id');
+    const username = this.secureStorage.getItem('user_name');
 
     if (!userId || !username) {
       throw new Error('User data not available for token update');
@@ -273,23 +217,19 @@ export class UserStorageService {
       userKey,
     );
 
-    this.secureStorage.setItem(this.TOKEN_KEY, encryptedToken, {
-      strategy: 'session',
-    });
+    this.secureStorage.setItem(this.TOKEN_KEY, encryptedToken);
   }
 
   /**
    * Clear all user data from storage
    */
   clearUser(): void {
-    this.secureStorage.removeItem(this.USER_KEY, { strategy: 'local' });
-    this.secureStorage.removeItem(this.TOKEN_KEY, { strategy: 'session' });
-    this.secureStorage.removeItem(this.REFRESH_TOKEN_KEY, {
-      strategy: 'session',
-    });
-    // Clear user data used for key generation
-    this.secureStorage.removeItem('user_id', { strategy: 'session' });
-    this.secureStorage.removeItem('user_name', { strategy: 'session' });
+    // Clear all user data from localStorage
+    this.secureStorage.removeItem(this.USER_KEY);
+    this.secureStorage.removeItem(this.TOKEN_KEY);
+    this.secureStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    this.secureStorage.removeItem('user_id');
+    this.secureStorage.removeItem('user_name');
   }
 
   /**
