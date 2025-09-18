@@ -136,7 +136,13 @@ export const adminRoutes: Routes = [
       import(
         '@features/admin/features/match/components/match-form.component'
       ).then((m) => m.MatchFormComponent),
-    providers: [CompetitionsService, CompetitionsStore, AdminMatchService],
+    providers: [
+      CompetitionsService,
+      CompetitionsStore,
+      AdminMatchService,
+      AdminTeamsService,
+      AdminTeamsStore,
+    ],
     data: { title: 'Crear Partido' },
   },
   {
@@ -145,7 +151,13 @@ export const adminRoutes: Routes = [
       import(
         '@features/admin/features/match/components/match-form.component'
       ).then((m) => m.MatchFormComponent),
-    providers: [CompetitionsService, CompetitionsStore, AdminMatchService],
+    providers: [
+      CompetitionsService,
+      CompetitionsStore,
+      AdminMatchService,
+      AdminTeamsService,
+      AdminTeamsStore,
+    ],
     data: { title: 'Editar Partido' },
   },
   {

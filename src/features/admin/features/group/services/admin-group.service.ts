@@ -8,15 +8,47 @@ import { Observable } from 'rxjs';
 export class AdminGroupService {
   private http = inject(HttpClient);
 
-  addGroup(group: ApiFormGroup): Observable<number> {
-    return this.http.post<number>(`${environment.apiUrl}/Group`, group);
+  addGroup({
+    competitionId,
+    phaseId,
+    group,
+  }: {
+    competitionId: number;
+    phaseId: number;
+    group: ApiFormGroup;
+  }): Observable<number> {
+    return this.http.post<number>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}/Group`,
+      group,
+    );
   }
 
-  updateGroup(group: ApiFormGroup): Observable<void> {
-    return this.http.put<void>(`${environment.apiUrl}/Group`, group);
+  updateGroup({
+    competitionId,
+    phaseId,
+    group,
+  }: {
+    competitionId: number;
+    phaseId: number;
+    group: ApiFormGroup;
+  }): Observable<void> {
+    return this.http.put<void>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}/Group`,
+      group,
+    );
   }
 
-  deleteGroup(groupId: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/Group/${groupId}`);
+  deleteGroup({
+    competitionId,
+    phaseId,
+    groupId,
+  }: {
+    competitionId: number;
+    phaseId: number;
+    groupId: number;
+  }): Observable<void> {
+    return this.http.delete<void>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}/Group/${groupId}`,
+    );
   }
 }

@@ -32,7 +32,14 @@ export class CompetitionService {
     competition: DetailedApiCompetition,
   ): DetailedCompetition {
     return {
-      ...competition,
+      id: competition.id,
+      sportName: competition.sportName,
+      name: competition.name,
+      description: competition.description,
+      imageUrl: competition.imageUrl,
+      active: competition.active,
+      status: competition.status,
+      teams: competition.teams,
       startDate: competition.startDate ? parseISO(competition.startDate) : null,
       endDate: competition.endDate ? parseISO(competition.endDate) : null,
       phases: this.parsePhases(competition.phases, competition.teams),
@@ -41,7 +48,9 @@ export class CompetitionService {
 
   private parsePhases(phases: ApiPhase[], teams: Team[]): Phase[] {
     return phases.map((phase) => ({
-      ...phase,
+      id: phase.id,
+      name: phase.name,
+      rounds: phase.rounds,
       groups: this.parseGroups({
         groups: phase.groups,
         teams: teams,
@@ -63,11 +72,13 @@ export class CompetitionService {
     phaseName: string;
   }): Group[] {
     return groups.map((group) => ({
-      ...group,
+      id: group.id,
+      name: group.name,
       classification: this.parseClassification(
         group.classification || [],
         teams,
       ),
+      teamIds: group.teamIds,
       actualRound: group.actualRoundId
         ? rounds.find((round) => round.id === group.actualRoundId)
         : null,
@@ -78,7 +89,6 @@ export class CompetitionService {
         phaseName: phaseName,
         groupName: group.name,
       }),
-      teams: teams.filter((team) => group.teamIds.includes(team.id)),
     }));
   }
 
@@ -92,8 +102,9 @@ export class CompetitionService {
       )
       .map((classification) => ({
         id: uuidv4(),
+        position: classification.position,
+        points: classification.points,
         team: teams.find((team) => team.id === classification.teamId)!,
-        ...classification,
       }));
   }
 
@@ -121,7 +132,8 @@ export class CompetitionService {
         throw new Error('Home team not found');
       }
       return {
-        ...match,
+        id: match.id,
+        status: match.status,
         homeTeam: homeTeam,
         awayTeam: awayTeam,
         round: round,

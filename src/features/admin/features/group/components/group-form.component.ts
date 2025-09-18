@@ -85,7 +85,7 @@ export class GroupFormComponent {
     return this.competitionStore.competition()?.phases ?? [];
   });
   public teams = computed<Team[]>(() => {
-    return this.teamsStore.teams() ?? [];
+    return this.teamsStore.teams()?.filter((team) => team.active) ?? [];
   });
 
   private selectedPhase = signal<Phase | null>(null);
@@ -136,9 +136,9 @@ export class GroupFormComponent {
       }
 
       if (this.isEditMode()) {
-        await this.handleUpdateGroup(group);
+        await this.handleUpdateGroup(group, competitionId, phase);
       } else {
-        await this.handleAddGroup(group);
+        await this.handleAddGroup(group, competitionId, phase);
       }
     } else {
       this.form.markAllAsTouched();
@@ -147,7 +147,9 @@ export class GroupFormComponent {
 
   public async onDelete(): Promise<void> {
     const groupId = this.groupId();
-    if (!groupId) {
+    const competitionId = this.competitionStore.competition()?.id;
+    const phase = this.selectedPhase();
+    if (!groupId || !competitionId || !phase) {
       return;
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
@@ -158,7 +160,7 @@ export class GroupFormComponent {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.onConfirmDelete(groupId);
+        this.onConfirmDelete({ groupId, competitionId, phase });
       }
     });
   }
@@ -170,14 +172,24 @@ export class GroupFormComponent {
     }
   }
 
-  private async onConfirmDelete(groupId: number): Promise<void> {
-    if (!groupId) {
-      return;
-    }
-
+  private async onConfirmDelete({
+    groupId,
+    competitionId,
+    phase,
+  }: {
+    groupId: number;
+    competitionId: number;
+    phase: Phase;
+  }): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminGroupService.deleteGroup(groupId));
+      await firstValueFrom(
+        this.adminGroupService.deleteGroup({
+          competitionId: competitionId,
+          phaseId: phase.id,
+          groupId,
+        }),
+      );
       this.refreshCompetition();
       this.navigateToCompetition();
     } catch (error) {
@@ -196,16 +208,24 @@ export class GroupFormComponent {
     };
   }
 
-  private async handleAddGroup(group: ApiFormGroup): Promise<void> {
+  private async handleAddGroup(
+    group: ApiFormGroup,
+    competitionId: number,
+    phase: Phase,
+  ): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
       const groupId = await firstValueFrom(
-        this.adminGroupService.addGroup(group),
+        this.adminGroupService.addGroup({
+          competitionId: competitionId,
+          phaseId: phase.id,
+          group,
+        }),
       );
       const newGroup: Group = {
         id: groupId,
         name: group.name,
-        teams: [],
+        teamIds: [],
         matches: [],
         classification: [],
       };
@@ -216,14 +236,11 @@ export class GroupFormComponent {
         duration: 3000,
       });
       // Update the browser URL without navigation to reflect edit mode
-      const competitionId = this.competitionStore.competition()?.id;
-      if (competitionId) {
-        window.history.replaceState(
-          {},
-          '',
-          `/admin/competicion/${competitionId}/grupo/${groupId}`,
-        );
-      }
+      window.history.replaceState(
+        {},
+        '',
+        `/admin/competicion/${competitionId}/grupo/${groupId}`,
+      );
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir el grupo', 'Cerrar');
@@ -232,14 +249,24 @@ export class GroupFormComponent {
     }
   }
 
-  private async handleUpdateGroup(group: ApiFormGroup): Promise<void> {
+  private async handleUpdateGroup(
+    group: ApiFormGroup,
+    competitionId: number,
+    phase: Phase,
+  ): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminGroupService.updateGroup(group));
+      await firstValueFrom(
+        this.adminGroupService.updateGroup({
+          competitionId: competitionId,
+          phaseId: phase.id,
+          group,
+        }),
+      );
       const updatedGroup: Group = {
         id: group.id,
         name: group.name,
-        teams: this.group()?.teams || [],
+        teamIds: this.group()?.teamIds || [],
         matches: this.group()?.matches || [],
         classification: this.group()?.classification || [],
       };
@@ -340,7 +367,7 @@ export class GroupFormComponent {
       this.form.patchValue({
         phase: foundPhase,
         name: foundGroup.name,
-        teamIds: foundGroup.teams.map((team) => team.id),
+        teamIds: foundGroup.teamIds,
       });
     }
   }

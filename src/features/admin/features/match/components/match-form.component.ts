@@ -47,6 +47,8 @@ import { Round } from '@shared/models/round';
 import { Team } from '@shared/models/team';
 import { setHours, setMinutes } from 'date-fns';
 import { firstValueFrom } from 'rxjs';
+import { AdminTeamsService } from '../../teams/services/admin-teams.service';
+import { AdminTeamsStore } from '../../teams/store/admin-teams-store';
 import { AdminMatchService } from '../services/admin-match.service';
 import { awayTeamValidator } from '../validators/away-team.validator';
 import { timeValidator } from '../validators/time.validator';
@@ -74,11 +76,18 @@ import { timeValidator } from '../validators/time.validator';
     MatDialogModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [CompetitionService, CompetitionStore, AdminMatchService],
+  providers: [
+    CompetitionService,
+    CompetitionStore,
+    AdminMatchService,
+    AdminTeamsService,
+    AdminTeamsStore,
+  ],
 })
 export class MatchFormComponent {
   public competitionStore = inject(CompetitionStore);
   private adminMatchService = inject(AdminMatchService);
+  private teamsStore = inject(AdminTeamsStore);
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
@@ -87,7 +96,11 @@ export class MatchFormComponent {
 
   public teams = computed<Team[]>(() => {
     const group = this.selectedGroup();
-    return group?.teams ?? [];
+    return (
+      this.teamsStore
+        .teams()
+        ?.filter((team) => group?.teamIds.includes(team.id)) ?? []
+    );
   });
   public phases = computed<Phase[]>(() => {
     return this.competitionStore.competition()?.phases ?? [];
@@ -149,10 +162,19 @@ export class MatchFormComponent {
       awayTeam: new FormControl<Team | null>({ value: null, disabled: true }),
       date: new FormControl<Date | null>(null),
       time: new FormControl<string | null>(null),
-      homeTeamScore: new FormControl<number | null>(null),
-      awayTeamScore: new FormControl<number | null>(null),
+      homeTeamScore: new FormControl<number | null>({
+        value: null,
+        disabled: true,
+      }),
+      awayTeamScore: new FormControl<number | null>({
+        value: null,
+        disabled: true,
+      }),
+      result: new FormControl<MatchResult | null>({
+        value: null,
+        disabled: true,
+      }),
       location: new FormControl<string | null>(null),
-      result: new FormControl<MatchResult | null>(null),
       status: new FormControl<MatchStatus>('NotStarted', [Validators.required]),
     });
     this.form.controls['awayTeam'].addValidators([
@@ -173,6 +195,13 @@ export class MatchFormComponent {
   }
 
   public async onSubmit(): Promise<void> {
+    const competitionId = this.competitionStore.competition()?.id;
+    const phaseId = this.selectedPhase()?.id;
+    const groupId = this.selectedGroup()?.id;
+    if (!competitionId || !phaseId || !groupId) {
+      return;
+    }
+
     if (!this.isStatusCorrect()) {
       this.form.get('awayTeam')?.setErrors({ awayTeamRequired: true });
       this.form.markAllAsTouched();
@@ -181,9 +210,14 @@ export class MatchFormComponent {
     if (this.form.valid && !this.isLoading()) {
       const match = this.formToApiMatch(this.form);
       if (this.isEditMode()) {
-        await this.handleUpdateMatch(match);
+        await this.handleUpdateMatch({
+          match,
+          competitionId,
+          phaseId,
+          groupId,
+        });
       } else {
-        await this.handleAddMatch(match);
+        await this.handleAddMatch({ match, competitionId, phaseId, groupId });
       }
     } else {
       this.form.markAllAsTouched();
@@ -192,7 +226,10 @@ export class MatchFormComponent {
 
   public async onDelete(): Promise<void> {
     const matchId = this.matchId();
-    if (!matchId) {
+    const competitionId = this.competitionStore.competition()?.id;
+    const phaseId = this.selectedPhase()?.id;
+    const groupId = this.selectedGroup()?.id;
+    if (!matchId || !competitionId || !phaseId || !groupId) {
       return;
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
@@ -203,19 +240,36 @@ export class MatchFormComponent {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.onConfirmDelete(matchId);
+        this.onConfirmDelete({ matchId, competitionId, phaseId, groupId });
       }
     });
   }
 
-  private async onConfirmDelete(matchId: number): Promise<void> {
+  private async onConfirmDelete({
+    matchId,
+    competitionId,
+    phaseId,
+    groupId,
+  }: {
+    matchId: number;
+    competitionId: number;
+    phaseId: number;
+    groupId: number;
+  }): Promise<void> {
     if (!matchId) {
       return;
     }
 
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminMatchService.deleteMatch(matchId));
+      await firstValueFrom(
+        this.adminMatchService.deleteMatch({
+          competitionId,
+          phaseId,
+          groupId,
+          matchId,
+        }),
+      );
       this.refreshCompetition();
       this.navigateToCompetition();
     } catch (error) {
@@ -271,11 +325,26 @@ export class MatchFormComponent {
     return !!value && value.trim() === '' ? null : value;
   }
 
-  private async handleAddMatch(match: ApiMatch): Promise<void> {
+  private async handleAddMatch({
+    match,
+    competitionId,
+    phaseId,
+    groupId,
+  }: {
+    match: ApiMatch;
+    competitionId: number;
+    phaseId: number;
+    groupId: number;
+  }): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
       const matchId = await firstValueFrom(
-        this.adminMatchService.addMatch(match),
+        this.adminMatchService.addMatch({
+          competitionId,
+          phaseId,
+          groupId,
+          match,
+        }),
       );
       const newMatch: DetailedMatch = {
         id: matchId,
@@ -298,14 +367,11 @@ export class MatchFormComponent {
         duration: 3000,
       });
       // Update the browser URL without navigation to reflect edit mode
-      const competitionId = this.competitionStore.competition()?.id;
-      if (competitionId) {
-        window.history.replaceState(
-          {},
-          '',
-          `/admin/competicion/${competitionId}/partido/${matchId}`,
-        );
-      }
+      window.history.replaceState(
+        {},
+        '',
+        `/admin/competicion/${competitionId}/partido/${matchId}`,
+      );
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir el partido', 'Cerrar');
@@ -314,10 +380,27 @@ export class MatchFormComponent {
     }
   }
 
-  private async handleUpdateMatch(match: ApiMatch): Promise<void> {
+  private async handleUpdateMatch({
+    match,
+    competitionId,
+    phaseId,
+    groupId,
+  }: {
+    match: ApiMatch;
+    competitionId: number;
+    phaseId: number;
+    groupId: number;
+  }): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminMatchService.updateMatch(match));
+      await firstValueFrom(
+        this.adminMatchService.updateMatch({
+          competitionId,
+          phaseId,
+          groupId,
+          match,
+        }),
+      );
       const updatedMatch: DetailedMatch = {
         id: match.id,
         homeTeam: this.form.get('homeTeam')?.value,
@@ -384,15 +467,9 @@ export class MatchFormComponent {
     this.form
       .get('status')
       ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((status: MatchStatus | null) => {
-        const awayTeamControl = this.form.get('awayTeam');
-        if (status === 'Rest') {
-          awayTeamControl?.setValue(null);
-          awayTeamControl?.disable();
-        } else {
-          awayTeamControl?.enable();
-        }
-        awayTeamControl?.updateValueAndValidity();
+      .subscribe(() => {
+        this.updateAwayTeamInput();
+        this.updateResultInput();
       });
 
     this.form
@@ -461,9 +538,9 @@ export class MatchFormComponent {
           foundPhase = phase;
           foundGroup = group;
           foundAwayTeam =
-            group.teams?.find((t: Team) => t.id === match.awayTeam?.id) ?? null;
+            this.teams().find((t: Team) => t.id === match.awayTeam?.id) ?? null;
           foundHomeTeam =
-            group.teams?.find((t: Team) => t.id === match.homeTeam.id) ?? null;
+            this.teams().find((t: Team) => t.id === match.homeTeam.id) ?? null;
           break;
         }
         if (foundMatch) break;
@@ -674,31 +751,58 @@ export class MatchFormComponent {
   }
 
   private setupGroupChangeEffect(): void {
-    // Subscribe to group form control changes
     this.form
       .get('group')
       ?.valueChanges.pipe(takeUntilDestroyed())
       .subscribe((group: Group | null) => {
-        // Update the selectedGroup signal
         this.selectedGroup.set(group);
+        this.updateAwayTeamInput();
 
         const homeTeamControl = this.form.get('homeTeam');
-        const awayTeamControl = this.form.get('awayTeam');
 
         if (!group) {
-          // Disable team selects and clear selections when no group is selected
           homeTeamControl?.disable();
-          awayTeamControl?.disable();
-          this.form.patchValue({
-            homeTeam: null,
-            awayTeam: null,
-          });
+          homeTeamControl?.setValue(null);
         } else {
-          // Enable team selects when a group is selected
           homeTeamControl?.enable();
-          awayTeamControl?.enable();
         }
       });
+  }
+
+  private updateAwayTeamInput(): void {
+    const awayTeamControl = this.form.get('awayTeam');
+    const statusControl = this.form.get('status');
+    const groupControl = this.form.get('group');
+    if (statusControl?.value === 'Rest' || !groupControl?.value) {
+      awayTeamControl?.setValue(null);
+      awayTeamControl?.disable();
+    } else {
+      awayTeamControl?.enable();
+    }
+    awayTeamControl?.updateValueAndValidity();
+  }
+
+  private updateResultInput(): void {
+    const resultControl = this.form.get('result');
+    const homeTeamScoreControl = this.form.get('homeTeamScore');
+    const awayTeamScoreControl = this.form.get('awayTeamScore');
+    const statusControl = this.form.get('status');
+
+    if (statusControl?.value === 'Finished') {
+      resultControl?.enable();
+      homeTeamScoreControl?.enable();
+      awayTeamScoreControl?.enable();
+    } else {
+      resultControl?.disable();
+      homeTeamScoreControl?.disable();
+      awayTeamScoreControl?.disable();
+      this.form.patchValue({
+        result: null,
+        homeTeamScore: null,
+        awayTeamScore: null,
+      });
+    }
+    resultControl?.updateValueAndValidity();
   }
 
   // Helper methods for finding phases that contain specific groups and rounds

@@ -126,9 +126,9 @@ export class RoundFormComponent {
       }
 
       if (this.isEditMode()) {
-        await this.handleUpdateRound(round, phase);
+        await this.handleUpdateRound(round, phase, competitionId);
       } else {
-        await this.handleAddRound(round, phase);
+        await this.handleAddRound(round, phase, competitionId);
       }
     } else {
       this.form.markAllAsTouched();
@@ -137,7 +137,9 @@ export class RoundFormComponent {
 
   public async onDelete(): Promise<void> {
     const roundId = this.roundId();
-    if (!roundId) {
+    const competitionId = this.competitionStore.competition()?.id;
+    const phase = this.selectedPhase();
+    if (!roundId || !competitionId || !phase) {
       return;
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
@@ -148,19 +150,29 @@ export class RoundFormComponent {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.onConfirmDelete(roundId);
+        this.onConfirmDelete(roundId, competitionId, phase);
       }
     });
   }
 
-  private async onConfirmDelete(roundId: number): Promise<void> {
+  private async onConfirmDelete(
+    roundId: number,
+    competitionId: number,
+    phase: Phase,
+  ): Promise<void> {
     if (!roundId) {
       return;
     }
 
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminRoundService.deleteRound(roundId));
+      await firstValueFrom(
+        this.adminRoundService.deleteRound({
+          competitionId: competitionId,
+          phaseId: phase.id,
+          roundId,
+        }),
+      );
       this.refreshCompetition();
       this.navigateToCompetition();
     } catch (error) {
@@ -185,11 +197,19 @@ export class RoundFormComponent {
     };
   }
 
-  private async handleAddRound(round: Round, _phase: Phase): Promise<void> {
+  private async handleAddRound(
+    round: Round,
+    phase: Phase,
+    competitionId: number,
+  ): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
       const roundId = await firstValueFrom(
-        this.adminRoundService.addRound(round),
+        this.adminRoundService.addRound({
+          competitionId: competitionId,
+          phaseId: phase.id,
+          round,
+        }),
       );
       const newRound = { ...round, id: roundId };
       this.round.set(newRound);
@@ -199,7 +219,6 @@ export class RoundFormComponent {
         duration: 3000,
       });
       // Update the browser URL without navigation to reflect edit mode
-      const competitionId = this.competitionStore.competition()?.id;
       if (competitionId) {
         window.history.replaceState(
           {},
@@ -215,11 +234,21 @@ export class RoundFormComponent {
     }
   }
 
-  private async handleUpdateRound(round: Round, _phase: Phase): Promise<void> {
+  private async handleUpdateRound(
+    round: Round,
+    phase: Phase,
+    competitionId: number,
+  ): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
       const updatedRound = { ...round, id: this.roundId()! };
-      await firstValueFrom(this.adminRoundService.updateRound(updatedRound));
+      await firstValueFrom(
+        this.adminRoundService.updateRound({
+          competitionId: competitionId,
+          phaseId: phase.id,
+          round: updatedRound,
+        }),
+      );
       this.round.set(updatedRound);
       this.refreshCompetition();
       this.snackBar.open('Jornada actualizada correctamente', 'Cerrar', {

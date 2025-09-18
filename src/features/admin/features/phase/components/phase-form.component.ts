@@ -105,11 +105,14 @@ export class PhaseFormComponent {
   public async onSubmit(): Promise<void> {
     if (this.form.valid && !this.isLoading()) {
       const phase = this.formToPhase(this.form);
-
+      const competitionId = this.competitionStore.competition()?.id;
+      if (!competitionId) {
+        return;
+      }
       if (this.isEditMode()) {
-        await this.handleUpdatePhase(phase);
+        await this.handleUpdatePhase(phase, competitionId);
       } else {
-        await this.handleAddPhase(phase);
+        await this.handleAddPhase(phase, competitionId);
       }
     } else {
       this.form.markAllAsTouched();
@@ -118,7 +121,8 @@ export class PhaseFormComponent {
 
   public async onDelete(): Promise<void> {
     const phaseId = this.phaseId();
-    if (!phaseId) {
+    const competitionId = this.competitionStore.competition()?.id;
+    if (!phaseId || !competitionId) {
       return;
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
@@ -129,19 +133,27 @@ export class PhaseFormComponent {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.onConfirmDelete(phaseId);
+        this.onConfirmDelete(phaseId, competitionId);
       }
     });
   }
 
-  private async onConfirmDelete(phaseId: number): Promise<void> {
+  private async onConfirmDelete(
+    phaseId: number,
+    competitionId: number,
+  ): Promise<void> {
     if (!phaseId) {
       return;
     }
 
     this.isLoadingResponse.set(true);
     try {
-      await firstValueFrom(this.adminPhaseService.deletePhase(phaseId));
+      await firstValueFrom(
+        this.adminPhaseService.deletePhase({
+          competitionId: competitionId,
+          phaseId,
+        }),
+      );
       this.refreshCompetition();
       this.navigateToCompetition();
     } catch (error) {
@@ -168,12 +180,18 @@ export class PhaseFormComponent {
     };
   }
 
-  private async handleAddPhase(phase: Phase): Promise<void> {
+  private async handleAddPhase(
+    phase: Phase,
+    competitionId: number,
+  ): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
       const apiPhase = this.phaseToApiPhase(phase);
       const phaseId = await firstValueFrom(
-        this.adminPhaseService.addPhase(apiPhase),
+        this.adminPhaseService.addPhase({
+          competitionId: competitionId,
+          phase: apiPhase,
+        }),
       );
       const newPhase = { ...phase, id: phaseId };
       this.phase.set(newPhase);
@@ -182,15 +200,11 @@ export class PhaseFormComponent {
       this.snackBar.open('Fase añadida correctamente', 'Cerrar', {
         duration: 3000,
       });
-      // Update the browser URL without navigation to reflect edit mode
-      const competitionId = this.competitionStore.competition()?.id;
-      if (competitionId) {
-        window.history.replaceState(
-          {},
-          '',
-          `/admin/competicion/${competitionId}/fase/${phaseId}`,
-        );
-      }
+      window.history.replaceState(
+        {},
+        '',
+        `/admin/competicion/${competitionId}/fase/${phaseId}`,
+      );
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir la fase', 'Cerrar');
@@ -199,12 +213,20 @@ export class PhaseFormComponent {
     }
   }
 
-  private async handleUpdatePhase(phase: Phase): Promise<void> {
+  private async handleUpdatePhase(
+    phase: Phase,
+    competitionId: number,
+  ): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
       const updatedPhase = { ...phase, id: this.phaseId()! };
       const apiPhase = this.phaseToApiPhase(updatedPhase);
-      await firstValueFrom(this.adminPhaseService.updatePhase(apiPhase));
+      await firstValueFrom(
+        this.adminPhaseService.updatePhase({
+          competitionId: competitionId,
+          phase: apiPhase,
+        }),
+      );
       this.phase.set(updatedPhase);
       this.refreshCompetition();
       this.snackBar.open('Fase actualizada correctamente', 'Cerrar', {

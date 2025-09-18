@@ -8,15 +8,41 @@ import { Observable } from 'rxjs';
 export class AdminPhaseService {
   private http = inject(HttpClient);
 
-  addPhase(phase: ApiPhase): Observable<number> {
-    return this.http.post<number>(`${environment.apiUrl}/Phase`, phase);
+  addPhase({
+    competitionId,
+    phase,
+  }: {
+    competitionId: number;
+    phase: ApiPhase;
+  }): Observable<number> {
+    return this.http.post<number>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase`,
+      phase,
+    );
   }
 
-  updatePhase(phase: ApiPhase): Observable<void> {
-    return this.http.put<void>(`${environment.apiUrl}/Phase`, phase);
+  updatePhase({
+    competitionId,
+    phase,
+  }: {
+    competitionId: number;
+    phase: ApiPhase;
+  }): Observable<void> {
+    return this.http.put<void>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase`,
+      phase,
+    );
   }
 
-  deletePhase(phaseId: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/Phase/${phaseId}`);
+  deletePhase({
+    competitionId,
+    phaseId,
+  }: {
+    competitionId: number;
+    phaseId: number;
+  }): Observable<void> {
+    return this.http.delete<void>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}`,
+    );
   }
 }

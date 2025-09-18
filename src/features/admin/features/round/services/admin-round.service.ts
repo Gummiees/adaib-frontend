@@ -8,15 +8,47 @@ import { Observable } from 'rxjs';
 export class AdminRoundService {
   private http = inject(HttpClient);
 
-  addRound(round: Round): Observable<number> {
-    return this.http.post<number>(`${environment.apiUrl}/Round`, round);
+  addRound({
+    competitionId,
+    phaseId,
+    round,
+  }: {
+    competitionId: number;
+    phaseId: number;
+    round: Round;
+  }): Observable<number> {
+    return this.http.post<number>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}/Round`,
+      round,
+    );
   }
 
-  updateRound(round: Round): Observable<void> {
-    return this.http.put<void>(`${environment.apiUrl}/Round`, round);
+  updateRound({
+    competitionId,
+    phaseId,
+    round,
+  }: {
+    competitionId: number;
+    phaseId: number;
+    round: Round;
+  }): Observable<void> {
+    return this.http.put<void>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}/Round`,
+      round,
+    );
   }
 
-  deleteRound(roundId: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/Round/${roundId}`);
+  deleteRound({
+    competitionId,
+    phaseId,
+    roundId,
+  }: {
+    competitionId: number;
+    phaseId: number;
+    roundId: number;
+  }): Observable<void> {
+    return this.http.delete<void>(
+      `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}/Round/${roundId}`,
+    );
   }
 }
