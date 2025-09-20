@@ -85,6 +85,7 @@ export class RoundFormComponent {
   public isEditMode = computed(() => !!this.roundId() || !!this.round()?.id);
 
   private isLoadingResponse = signal(false);
+  private shouldForceFormUpdate = signal(false);
 
   public form!: FormGroup;
 
@@ -96,11 +97,12 @@ export class RoundFormComponent {
   private shouldPopulateForm = computed(() => {
     const competition = this.competitionStore.competition();
     const roundId = this.roundId();
+    const shouldForce = this.shouldForceFormUpdate();
     return !!(
       competition &&
       roundId &&
       !this.competitionStore.isLoading() &&
-      !this.round()
+      (!this.round() || shouldForce)
     );
   });
 
@@ -214,6 +216,7 @@ export class RoundFormComponent {
       const newRound = { ...round, id: roundId };
       this.round.set(newRound);
       this.roundId.set(roundId);
+      this.shouldForceFormUpdate.set(true);
       this.refreshCompetition();
       this.snackBar.open('Jornada añadida correctamente', 'Cerrar', {
         duration: 3000,
@@ -250,6 +253,7 @@ export class RoundFormComponent {
         }),
       );
       this.round.set(updatedRound);
+      this.shouldForceFormUpdate.set(true);
       this.refreshCompetition();
       this.snackBar.open('Jornada actualizada correctamente', 'Cerrar', {
         duration: 3000,
@@ -347,6 +351,8 @@ export class RoundFormComponent {
         phase: foundPhase,
         name: foundRound.name,
       });
+      // Reset the force update flag after successful population
+      this.shouldForceFormUpdate.set(false);
     }
   }
 

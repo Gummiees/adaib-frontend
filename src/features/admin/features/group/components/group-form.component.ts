@@ -94,6 +94,7 @@ export class GroupFormComponent {
   public isEditMode = computed(() => !!this.groupId() || !!this.group()?.id);
 
   private isLoadingResponse = signal(false);
+  private shouldForceFormUpdate = signal(false);
 
   public form!: FormGroup;
 
@@ -105,11 +106,12 @@ export class GroupFormComponent {
   private shouldPopulateForm = computed(() => {
     const competition = this.competitionStore.competition();
     const groupId = this.groupId();
+    const shouldForce = this.shouldForceFormUpdate();
     return !!(
       competition &&
       groupId &&
       !this.competitionStore.isLoading() &&
-      !this.group()
+      (!this.group() || shouldForce)
     );
   });
 
@@ -225,12 +227,13 @@ export class GroupFormComponent {
       const newGroup: Group = {
         id: groupId,
         name: group.name,
-        teamIds: [],
+        teamIds: group.teamIds,
         matches: [],
         classification: [],
       };
       this.group.set(newGroup);
       this.groupId.set(groupId);
+      this.shouldForceFormUpdate.set(true);
       this.refreshCompetition();
       this.snackBar.open('Grupo añadido correctamente', 'Cerrar', {
         duration: 3000,
@@ -271,6 +274,7 @@ export class GroupFormComponent {
         classification: this.group()?.classification || [],
       };
       this.group.set(updatedGroup);
+      this.shouldForceFormUpdate.set(true);
       this.refreshCompetition();
       this.snackBar.open('Grupo actualizado correctamente', 'Cerrar', {
         duration: 3000,
@@ -303,7 +307,7 @@ export class GroupFormComponent {
   }
 
   private setupPhasePreSelection(): void {
-    // Watch for competition changes and pre-select phase from query params
+    // Watch for competition changes and pre-select phase from query params in create mode
     effect(() => {
       const competition = this.competitionStore.competition();
       if (competition && !this.isEditMode()) {
@@ -369,6 +373,8 @@ export class GroupFormComponent {
         name: foundGroup.name,
         teamIds: foundGroup.teamIds,
       });
+      // Reset the force update flag after successful population
+      this.shouldForceFormUpdate.set(false);
     }
   }
 
