@@ -5,7 +5,20 @@ import { ApiMatch, DetailedMatch } from '@shared/models/match';
 import { ApiPhase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
 import { DetailedTeam } from '@shared/models/team';
-import { parseISO } from 'date-fns';
+import { addDays, format, parseISO, subDays } from 'date-fns';
+
+// Helper function to get relative dates
+const getRelativeDate = (
+  daysOffset: number,
+  timeString = '18:00:00',
+): string => {
+  const today = new Date();
+  const targetDate =
+    daysOffset >= 0
+      ? addDays(today, daysOffset)
+      : subDays(today, Math.abs(daysOffset));
+  return format(targetDate, 'yyyy-MM-dd') + `T${timeString}`;
+};
 
 let _fakeTeams: DetailedTeam[] = [
   {
@@ -143,13 +156,13 @@ export const fakeRounds: Round[] = [
 ];
 
 export const fakeMatches: ApiMatch[] = [
-  // FASE INICIAL - Jornada 1
+  // FASE INICIAL - Jornada 1 (Finished matches - past dates)
   {
     id: 1,
     roundId: 1,
     homeTeamId: 1,
     awayTeamId: 2,
-    date: '2025-09-01T18:00:00',
+    date: getRelativeDate(-20, '18:00:00'), // 20 days ago
     location: 'Polideportivo Municipal de Palma',
     homeTeamScore: 85,
     awayTeamScore: 78,
@@ -161,7 +174,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 1,
     homeTeamId: 3,
     awayTeamId: 4,
-    date: '2025-09-01T20:00:00',
+    date: getRelativeDate(-20, '20:00:00'), // 20 days ago
     location: 'Pabellón de Inca',
     homeTeamScore: 92,
     awayTeamScore: 88,
@@ -173,7 +186,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 1,
     homeTeamId: 5,
     awayTeamId: 6,
-    date: '2025-09-02T18:30:00',
+    date: getRelativeDate(-19, '18:30:00'), // 19 days ago
     location: 'Polideportivo de Calvià',
     homeTeamScore: 76,
     awayTeamScore: 82,
@@ -185,7 +198,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 1,
     homeTeamId: 7,
     awayTeamId: 8,
-    date: '2025-09-02T20:00:00',
+    date: getRelativeDate(-19, '20:00:00'), // 19 days ago
     location: 'Polideportivo de Llucmajor',
     homeTeamScore: 89,
     awayTeamScore: 91,
@@ -193,13 +206,13 @@ export const fakeMatches: ApiMatch[] = [
     status: 'Finished',
   },
 
-  // FASE INICIAL - Jornada 2
+  // FASE INICIAL - Jornada 2 (Finished matches - past dates)
   {
     id: 5,
     roundId: 2,
     homeTeamId: 2,
     awayTeamId: 3,
-    date: '2025-09-08T19:00:00',
+    date: getRelativeDate(-13, '19:00:00'), // 13 days ago
     location: 'Polideportivo de Manacor',
     homeTeamScore: 89,
     awayTeamScore: 91,
@@ -211,7 +224,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 2,
     homeTeamId: 4,
     awayTeamId: 5,
-    date: '2025-09-08T20:30:00',
+    date: getRelativeDate(-13, '20:30:00'), // 13 days ago
     location: 'Polideportivo de Sóller',
     homeTeamScore: 83,
     awayTeamScore: 87,
@@ -223,7 +236,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 2,
     homeTeamId: 6,
     awayTeamId: 7,
-    date: '2025-09-09T18:00:00',
+    date: getRelativeDate(-12, '18:00:00'), // 12 days ago
     location: 'Polideportivo de Marratxí',
     homeTeamScore: 79,
     awayTeamScore: 84,
@@ -235,7 +248,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 2,
     homeTeamId: 8,
     awayTeamId: 1,
-    date: '2025-09-09T20:00:00',
+    date: getRelativeDate(-12, '20:00:00'), // 12 days ago
     location: 'Polideportivo de Alcúdia',
     homeTeamScore: 85,
     awayTeamScore: 91,
@@ -243,13 +256,13 @@ export const fakeMatches: ApiMatch[] = [
     status: 'Finished',
   },
 
-  // FASE INICIAL - Jornada 3
+  // FASE INICIAL - Jornada 3 (Mix of finished and ongoing)
   {
     id: 9,
     roundId: 3,
     homeTeamId: 1,
     awayTeamId: 3,
-    date: '2025-09-15T18:00:00',
+    date: getRelativeDate(-6, '18:00:00'), // 6 days ago
     location: 'Polideportivo Municipal de Palma',
     homeTeamScore: 88,
     awayTeamScore: 85,
@@ -261,7 +274,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 3,
     homeTeamId: 2,
     awayTeamId: 4,
-    date: '2025-09-15T19:30:00',
+    date: getRelativeDate(-6, '19:30:00'), // 6 days ago
     location: 'Polideportivo de Manacor',
     homeTeamScore: 91,
     awayTeamScore: 89,
@@ -273,7 +286,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 3,
     homeTeamId: 5,
     awayTeamId: 7,
-    date: '2025-09-16T18:00:00',
+    date: getRelativeDate(0, '18:00:00'), // Today (ongoing)
     location: 'Polideportivo de Calvià',
     homeTeamScore: null,
     awayTeamScore: null,
@@ -285,7 +298,7 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 3,
     homeTeamId: 6,
     awayTeamId: 8,
-    date: '2025-09-16T20:00:00',
+    date: getRelativeDate(-5, '20:00:00'), // 5 days ago
     location: 'Polideportivo de Marratxí',
     homeTeamScore: 87,
     awayTeamScore: 90,
@@ -293,91 +306,91 @@ export const fakeMatches: ApiMatch[] = [
     status: 'Finished',
   },
 
-  // FASE GRUPOS - Jornada 1 (Top 4 teams from Fase Inicial)
+  // FASE GRUPOS - Jornada 1 (Future matches - not started)
   {
     id: 13,
     roundId: 4,
     homeTeamId: 1, // CB Palma (1st)
     awayTeamId: 3, // Inca Basketball (2nd)
-    date: '2025-09-22T18:00:00',
+    date: getRelativeDate(7, '18:00:00'), // 7 days from now
     location: 'Polideportivo Municipal de Palma',
-    homeTeamScore: 95,
-    awayTeamScore: 87,
-    result: 'Home',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
   {
     id: 14,
     roundId: 4,
     homeTeamId: 2, // Manacor Basket (3rd)
     awayTeamId: 4, // Sóller Basket (4th)
-    date: '2025-09-22T20:00:00',
+    date: getRelativeDate(7, '20:00:00'), // 7 days from now
     location: 'Polideportivo de Manacor',
-    homeTeamScore: 88,
-    awayTeamScore: 92,
-    result: 'Away',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
 
-  // FASE GRUPOS - Jornada 2
+  // FASE GRUPOS - Jornada 2 (Future matches)
   {
     id: 15,
     roundId: 5,
     homeTeamId: 3,
     awayTeamId: 2,
-    date: '2025-09-29T18:00:00',
+    date: getRelativeDate(14, '18:00:00'), // 14 days from now
     location: 'Pabellón de Inca',
-    homeTeamScore: 93,
-    awayTeamScore: 89,
-    result: 'Home',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
   {
     id: 16,
     roundId: 5,
     homeTeamId: 4,
     awayTeamId: 1,
-    date: '2025-09-29T20:00:00',
+    date: getRelativeDate(14, '20:00:00'), // 14 days from now
     location: 'Polideportivo de Sóller',
-    homeTeamScore: 85,
-    awayTeamScore: 91,
-    result: 'Away',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
 
-  // FASE GRUPOS - Jornada 3
+  // FASE GRUPOS - Jornada 3 (Future matches)
   {
     id: 17,
     roundId: 6,
     homeTeamId: 1,
     awayTeamId: 4,
-    date: '2025-10-06T18:00:00',
+    date: getRelativeDate(21, '18:00:00'), // 21 days from now
     location: 'Polideportivo Municipal de Palma',
-    homeTeamScore: 89,
-    awayTeamScore: 86,
-    result: 'Home',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
   {
     id: 18,
     roundId: 6,
     homeTeamId: 2,
     awayTeamId: 3,
-    date: '2025-10-06T20:00:00',
+    date: getRelativeDate(21, '20:00:00'), // 21 days from now
     location: 'Polideportivo de Manacor',
-    homeTeamScore: 87,
-    awayTeamScore: 90,
-    result: 'Away',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
 
-  // FASE GRUPOS - Jornada 4 (Postponed match)
+  // FASE GRUPOS - Jornada 4 (Future and cancelled matches)
   {
     id: 19,
     roundId: 7,
     homeTeamId: 1,
     awayTeamId: 2,
-    date: '2025-10-13T18:00:00',
+    date: getRelativeDate(28, '18:00:00'), // 28 days from now
     location: 'Polideportivo Municipal de Palma',
     homeTeamScore: null,
     awayTeamScore: null,
@@ -389,52 +402,52 @@ export const fakeMatches: ApiMatch[] = [
     roundId: 7,
     homeTeamId: 3,
     awayTeamId: 4,
-    date: '2025-10-13T20:00:00',
+    date: getRelativeDate(28, '20:00:00'), // 28 days from now
     location: 'Pabellón de Inca',
-    homeTeamScore: 92,
-    awayTeamScore: 88,
-    result: 'Home',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
 
-  // SEMIFINAL
+  // SEMIFINAL (Future matches)
   {
     id: 21,
     roundId: 8,
     homeTeamId: 1, // CB Palma (1st in groups)
     awayTeamId: 3, // Inca Basketball (2nd in groups)
-    date: '2025-10-20T18:00:00',
+    date: getRelativeDate(35, '18:00:00'), // 35 days from now
     location: 'Polideportivo Municipal de Palma',
-    homeTeamScore: 95,
-    awayTeamScore: 87,
-    result: 'Home',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
   {
     id: 22,
     roundId: 8,
     homeTeamId: 4, // Sóller Basket (3rd in groups)
     awayTeamId: 2, // Manacor Basket (4th in groups)
-    date: '2025-10-20T20:00:00',
+    date: getRelativeDate(35, '20:00:00'), // 35 days from now
     location: 'Polideportivo de Sóller',
-    homeTeamScore: 88,
-    awayTeamScore: 92,
-    result: 'Away',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
 
-  // FINAL
+  // FINAL (Future match)
   {
     id: 23,
     roundId: 9,
     homeTeamId: 1, // CB Palma (Winner semifinal 1)
     awayTeamId: 2, // Manacor Basket (Winner semifinal 2)
-    date: '2025-10-27T18:00:00',
+    date: getRelativeDate(42, '18:00:00'), // 42 days from now
     location: 'Polideportivo Municipal de Palma',
-    homeTeamScore: 89,
-    awayTeamScore: 86,
-    result: 'Home',
-    status: 'Finished',
+    homeTeamScore: null,
+    awayTeamScore: null,
+    result: undefined,
+    status: 'NotStarted',
   },
 ];
 
