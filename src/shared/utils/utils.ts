@@ -3,7 +3,7 @@ import { DetailedMatch, MatchStatus } from '@shared/models/match';
 import { Classification } from '../models/classification';
 
 export const imageUrlRegex =
-  '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?';
+  '^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w%.-]*)*\\.(jpg|jpeg|png|gif|bmp|webp|svg)(?:\\?[\\w%&=.-]*)?$';
 
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
