@@ -788,7 +788,10 @@ export class MatchFormComponent {
     const awayTeamScoreControl = this.form.get('awayTeamScore');
     const statusControl = this.form.get('status');
 
-    if (statusControl?.value === 'Finished') {
+    if (
+      statusControl?.value === 'Finished' ||
+      statusControl?.value === 'Ongoing'
+    ) {
       resultControl?.enable();
       homeTeamScoreControl?.enable();
       awayTeamScoreControl?.enable();

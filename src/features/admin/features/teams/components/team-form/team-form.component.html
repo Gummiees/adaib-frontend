@@ -29,10 +29,6 @@
         <input matInput type="text" formControlName="shortName" />
       </mat-form-field>
       <mat-form-field class="w-full">
-        <mat-label>Descripción</mat-label>
-        <input matInput type="text" formControlName="description" />
-      </mat-form-field>
-      <mat-form-field class="w-full">
         <mat-label>Ubicación</mat-label>
         <input matInput type="text" formControlName="location" />
       </mat-form-field>
@@ -42,6 +38,10 @@
         @if(imageUrl.errors?.['pattern']) {
           <mat-error>La URL de la imagen no es válida</mat-error>
         }
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="description" rows="3"></textarea>
       </mat-form-field>
       <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
         <div class="flex flex-row gap-2 items-center">

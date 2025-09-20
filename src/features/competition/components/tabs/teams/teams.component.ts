@@ -10,7 +10,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { competitionNavEvents } from '@features/competition/store/competition-nav-events';
+import { Router } from '@angular/router';
 import { UserStore } from '@features/user/store/user-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
@@ -34,6 +34,7 @@ import { Team } from '@shared/models/team';
 export class TeamsComponent {
   public userStore = inject(UserStore);
   public dispatcher = inject(Dispatcher);
+  private router = inject(Router);
   public teams = input.required<Team[]>();
   public teamSelected = output<number>();
 
@@ -46,6 +47,6 @@ export class TeamsComponent {
   }
 
   public onEditTeamsClick(): void {
-    this.dispatcher.dispatch(competitionNavEvents.toEditGroup());
+    this.router.navigate(['/admin/equipos']);
   }
 }
