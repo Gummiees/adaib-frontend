@@ -495,41 +495,97 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     position: 1,
     teamId: 1, // CB Palma
     points: 6,
+    played: 3,
+    wins: 3,
+    draws: 0,
+    loses: 0,
+    scored: 264, // 85+91+88
+    conceded: 241, // 78+85+85
+    difference: 23,
   },
   {
     position: 2,
     teamId: 3, // Inca Basketball
     points: 6,
+    played: 3,
+    wins: 3,
+    draws: 0,
+    loses: 0,
+    scored: 268, // 92+91+85
+    conceded: 239, // 88+89+88
+    difference: 29,
   },
   {
     position: 3,
     teamId: 2, // Manacor Basket
     points: 3,
+    played: 3,
+    wins: 1,
+    draws: 0,
+    loses: 2,
+    scored: 257, // 78+89+91
+    conceded: 267, // 85+91+89
+    difference: -10,
   },
   {
     position: 4,
     teamId: 4, // Sóller Basket
     points: 3,
+    played: 3,
+    wins: 1,
+    draws: 0,
+    loses: 2,
+    scored: 256, // 88+83+89
+    conceded: 268, // 92+87+91
+    difference: -12,
   },
   {
     position: 5,
     teamId: 8, // Alcúdia Basket
     points: 3,
+    played: 3,
+    wins: 1,
+    draws: 0,
+    loses: 2,
+    scored: 266, // 91+85+90
+    conceded: 252, // 89+91+87
+    difference: 14,
   },
   {
     position: 6,
     teamId: 6, // Marratxí Basket
     points: 3,
+    played: 3,
+    wins: 1,
+    draws: 0,
+    loses: 2,
+    scored: 248, // 82+79+87
+    conceded: 251, // 76+84+90
+    difference: -3,
   },
   {
     position: 7,
     teamId: 5, // CB Calvià
     points: 0,
+    played: 2, // One match ongoing
+    wins: 0,
+    draws: 0,
+    loses: 2,
+    scored: 163, // 76+87
+    conceded: 169, // 82+87
+    difference: -6,
   },
   {
     position: 8,
     teamId: 7, // CB Llucmajor
     points: 0,
+    played: 2, // One match ongoing
+    wins: 0,
+    draws: 0,
+    loses: 2,
+    scored: 173, // 89+84
+    conceded: 175, // 91+79
+    difference: -2,
   },
 ];
 
@@ -538,22 +594,50 @@ export const fakeClassificationFaseGrupos: ClassificationApi[] = [
   {
     position: 1,
     teamId: 1, // CB Palma
-    points: 6,
+    points: 6, // 3 wins in first 3 group matches
+    played: 3,
+    wins: 3,
+    draws: 0,
+    loses: 0,
+    scored: 255, // Future matches estimated
+    conceded: 235,
+    difference: 20,
   },
   {
     position: 2,
     teamId: 3, // Inca Basketball
-    points: 6,
+    points: 4, // 2 wins, 1 loss
+    played: 3,
+    wins: 2,
+    draws: 0,
+    loses: 1,
+    scored: 248,
+    conceded: 245,
+    difference: 3,
   },
   {
     position: 3,
     teamId: 4, // Sóller Basket
-    points: 3,
+    points: 2, // 1 win, 2 losses
+    played: 3,
+    wins: 1,
+    draws: 0,
+    loses: 2,
+    scored: 241,
+    conceded: 251,
+    difference: -10,
   },
   {
     position: 4,
     teamId: 2, // Manacor Basket
-    points: 0,
+    points: 0, // 0 wins, 3 losses
+    played: 3,
+    wins: 0,
+    draws: 0,
+    loses: 3,
+    scored: 230,
+    conceded: 243,
+    difference: -13,
   },
 ];
 

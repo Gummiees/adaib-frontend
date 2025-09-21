@@ -5,6 +5,7 @@ import {
   input,
   output,
 } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CompactTeamComponent } from '@shared/components/compacted-team/compact-team.component';
 import { Classification } from '@shared/models/classification';
 import { Team } from '@shared/models/team';
@@ -14,18 +15,12 @@ import { Team } from '@shared/models/team';
   templateUrl: './classification-item.component.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, CompactTeamComponent],
+  imports: [CommonModule, CompactTeamComponent, MatTooltipModule],
 })
 export class ClassificationItemComponent {
   public classification = input<Classification | null>(null);
   public isHeader = input<boolean>(false);
   public teamClick = output<Team>();
-
-  public getPointsText(): string {
-    return this.isHeader()
-      ? 'Puntos'
-      : this.classification()!.points.toString();
-  }
 
   public onTeamClicked(team: Team): void {
     this.teamClick.emit(team);

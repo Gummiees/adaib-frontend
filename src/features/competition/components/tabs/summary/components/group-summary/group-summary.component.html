@@ -1,21 +1,21 @@
 @if(group()) {
   <h4 class="text-3xl font-bold text-center pb-2">{{ group()!.name }}</h4>
-  <div class="w-full flex flex-col md:flex-row justify-center gap-4">
+  <div class="w-full flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4">
     @if(hasClassification(group()!)) {
-      <app-group-classification class="flex-1" [group]="group()!" (moreInfoClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-group-classification>
+      <app-group-classification class="flex-1 w-full max-w-200" [group]="group()!" (moreInfoClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-group-classification>
     }
     @if(hasMatches(group()!)) {
-      <app-group-results class="flex-1 max-w-200" [group]="group()!" (moreInfoClick)="onMoreInfoResultsClicked()" (teamClick)="onTeamClicked($event)"></app-group-results>
+      <app-group-results class="flex-1 w-full max-w-200" [group]="group()!" (moreInfoClick)="onMoreInfoResultsClicked()" (teamClick)="onTeamClicked($event)"></app-group-results>
     }
   </div>
 } @else if(!!getGroup(store.group())) {
   <h4 class="text-3xl font-bold text-center pb-2">{{ getGroup(store.group())!.name }}</h4>
-  <div class="w-full flex flex-col md:flex-row justify-center gap-4">
+  <div class="w-full flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4">
     @if(hasClassification(getGroup(store.group())!)) {
-      <app-group-classification class="flex-1" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-group-classification>
+      <app-group-classification class="flex-1 w-full max-w-200" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoClassificationClicked()" (teamClick)="onTeamClicked($event)"></app-group-classification>
     }
     @if(hasMatches(getGroup(store.group())!)) {
-      <app-group-results class="flex-1 max-w-200" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoResultsClicked()" (teamClick)="onTeamClicked($event)"></app-group-results>
+      <app-group-results class="flex-1 w-full max-w-200" [group]="getGroup(store.group())!" (moreInfoClick)="onMoreInfoResultsClicked()" (teamClick)="onTeamClicked($event)"></app-group-results>
     }
   </div>
 } @else {

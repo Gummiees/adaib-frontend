@@ -4,11 +4,16 @@ export interface ClassificationApi {
   position: number;
   teamId: number;
   points: number;
+  played: number;
+  wins: number;
+  draws: number;
+  loses: number;
+  scored: number;
+  conceded: number;
+  difference: number;
 }
 
-export interface Classification {
+export type Classification = Omit<ClassificationApi, 'teamId'> & {
   id: string;
   team: Team;
-  position: number;
-  points: number;
-}
+};

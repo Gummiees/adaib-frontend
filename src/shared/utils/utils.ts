@@ -76,5 +76,5 @@ export function sortMatches(matches: DetailedMatch[]): DetailedMatch[] {
 export function sortClassification(
   classification: Classification[],
 ): Classification[] {
-  return [...classification].sort((a, b) => b.points - a.points);
+  return [...classification].sort((a, b) => a.position - b.position);
 }

@@ -104,6 +104,13 @@ export class CompetitionService {
         id: uuidv4(),
         position: classification.position,
         points: classification.points,
+        played: classification.played,
+        wins: classification.wins,
+        draws: classification.draws,
+        loses: classification.loses,
+        scored: classification.scored,
+        conceded: classification.conceded,
+        difference: classification.difference,
         team: teams.find((team) => team.id === classification.teamId)!,
       }));
   }

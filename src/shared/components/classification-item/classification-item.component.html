@@ -1,12 +1,29 @@
-<div class="w-full flex p-2 sm:p-3 justify-between items-center gap-2 text-lg">
-    <div class="flex items-center gap-2">
-      @if(classification() && !isHeader()) {
-        <p>{{ classification()!.position }}</p>
+<tr [ngClass]="{'bg-gray-100': isHeader(), 'hover:bg-blue-50 transition-colors duration-200': !isHeader()}">
+    @if(isHeader()) {
+      <th class="text-left p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 40%;" matTooltip="Equipo" matTooltipPosition="above">Equipo</th>
+      <th class="text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 10%;" matTooltip="Puntos" matTooltipPosition="above">Pts</th>
+      <th class="hidden sm:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 8%;" matTooltip="Partidos jugados" matTooltipPosition="above">J</th>
+      <th class="hidden sm:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 8%;" matTooltip="Partidos ganados" matTooltipPosition="above">G</th>
+      <th class="hidden sm:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 8%;" matTooltip="Partidos empatados" matTooltipPosition="above">E</th>
+      <th class="hidden sm:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 8%;" matTooltip="Partidos perdidos" matTooltipPosition="above">P</th>
+      <th class="hidden md:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 9%;" matTooltip="Goles a favor" matTooltipPosition="above">GF</th>
+      <th class="hidden md:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 9%;" matTooltip="Goles en contra" matTooltipPosition="above">GC</th>
+      <th class="text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 10%;" matTooltip="Diferencia de goles" matTooltipPosition="above">DG</th>
+    } @else {
+      <td class="p-2 lg:p-3 text-left align-middle" style="width: 40%;">
         <app-compact-team [team]="classification()!.team" fontSize="large" (teamClicked)="onTeamClicked(classification()!.team)"></app-compact-team>
-      }
-      @else {
-        <p class="text-gray-500">Equipo</p>
-      }
-    </div>
-    <p [ngClass]="{'text-gray-500': isHeader()}">{{ getPointsText() }}</p>
-</div>
+      </td>
+      <td class="p-2 lg:p-3 text-center font-bold align-middle" style="width: 10%;">{{ classification()!.points }}</td>
+      <td class="hidden sm:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 8%;">{{ classification()!.played }}</td>
+      <td class="hidden sm:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 8%;">{{ classification()!.wins }}</td>
+      <td class="hidden sm:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 8%;">{{ classification()!.draws }}</td>
+      <td class="hidden sm:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 8%;">{{ classification()!.loses }}</td>
+      <td class="hidden md:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 9%;">{{ classification()!.scored }}</td>
+      <td class="hidden md:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 9%;">{{ classification()!.conceded }}</td>
+      <td class="p-2 lg:p-3 text-center font-semibold align-middle" style="width: 10%;" [ngClass]="{
+        'text-green-600': classification()!.difference > 0,
+        'text-red-600': classification()!.difference < 0,
+        'text-gray-600': classification()!.difference === 0
+      }">{{ classification()!.difference }}</td>
+    }
+</tr>
