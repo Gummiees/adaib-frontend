@@ -16,7 +16,10 @@ export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  if (tokenRefreshService.isTokenExpiredOrExpiring(user)) {
+  // Don't attempt token refresh for auth-related requests to avoid infinite loops
+  const isAuthRequest = req.url.includes('/auth/');
+
+  if (tokenRefreshService.isTokenExpiredOrExpiring(user) && !isAuthRequest) {
     return tokenRefreshService.refreshTokenIfNeeded(user).pipe(
       switchMap((refreshedUser) => {
         const modifiedReq = req.clone({
@@ -43,9 +46,6 @@ export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(modifiedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Don't attempt token refresh for auth-related requests to avoid infinite loops
-      const isAuthRequest = req.url.includes('/auth/');
-
       if (error.status === 401 && user.refreshToken && !isAuthRequest) {
         return tokenRefreshService.refreshTokenIfNeeded(user).pipe(
           switchMap((refreshedUser) => {
