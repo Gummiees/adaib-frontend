@@ -290,7 +290,7 @@ export class MatchFormComponent {
 
   private formToApiMatch(form: FormGroup): FormApiMatch {
     const date = form.get('date')?.value as Date | null;
-    const time = form.get('time')?.value as string | null;
+    const time = form.get('time')?.value as Date | null;
     let combinedDate = date;
 
     if (date && time) {
@@ -310,8 +310,9 @@ export class MatchFormComponent {
     };
   }
 
-  private combineDateAndTime(date: Date, time: string): Date {
-    const [hours, minutes] = time.split(':').map(Number);
+  private combineDateAndTime(date: Date, time: Date): Date {
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
     return setMinutes(setHours(date, hours), minutes);
   }
 
