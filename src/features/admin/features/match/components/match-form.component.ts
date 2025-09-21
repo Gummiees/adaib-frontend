@@ -93,12 +93,13 @@ export class MatchFormComponent {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
+  private allTeams = computed<Team[]>(() => {
+    return this.teamsStore.teams() ?? [];
+  });
   public teams = computed<Team[]>(() => {
     const group = this.selectedGroup();
     return (
-      this.teamsStore
-        .teams()
-        ?.filter((team) => group?.teamIds.includes(team.id)) ?? []
+      this.allTeams()?.filter((team) => group?.teamIds.includes(team.id)) ?? []
     );
   });
   public phases = computed<Phase[]>(() => {
@@ -503,6 +504,7 @@ export class MatchFormComponent {
 
   private populateFormFromMatch(): void {
     const competition = this.competitionStore.competition();
+    const teams = this.allTeams();
     if (!competition) {
       return;
     }
@@ -531,9 +533,9 @@ export class MatchFormComponent {
           foundPhase = phase;
           foundGroup = group;
           foundAwayTeam =
-            this.teams().find((t: Team) => t.id === match.awayTeam?.id) ?? null;
+            teams.find((t: Team) => t.id === match.awayTeam?.id) ?? null;
           foundHomeTeam =
-            this.teams().find((t: Team) => t.id === match.homeTeam.id) ?? null;
+            teams.find((t: Team) => t.id === match.homeTeam.id) ?? null;
           break;
         }
         if (foundMatch) break;
