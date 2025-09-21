@@ -9,7 +9,7 @@ export interface ClassificationApi {
   draws: number;
   loses: number;
   scored: number;
-  conceded: number;
+  conced: number;
   difference: number;
 }
 

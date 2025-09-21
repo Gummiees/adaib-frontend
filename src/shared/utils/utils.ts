@@ -12,9 +12,9 @@ export function capitalize(str: string): string {
 export function getErrorMessage(error: unknown): string {
   let errorMessage = 'Failed to load data';
   if (error instanceof HttpErrorResponse) {
-    if (error.error.message) {
+    if (error.error?.message) {
       errorMessage = error.error.message;
-    } else if (error.error.title) {
+    } else if (error.error?.title) {
       errorMessage = error.error.title;
     }
   } else if (error instanceof Error && error.message) {

@@ -6,9 +6,9 @@
       <th class="hidden sm:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 8%;" matTooltip="Partidos ganados" matTooltipPosition="above">G</th>
       <th class="hidden sm:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 8%;" matTooltip="Partidos empatados" matTooltipPosition="above">E</th>
       <th class="hidden sm:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 8%;" matTooltip="Partidos perdidos" matTooltipPosition="above">P</th>
-      <th class="hidden md:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 9%;" matTooltip="Goles a favor" matTooltipPosition="above">GF</th>
-      <th class="hidden md:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 9%;" matTooltip="Goles en contra" matTooltipPosition="above">GC</th>
-      <th class="text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 10%;" matTooltip="Diferencia de goles" matTooltipPosition="above">DG</th>
+      <th class="hidden md:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 9%;" matTooltip="Puntos a favor" matTooltipPosition="above">PF</th>
+      <th class="hidden md:table-cell text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 9%;" matTooltip="Puntos en contra" matTooltipPosition="above">PC</th>
+      <th class="text-center p-2 lg:p-3 text-xs font-semibold text-gray-700 uppercase align-middle" style="width: 10%;" matTooltip="Diferencia de puntos" matTooltipPosition="above">DP</th>
     } @else {
       <td class="p-2 lg:p-3 text-left align-middle" style="width: 40%;">
         <app-compact-team [team]="classification()!.team" fontSize="large" (teamClicked)="onTeamClicked(classification()!.team)"></app-compact-team>
@@ -19,7 +19,7 @@
       <td class="hidden sm:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 8%;">{{ classification()!.draws }}</td>
       <td class="hidden sm:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 8%;">{{ classification()!.loses }}</td>
       <td class="hidden md:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 9%;">{{ classification()!.scored }}</td>
-      <td class="hidden md:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 9%;">{{ classification()!.conceded }}</td>
+      <td class="hidden md:table-cell p-2 lg:p-3 text-center text-gray-900 align-middle" style="width: 9%;">{{ classification()!.conced }}</td>
       <td class="p-2 lg:p-3 text-center font-semibold align-middle" style="width: 10%;" [ngClass]="{
         'text-green-600': classification()!.difference > 0,
         'text-red-600': classification()!.difference < 0,

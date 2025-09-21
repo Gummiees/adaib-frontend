@@ -109,7 +109,7 @@ export class CompetitionService {
         draws: classification.draws,
         loses: classification.loses,
         scored: classification.scored,
-        conceded: classification.conceded,
+        conced: classification.conced,
         difference: classification.difference,
         team: teams.find((team) => team.id === classification.teamId)!,
       }));
