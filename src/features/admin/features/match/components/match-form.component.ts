@@ -36,10 +36,9 @@ import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinn
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Group } from '@shared/models/group';
 import {
-  ApiMatch,
   DetailedMatch,
+  FormApiMatch,
   Match,
-  MatchResult,
   MatchStatus,
 } from '@shared/models/match';
 import { Phase } from '@shared/models/phase';
@@ -170,10 +169,6 @@ export class MatchFormComponent {
         value: null,
         disabled: true,
       }),
-      result: new FormControl<MatchResult | null>({
-        value: null,
-        disabled: true,
-      }),
       location: new FormControl<string | null>(null),
       status: new FormControl<MatchStatus>('NotStarted', [Validators.required]),
     });
@@ -293,7 +288,7 @@ export class MatchFormComponent {
     }
   }
 
-  private formToApiMatch(form: FormGroup): ApiMatch {
+  private formToApiMatch(form: FormGroup): FormApiMatch {
     const date = form.get('date')?.value as Date | null;
     const time = form.get('time')?.value as string | null;
     let combinedDate = date;
@@ -312,7 +307,6 @@ export class MatchFormComponent {
       homeTeamScore: form.get('homeTeamScore')?.value,
       awayTeamScore: form.get('awayTeamScore')?.value,
       location: this.parseEmptyStringToNull(form.get('location')?.value),
-      result: form.get('result')?.value,
     };
   }
 
@@ -331,7 +325,7 @@ export class MatchFormComponent {
     phaseId,
     groupId,
   }: {
-    match: ApiMatch;
+    match: FormApiMatch;
     competitionId: number;
     phaseId: number;
     groupId: number;
@@ -354,7 +348,6 @@ export class MatchFormComponent {
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
         location: match.location,
-        result: match.result,
         status: match.status,
         round: this.form.get('round')?.value,
         phaseName: this.selectedPhase()?.name || '',
@@ -386,7 +379,7 @@ export class MatchFormComponent {
     phaseId,
     groupId,
   }: {
-    match: ApiMatch;
+    match: FormApiMatch;
     competitionId: number;
     phaseId: number;
     groupId: number;
@@ -409,7 +402,6 @@ export class MatchFormComponent {
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
         location: match.location,
-        result: match.result,
         status: match.status,
         round: this.form.get('round')?.value,
         phaseName: this.selectedPhase()?.name || '',
@@ -469,7 +461,7 @@ export class MatchFormComponent {
       ?.valueChanges.pipe(takeUntilDestroyed())
       .subscribe(() => {
         this.updateAwayTeamInput();
-        this.updateResultInput();
+        this.updateScoreInputs();
       });
 
     this.form
@@ -563,7 +555,6 @@ export class MatchFormComponent {
         homeTeamScore: foundMatch.homeTeamScore,
         awayTeamScore: foundMatch.awayTeamScore,
         location: foundMatch.location,
-        result: foundMatch.result,
         status: foundMatch.status,
       });
     }
@@ -782,8 +773,7 @@ export class MatchFormComponent {
     awayTeamControl?.updateValueAndValidity();
   }
 
-  private updateResultInput(): void {
-    const resultControl = this.form.get('result');
+  private updateScoreInputs(): void {
     const homeTeamScoreControl = this.form.get('homeTeamScore');
     const awayTeamScoreControl = this.form.get('awayTeamScore');
     const statusControl = this.form.get('status');
@@ -792,20 +782,16 @@ export class MatchFormComponent {
       statusControl?.value === 'Finished' ||
       statusControl?.value === 'Ongoing'
     ) {
-      resultControl?.enable();
       homeTeamScoreControl?.enable();
       awayTeamScoreControl?.enable();
     } else {
-      resultControl?.disable();
       homeTeamScoreControl?.disable();
       awayTeamScoreControl?.disable();
       this.form.patchValue({
-        result: null,
         homeTeamScore: null,
         awayTeamScore: null,
       });
     }
-    resultControl?.updateValueAndValidity();
   }
 
   // Helper methods for finding phases that contain specific groups and rounds

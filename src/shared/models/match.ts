@@ -23,6 +23,8 @@ export interface ApiMatch {
   status: MatchStatus;
 }
 
+export type FormApiMatch = Omit<ApiMatch, 'result'>;
+
 export interface Match {
   id: number;
   round: Round;

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { ApiMatch } from '@shared/models/match';
+import { FormApiMatch } from '@shared/models/match';
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AdminMatchService {
     competitionId: number;
     phaseId: number;
     groupId: number;
-    match: ApiMatch;
+    match: FormApiMatch;
   }): Observable<number> {
     return this.http.post<number>(
       `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}/Group/${groupId}/Match`,
@@ -34,7 +34,7 @@ export class AdminMatchService {
     competitionId: number;
     phaseId: number;
     groupId: number;
-    match: ApiMatch;
+    match: FormApiMatch;
   }): Observable<void> {
     return this.http.put<void>(
       `${environment.apiUrl}/Competition/${competitionId}/Phase/${phaseId}/Group/${groupId}/Match`,
@@ -58,7 +58,7 @@ export class AdminMatchService {
     );
   }
 
-  private matchToJson(match: ApiMatch): string {
+  private matchToJson(match: FormApiMatch): string {
     return JSON.stringify(match);
   }
 }
