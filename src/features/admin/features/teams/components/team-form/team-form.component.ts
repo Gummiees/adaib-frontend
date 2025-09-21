@@ -194,6 +194,7 @@ export class TeamFormComponent {
       const newTeam = { ...team, id: teamId };
       this.dispatcher.dispatch(adminTeamsEvent.addTeam(newTeam));
       this.team.set(newTeam);
+      this.form.markAsPristine();
       this.snackBar.open('Equipo añadido correctamente', 'Cerrar', {
         duration: 3000,
       });
@@ -213,6 +214,7 @@ export class TeamFormComponent {
       await firstValueFrom(this.teamsService.updateTeam(team));
       this.dispatcher.dispatch(adminTeamsEvent.updateTeam(team));
       this.team.set(team);
+      this.form.markAsPristine();
       this.snackBar.open('Equipo actualizado correctamente', 'Cerrar', {
         duration: 3000,
       });

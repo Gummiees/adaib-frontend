@@ -117,7 +117,7 @@
           </mat-form-field>
         </div>
         <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
-          <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
+          <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading() || form.pristine">
             {{ isEditMode() ? 'Guardar' : 'Crear' }}
           </button>
         </div>

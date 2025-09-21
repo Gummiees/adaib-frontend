@@ -29,7 +29,7 @@
             Crear nueva jornada
           </a>
         }
-        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
+        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading() || form.pristine">
           {{ isEditMode() ? 'Guardar' : 'Crear' }}
         </button>
       </div>

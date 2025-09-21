@@ -220,6 +220,7 @@ export class CompetitionFormComponent {
         adminCompetitionsEvent.addCompetition(newCompetition),
       );
       this.competition.set(newCompetition);
+      this.form.markAsPristine();
       this.snackBar.open('Competición añadida correctamente', 'Cerrar', {
         duration: 3000,
       });
@@ -249,6 +250,7 @@ export class CompetitionFormComponent {
         adminCompetitionsEvent.updateCompetition(competition),
       );
       this.competition.set(competition);
+      this.form.markAsPristine();
       this.snackBar.open('Competición actualizada correctamente', 'Cerrar', {
         duration: 3000,
       });

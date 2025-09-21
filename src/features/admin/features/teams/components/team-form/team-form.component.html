@@ -48,7 +48,7 @@
           <mat-label>Activo</mat-label>
           <mat-slide-toggle formControlName="active" />
         </div>
-        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading()">
+        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading() || form.pristine">
           {{ submitButtonText }}
         </button>
       </div>

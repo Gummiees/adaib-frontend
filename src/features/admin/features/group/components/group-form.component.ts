@@ -235,6 +235,7 @@ export class GroupFormComponent {
       this.groupId.set(groupId);
       this.shouldForceFormUpdate.set(true);
       this.refreshCompetition();
+      this.form.markAsPristine();
       this.snackBar.open('Grupo añadido correctamente', 'Cerrar', {
         duration: 3000,
       });
@@ -276,6 +277,7 @@ export class GroupFormComponent {
       this.group.set(updatedGroup);
       this.shouldForceFormUpdate.set(true);
       this.refreshCompetition();
+      this.form.markAsPristine();
       this.snackBar.open('Grupo actualizado correctamente', 'Cerrar', {
         duration: 3000,
       });

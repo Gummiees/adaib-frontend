@@ -218,6 +218,7 @@ export class RoundFormComponent {
       this.roundId.set(roundId);
       this.shouldForceFormUpdate.set(true);
       this.refreshCompetition();
+      this.form.markAsPristine();
       this.snackBar.open('Jornada añadida correctamente', 'Cerrar', {
         duration: 3000,
       });
@@ -255,6 +256,7 @@ export class RoundFormComponent {
       this.round.set(updatedRound);
       this.shouldForceFormUpdate.set(true);
       this.refreshCompetition();
+      this.form.markAsPristine();
       this.snackBar.open('Jornada actualizada correctamente', 'Cerrar', {
         duration: 3000,
       });

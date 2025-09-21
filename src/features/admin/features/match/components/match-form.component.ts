@@ -358,6 +358,7 @@ export class MatchFormComponent {
       this.match.set(newMatch);
       this.matchId.set(matchId);
       this.refreshCompetition();
+      this.form.markAsPristine();
       this.snackBar.open('Partido añadido correctamente', 'Cerrar', {
         duration: 3000,
       });
@@ -411,6 +412,7 @@ export class MatchFormComponent {
       };
       this.match.set(updatedMatch);
       this.refreshCompetition();
+      this.form.markAsPristine();
       this.snackBar.open('Partido actualizado correctamente', 'Cerrar', {
         duration: 3000,
       });

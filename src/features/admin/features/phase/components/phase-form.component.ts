@@ -197,6 +197,7 @@ export class PhaseFormComponent {
       this.phase.set(newPhase);
       this.phaseId.set(phaseId);
       this.refreshCompetition();
+      this.form.markAsPristine();
       this.snackBar.open('Fase añadida correctamente', 'Cerrar', {
         duration: 3000,
       });
@@ -229,6 +230,7 @@ export class PhaseFormComponent {
       );
       this.phase.set(updatedPhase);
       this.refreshCompetition();
+      this.form.markAsPristine();
       this.snackBar.open('Fase actualizada correctamente', 'Cerrar', {
         duration: 3000,
       });
