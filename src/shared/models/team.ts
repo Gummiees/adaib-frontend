@@ -6,6 +6,8 @@ export interface Team {
   shortName?: string | null;
   description?: string | null;
   location?: string | null;
+  arena?: string | null;
+  arenaUrl?: string | null;
   imageUrl?: string | null;
   active: boolean;
 }

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Match } from '@shared/models/match';
+import { Team } from '@shared/models/team';
 
 @Component({
   selector: 'app-match-info',
@@ -11,4 +12,5 @@ import { Match } from '@shared/models/match';
 })
 export class MatchInfoComponent {
   public match = input.required<Match>();
+  public homeTeam = input.required<Team>();
 }

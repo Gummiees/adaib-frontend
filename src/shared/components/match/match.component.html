@@ -15,7 +15,7 @@
       <app-compact-team class="flex-1" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)" (teamClicked)="onMatchTeamClicked(match().homeTeam)"></app-compact-team>
       <div class="flex flex-col items-center">
         <app-match-score [match]="match()"></app-match-score>
-        <app-match-info [match]="match()"></app-match-info>
+        <app-match-info [match]="match()" [homeTeam]="match().homeTeam"></app-match-info>
       </div>
       @if(match().awayTeam) {
         <app-compact-team class="flex-1" [team]="match().awayTeam!" position="right" [isWinner]="isTeamWinner(match().awayTeam!)" (teamClicked)="onMatchTeamClicked(match().awayTeam!)"></app-compact-team>

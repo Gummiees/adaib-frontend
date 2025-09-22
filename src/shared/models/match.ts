@@ -18,7 +18,6 @@ export interface ApiMatch {
   date?: string | null;
   homeTeamScore?: number | null;
   awayTeamScore?: number | null;
-  location?: string | null;
   result?: MatchResult | null;
   status: MatchStatus;
 }
@@ -33,7 +32,6 @@ export interface Match {
   date?: Date | null;
   homeTeamScore?: number | null;
   awayTeamScore?: number | null;
-  location?: string | null;
   result?: MatchResult | null;
   status: MatchStatus;
 }

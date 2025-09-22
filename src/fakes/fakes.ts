@@ -31,6 +31,8 @@ let _fakeTeams: DetailedTeam[] = [
       'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
     active: true,
     matches: [],
+    arena: 'Polideportivo Municipal de Palma',
+    arenaUrl: 'https://maps.app.goo.gl/wsSxdFZPiGq6nYQk8',
   },
   {
     id: 2,
@@ -43,6 +45,8 @@ let _fakeTeams: DetailedTeam[] = [
       'https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/100px-Real_Madrid_CF.svg.png',
     active: true,
     matches: [],
+    arena: 'Polideportivo de Manacor',
+    arenaUrl: 'https://maps.app.goo.gl/wsSxdFZPiGq6nYQk8',
   },
   {
     id: 3,
@@ -54,6 +58,8 @@ let _fakeTeams: DetailedTeam[] = [
     imageUrl: 'https://upload.wikimedia.org/wikipedia/sco/c/ce/Valenciacf.svg',
     active: true,
     matches: [],
+    arena: 'Pabellón de Inca',
+    arenaUrl: 'https://maps.app.goo.gl/wsSxdFZPiGq6nYQk8',
   },
   {
     id: 4,
@@ -65,15 +71,12 @@ let _fakeTeams: DetailedTeam[] = [
       'https://upload.wikimedia.org/wikipedia/en/f/f9/Atletico_Madrid_Logo_2024.svg',
     active: true,
     matches: [],
+    arena: 'Polideportivo de Sóller',
+    arenaUrl: 'https://maps.app.goo.gl/wsSxdFZPiGq6nYQk8',
   },
   {
     id: 5,
     name: 'CB Calvià',
-    shortName: 'CAL',
-    description: 'Club de Baloncesto Calvià - De la costa oeste',
-    location: 'Calvià',
-    imageUrl:
-      'https://mediaverse.sevillafc.hiway.media/image/6821b3bf/escudosuizo.jpg',
     active: true,
     matches: [],
   },
@@ -87,6 +90,7 @@ let _fakeTeams: DetailedTeam[] = [
       'https://upload.wikimedia.org/wikipedia/en/b/b9/Villarreal_CF_logo-en.svg',
     active: true,
     matches: [],
+    arena: 'Polideportivo de Marratxí',
   },
   {
     id: 7,
@@ -98,6 +102,7 @@ let _fakeTeams: DetailedTeam[] = [
       'https://upload.wikimedia.org/wikipedia/fr/1/13/Real_betis_logo.svg',
     active: true,
     matches: [],
+    arena: 'Polideportivo de Llucmajor',
   },
   {
     id: 8,
@@ -109,6 +114,7 @@ let _fakeTeams: DetailedTeam[] = [
       'https://upload.wikimedia.org/wikipedia/sco/f/f1/Real_Sociedad_logo.svg',
     active: true,
     matches: [],
+    arena: 'Polideportivo de Alcúdia',
   },
 ];
 
@@ -163,7 +169,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 1,
     awayTeamId: 2,
     date: getRelativeDate(-20, '18:00:00'), // 20 days ago
-    location: 'Polideportivo Municipal de Palma',
     homeTeamScore: 85,
     awayTeamScore: 78,
     result: 'Home',
@@ -175,7 +180,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 3,
     awayTeamId: 4,
     date: getRelativeDate(-20, '20:00:00'), // 20 days ago
-    location: 'Pabellón de Inca',
     homeTeamScore: 92,
     awayTeamScore: 88,
     result: 'Home',
@@ -187,7 +191,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 5,
     awayTeamId: 6,
     date: getRelativeDate(-19, '18:30:00'), // 19 days ago
-    location: 'Polideportivo de Calvià',
     homeTeamScore: 76,
     awayTeamScore: 82,
     result: 'Away',
@@ -199,7 +202,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 7,
     awayTeamId: 8,
     date: getRelativeDate(-19, '20:00:00'), // 19 days ago
-    location: 'Polideportivo de Llucmajor',
     homeTeamScore: 89,
     awayTeamScore: 91,
     result: 'Away',
@@ -213,7 +215,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 2,
     awayTeamId: 3,
     date: getRelativeDate(-13, '19:00:00'), // 13 days ago
-    location: 'Polideportivo de Manacor',
     homeTeamScore: 89,
     awayTeamScore: 91,
     result: 'Away',
@@ -225,7 +226,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 4,
     awayTeamId: 5,
     date: getRelativeDate(-13, '20:30:00'), // 13 days ago
-    location: 'Polideportivo de Sóller',
     homeTeamScore: 83,
     awayTeamScore: 87,
     result: 'Away',
@@ -237,7 +237,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 6,
     awayTeamId: 7,
     date: getRelativeDate(-12, '18:00:00'), // 12 days ago
-    location: 'Polideportivo de Marratxí',
     homeTeamScore: 79,
     awayTeamScore: 84,
     result: 'Away',
@@ -249,7 +248,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 8,
     awayTeamId: 1,
     date: getRelativeDate(-12, '20:00:00'), // 12 days ago
-    location: 'Polideportivo de Alcúdia',
     homeTeamScore: 85,
     awayTeamScore: 91,
     result: 'Away',
@@ -263,7 +261,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 1,
     awayTeamId: 3,
     date: getRelativeDate(-6, '18:00:00'), // 6 days ago
-    location: 'Polideportivo Municipal de Palma',
     homeTeamScore: 88,
     awayTeamScore: 85,
     result: 'Home',
@@ -275,7 +272,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 2,
     awayTeamId: 4,
     date: getRelativeDate(-6, '19:30:00'), // 6 days ago
-    location: 'Polideportivo de Manacor',
     homeTeamScore: 91,
     awayTeamScore: 89,
     result: 'Home',
@@ -287,7 +283,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 5,
     awayTeamId: 7,
     date: getRelativeDate(0, '18:00:00'), // Today (ongoing)
-    location: 'Polideportivo de Calvià',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -299,7 +294,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 6,
     awayTeamId: 8,
     date: getRelativeDate(-5, '20:00:00'), // 5 days ago
-    location: 'Polideportivo de Marratxí',
     homeTeamScore: 87,
     awayTeamScore: 90,
     result: 'Away',
@@ -313,7 +307,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 1, // CB Palma (1st)
     awayTeamId: 3, // Inca Basketball (2nd)
     date: getRelativeDate(7, '18:00:00'), // 7 days from now
-    location: 'Polideportivo Municipal de Palma',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -325,7 +318,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 2, // Manacor Basket (3rd)
     awayTeamId: 4, // Sóller Basket (4th)
     date: getRelativeDate(7, '20:00:00'), // 7 days from now
-    location: 'Polideportivo de Manacor',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -339,7 +331,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 3,
     awayTeamId: 2,
     date: getRelativeDate(14, '18:00:00'), // 14 days from now
-    location: 'Pabellón de Inca',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -351,7 +342,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 4,
     awayTeamId: 1,
     date: getRelativeDate(14, '20:00:00'), // 14 days from now
-    location: 'Polideportivo de Sóller',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -365,7 +355,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 1,
     awayTeamId: 4,
     date: getRelativeDate(21, '18:00:00'), // 21 days from now
-    location: 'Polideportivo Municipal de Palma',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -377,7 +366,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 2,
     awayTeamId: 3,
     date: getRelativeDate(21, '20:00:00'), // 21 days from now
-    location: 'Polideportivo de Manacor',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -391,7 +379,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 1,
     awayTeamId: 2,
     date: getRelativeDate(28, '18:00:00'), // 28 days from now
-    location: 'Polideportivo Municipal de Palma',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -403,7 +390,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 3,
     awayTeamId: 4,
     date: getRelativeDate(28, '20:00:00'), // 28 days from now
-    location: 'Pabellón de Inca',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -417,7 +403,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 1, // CB Palma (1st in groups)
     awayTeamId: 3, // Inca Basketball (2nd in groups)
     date: getRelativeDate(35, '18:00:00'), // 35 days from now
-    location: 'Polideportivo Municipal de Palma',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -429,7 +414,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 4, // Sóller Basket (3rd in groups)
     awayTeamId: 2, // Manacor Basket (4th in groups)
     date: getRelativeDate(35, '20:00:00'), // 35 days from now
-    location: 'Polideportivo de Sóller',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
@@ -443,7 +427,6 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 1, // CB Palma (Winner semifinal 1)
     awayTeamId: 2, // Manacor Basket (Winner semifinal 2)
     date: getRelativeDate(42, '18:00:00'), // 42 days from now
-    location: 'Polideportivo Municipal de Palma',
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
