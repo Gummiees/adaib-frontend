@@ -145,7 +145,6 @@ export class CompetitionService {
         round: round,
         phaseName: phaseName,
         groupName: groupName,
-        location: match.location,
         result: match.result,
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
