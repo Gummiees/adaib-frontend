@@ -178,7 +178,6 @@ export class MatchFormComponent {
         value: null,
         disabled: true,
       }),
-      location: new FormControl<string | null>(null),
       status: new FormControl<MatchStatus>('NotStarted', [Validators.required]),
     });
     this.form.controls['awayTeam'].addValidators([
@@ -329,7 +328,6 @@ export class MatchFormComponent {
       date: combinedDate ? combinedDate.toISOString() : null,
       homeTeamScore: form.get('homeTeamScore')?.value,
       awayTeamScore: form.get('awayTeamScore')?.value,
-      location: this.parseEmptyStringToNull(form.get('location')?.value),
     };
   }
 
@@ -337,10 +335,6 @@ export class MatchFormComponent {
     const hours = time.getHours();
     const minutes = time.getMinutes();
     return setMinutes(setHours(date, hours), minutes);
-  }
-
-  private parseEmptyStringToNull(value: string | null): string | null {
-    return !!value && value.trim() === '' ? null : value;
   }
 
   private async handleAddMatch({
@@ -373,7 +367,6 @@ export class MatchFormComponent {
         date: match.date ? new Date(match.date) : null,
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
-        location: match.location,
         status: match.status,
         round: round,
         phaseName: this.selectedPhase()?.name || '',
@@ -436,7 +429,6 @@ export class MatchFormComponent {
         date: match.date ? new Date(match.date) : null,
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
-        location: match.location,
         status: match.status,
         round: round,
         phaseName: this.selectedPhase()?.name || '',
@@ -597,7 +589,6 @@ export class MatchFormComponent {
         time: foundMatch.date,
         homeTeamScore: foundMatch.homeTeamScore,
         awayTeamScore: foundMatch.awayTeamScore,
-        location: foundMatch.location,
         status: foundMatch.status,
       });
     }
