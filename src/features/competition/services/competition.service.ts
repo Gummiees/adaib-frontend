@@ -106,7 +106,6 @@ export class CompetitionService {
         points: classification.points,
         played: classification.played,
         wins: classification.wins,
-        draws: classification.draws,
         loses: classification.loses,
         scored: classification.scored,
         conced: classification.conced,

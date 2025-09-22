@@ -8,7 +8,7 @@ export type MatchStatus =
   | 'Cancelled'
   | 'Rest';
 
-export type MatchResult = 'Home' | 'Away' | 'Draw';
+export type MatchResult = 'Home' | 'Away';
 
 export interface ApiMatch {
   id: number;

@@ -6,7 +6,6 @@ export interface ClassificationApi {
   points: number;
   played: number;
   wins: number;
-  draws: number;
   loses: number;
   scored: number;
   conced: number;

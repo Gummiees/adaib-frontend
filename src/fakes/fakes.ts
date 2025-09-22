@@ -497,7 +497,6 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     points: 6,
     played: 3,
     wins: 3,
-    draws: 0,
     loses: 0,
     scored: 264, // 85+91+88
     conced: 241, // 78+85+85
@@ -509,7 +508,6 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     points: 6,
     played: 3,
     wins: 3,
-    draws: 0,
     loses: 0,
     scored: 268, // 92+91+85
     conced: 239, // 88+89+88
@@ -521,7 +519,6 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     points: 3,
     played: 3,
     wins: 1,
-    draws: 0,
     loses: 2,
     scored: 257, // 78+89+91
     conced: 267, // 85+91+89
@@ -533,7 +530,6 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     points: 3,
     played: 3,
     wins: 1,
-    draws: 0,
     loses: 2,
     scored: 256, // 88+83+89
     conced: 268, // 92+87+91
@@ -545,7 +541,6 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     points: 3,
     played: 3,
     wins: 1,
-    draws: 0,
     loses: 2,
     scored: 266, // 91+85+90
     conced: 252, // 89+91+87
@@ -557,7 +552,6 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     points: 3,
     played: 3,
     wins: 1,
-    draws: 0,
     loses: 2,
     scored: 248, // 82+79+87
     conced: 251, // 76+84+90
@@ -569,7 +563,6 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     points: 0,
     played: 2, // One match ongoing
     wins: 0,
-    draws: 0,
     loses: 2,
     scored: 163, // 76+87
     conced: 169, // 82+87
@@ -581,7 +574,6 @@ export const fakeClassificationFaseInicial: ClassificationApi[] = [
     points: 0,
     played: 2, // One match ongoing
     wins: 0,
-    draws: 0,
     loses: 2,
     scored: 173, // 89+84
     conced: 175, // 91+79
@@ -597,7 +589,6 @@ export const fakeClassificationFaseGrupos: ClassificationApi[] = [
     points: 6, // 3 wins in first 3 group matches
     played: 3,
     wins: 3,
-    draws: 0,
     loses: 0,
     scored: 255, // Future matches estimated
     conced: 235,
@@ -609,7 +600,6 @@ export const fakeClassificationFaseGrupos: ClassificationApi[] = [
     points: 4, // 2 wins, 1 loss
     played: 3,
     wins: 2,
-    draws: 0,
     loses: 1,
     scored: 248,
     conced: 245,
@@ -621,7 +611,6 @@ export const fakeClassificationFaseGrupos: ClassificationApi[] = [
     points: 2, // 1 win, 2 losses
     played: 3,
     wins: 1,
-    draws: 0,
     loses: 2,
     scored: 241,
     conced: 251,
@@ -633,7 +622,6 @@ export const fakeClassificationFaseGrupos: ClassificationApi[] = [
     points: 0, // 0 wins, 3 losses
     played: 3,
     wins: 0,
-    draws: 0,
     loses: 3,
     scored: 230,
     conced: 243,
