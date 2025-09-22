@@ -12,18 +12,25 @@
   } @else if(isLoading()) {
     <app-full-spinner></app-full-spinner>
   } @else {
-    <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-lg" (ngSubmit)="onSubmit()">
-      <mat-form-field class="w-full">
-        <mat-label>Fase</mat-label>
-        <mat-select formControlName="phase">
-          @for(phase of phases(); track phase.id) {
-            <mat-option [value]="phase">{{ phase.name }}</mat-option>
+    <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-2xl" (ngSubmit)="onSubmit()">
+      <div class="flex flex-row gap-2 items-center w-full">
+        <mat-form-field class="flex-1">
+          <mat-label>Fase</mat-label>
+          <mat-select formControlName="phase">
+            @for(phase of phases(); track phase.id) {
+              <mat-option [value]="phase">{{ phase.name }}</mat-option>
+            }
+          </mat-select>
+          @if(form.get('phase')?.errors?.['required']) {
+            <mat-error>La fase es requerida</mat-error>
           }
-        </mat-select>
-        @if(form.get('phase')?.errors?.['required']) {
-          <mat-error>La fase es requerida</mat-error>
+        </mat-form-field>
+        @if(!!form.get('phase')?.value) {
+          <a mat-mini-fab aria-label="Editar fase" matTooltip="Editar fase" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onEditPhase()" (keyup)="onEditPhase()" (keypress)="onEditPhase()">
+            <mat-icon>edit</mat-icon>
+          </a>
         }
-      </mat-form-field>
+      </div>
       <mat-form-field class="w-full">
         <mat-label>Nombre del grupo</mat-label>
         <input matInput type="text" formControlName="name" />
@@ -43,10 +50,18 @@
       <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
         @if(isEditMode()) {
           <a matButton="outlined" matTooltip="Crear nuevo partido asociado a este grupo" matTooltipPosition="below" tabindex="0" [disabled]="isLoading()" (click)="onAddMatch()" (keyup)="onAddMatch()" (keypress)="onAddMatch()">
-            Crear nuevo partido
+            Añadir partido
           </a>
+          @if(shouldShowCreateButton()) {
+            <a matButton="outlined" matTooltip="Crear nueva jornada asociada a la fase" matTooltipPosition="below" tabindex="0" [disabled]="isLoading()" (click)="onAddRound()" (keyup)="onAddRound()" (keypress)="onAddRound()">
+              Nueva jornada
+            </a>
+            <a matButton="outlined" matTooltip="Crear nuevo grupo" tabindex="0" [disabled]="isLoading()" (click)="onCreateNew()" (keyup)="onCreateNew()" (keypress)="onCreateNew()">
+              Nuevo grupo
+            </a>
+          }
         }
-        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading() || form.pristine">
+        <button matButton="filled" type="submit" [disabled]="isMainButtonDisabled()">
           {{ isEditMode() ? 'Guardar' : 'Crear' }}
         </button>
       </div>

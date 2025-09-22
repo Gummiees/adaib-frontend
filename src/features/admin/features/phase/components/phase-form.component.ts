@@ -92,13 +92,21 @@ export class PhaseFormComponent {
     );
   });
 
+  public shouldShowCreateButton(): boolean {
+    return this.form.pristine;
+  }
+
+  public isMainButtonDisabled(): boolean {
+    return this.form.invalid || this.isLoading() || this.form.pristine;
+  }
+
   constructor() {
     this.form = new FormGroup({
       name: new FormControl<string | null>(null, [Validators.required]),
     });
 
     this.getCompetition();
-    this.checkForEditMode();
+    this.setupRouteParamSubscription();
     this.setupFormPopulation();
   }
 
@@ -251,14 +259,20 @@ export class PhaseFormComponent {
     };
   }
 
-  private checkForEditMode(): void {
-    const phaseId = this.activatedRoute.snapshot.params['phaseId'];
-    if (phaseId) {
-      const parsedPhaseId = Number(phaseId);
-      if (!isNaN(parsedPhaseId)) {
-        this.phaseId.set(parsedPhaseId);
+  private setupRouteParamSubscription(): void {
+    // Subscribe to route param changes to handle navigation within the same component
+    this.activatedRoute.paramMap.subscribe((params) => {
+      const phaseId = params.get('phaseId');
+      if (phaseId) {
+        const parsedPhaseId = Number(phaseId);
+        if (!isNaN(parsedPhaseId)) {
+          this.phaseId.set(parsedPhaseId);
+        }
+      } else {
+        // No phaseId in route, ensure we're in create mode
+        this.resetComponentState();
       }
-    }
+    });
   }
 
   private setupFormPopulation(): void {
@@ -324,6 +338,24 @@ export class PhaseFormComponent {
     );
   }
 
+  public onCreateNew(): void {
+    if (!this.form.pristine) {
+      this.snackBar.open('Hay cambios sin guardar en el formulario', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Reset component state manually
+    this.resetComponentState();
+
+    // Navigate to create new phase page
+    const competitionId = this.competitionStore.competition()?.id;
+    if (competitionId) {
+      this.router.navigate(['/admin/competicion', competitionId, 'fase']);
+    }
+  }
+
   public onAddRound(): void {
     const competition = this.competitionStore.competition();
     const phaseId = this.phaseId();
@@ -333,5 +365,16 @@ export class PhaseFormComponent {
     this.router.navigate(['/admin/competicion', competition.id, 'jornada'], {
       queryParams: { fase: phaseId },
     });
+  }
+
+  private resetComponentState(): void {
+    // Reset internal state
+    this.phaseId.set(null);
+    this.phase.set(null);
+
+    // Reset form to pristine state
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
   }
 }

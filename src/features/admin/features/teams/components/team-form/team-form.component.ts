@@ -103,6 +103,14 @@ export class TeamFormComponent {
     return this.isEditMode() ? 'Actualizar' : 'Añadir';
   }
 
+  public shouldShowCreateButton(): boolean {
+    return this.form.pristine;
+  }
+
+  public isMainButtonDisabled(): boolean {
+    return this.form.invalid || this.isLoading() || this.form.pristine;
+  }
+
   constructor() {
     effect(() => {
       if (this.isLoading()) {
@@ -169,6 +177,18 @@ export class TeamFormComponent {
         this.onConfirmDelete(team.id);
       }
     });
+  }
+
+  public onCreateNew(): void {
+    if (!this.form.pristine) {
+      this.snackBar.open('Hay cambios sin guardar en el formulario', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Navigate to create new team page
+    this.router.navigate(['/admin/equipo']);
   }
 
   private formToTeam(form: FormGroup): Team {

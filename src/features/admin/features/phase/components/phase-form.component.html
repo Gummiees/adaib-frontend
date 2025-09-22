@@ -12,7 +12,7 @@
   } @else if(isLoading()) {
     <app-full-spinner></app-full-spinner>
   } @else {
-    <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-lg" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-2xl" (ngSubmit)="onSubmit()">
       <mat-form-field class="w-full">
         <mat-label>Nombre de la fase</mat-label>
         <input matInput type="text" formControlName="name" />
@@ -23,13 +23,18 @@
       <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
         @if(isEditMode()) {
           <a matButton="outlined" matTooltip="Crear nuevo grupo asociado a esta fase" matTooltipPosition="below" tabindex="0" [disabled]="isLoading()" (click)="onAddGroup()" (keyup)="onAddGroup()" (keypress)="onAddGroup()">
-            Crear nuevo grupo
+            Añadir grupo
           </a>
           <a matButton="outlined" matTooltip="Crear nueva jornada asociada a esta fase" matTooltipPosition="below" tabindex="0" [disabled]="isLoading()" (click)="onAddRound()" (keyup)="onAddRound()" (keypress)="onAddRound()">
-            Crear nueva jornada
+            Añadir jornada
           </a>
         }
-        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading() || form.pristine">
+        @if(isEditMode() && shouldShowCreateButton()) {
+          <a matButton="outlined" matTooltip="Crear nueva fase" tabindex="0" [disabled]="isLoading()" (click)="onCreateNew()" (keyup)="onCreateNew()" (keypress)="onCreateNew()">
+            Nueva fase
+          </a>
+        }
+        <button matButton="filled" type="submit" [disabled]="isMainButtonDisabled()">
           {{ isEditMode() ? 'Guardar' : 'Crear' }}
         </button>
       </div>

@@ -3,7 +3,7 @@ import { Team } from './team';
 
 export type MatchStatus =
   | 'NotStarted'
-  | 'Ongoing'
+  | 'OnGoing'
   | 'Finished'
   | 'Cancelled'
   | 'Rest';

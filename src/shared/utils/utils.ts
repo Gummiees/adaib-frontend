@@ -3,7 +3,7 @@ import { DetailedMatch, MatchStatus } from '@shared/models/match';
 import { Classification } from '../models/classification';
 
 export const imageUrlRegex =
-  '^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w%.-]*)*\\.(jpg|jpeg|png|gif|bmp|webp|svg)(?:\\?[\\w%&=.-]*)?$';
+  '^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w%.-]*)*(?:\\.(jpg|jpeg|png|gif|bmp|webp|svg))?(?:\\?[\\w%&=.:-]*)*(?:#[\\w%-]*)?$';
 
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -25,14 +25,14 @@ export function getErrorMessage(error: unknown): string {
 
 export function sortMatches(matches: DetailedMatch[]): DetailedMatch[] {
   return [...matches].sort((a, b) => {
-    if (a.status === 'Ongoing' && b.status !== 'Ongoing') {
+    if (a.status === 'OnGoing' && b.status !== 'OnGoing') {
       return -1;
     }
-    if (a.status !== 'Ongoing' && b.status === 'Ongoing') {
+    if (a.status !== 'OnGoing' && b.status === 'OnGoing') {
       return 1;
     }
 
-    if (a.status === 'Ongoing' && b.status === 'Ongoing') {
+    if (a.status === 'OnGoing' && b.status === 'OnGoing') {
       if (a.date && !b.date) return 1;
       if (!a.date && b.date) return -1;
       if (a.date && b.date) return b.date.getTime() - a.date.getTime();

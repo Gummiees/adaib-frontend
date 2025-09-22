@@ -291,7 +291,7 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamScore: null,
     awayTeamScore: null,
     result: undefined,
-    status: 'Ongoing',
+    status: 'OnGoing',
   },
   {
     id: 12,

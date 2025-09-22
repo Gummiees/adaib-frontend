@@ -106,6 +106,14 @@ export class RoundFormComponent {
     );
   });
 
+  public shouldShowCreateButton(): boolean {
+    return this.form.pristine;
+  }
+
+  public isMainButtonDisabled(): boolean {
+    return this.form.invalid || this.isLoading() || this.form.pristine;
+  }
+
   constructor() {
     this.form = new FormGroup({
       phase: new FormControl<Phase | null>(null, [Validators.required]),
@@ -113,7 +121,7 @@ export class RoundFormComponent {
     });
 
     this.getCompetition();
-    this.checkForEditMode();
+    this.setupRouteParamSubscription();
     this.setupFormPopulation();
     this.setupPhasePreSelection();
   }
@@ -227,7 +235,7 @@ export class RoundFormComponent {
         window.history.replaceState(
           {},
           '',
-          `/admin/competicion/${competitionId}/jornada/${roundId}`,
+          `/admin/competicion/${competitionId}/jornada/${roundId}?fase=${phase.id}`,
         );
       }
     } catch (error) {
@@ -265,16 +273,6 @@ export class RoundFormComponent {
       this.snackBar.open('Hubo un error al actualizar la jornada', 'Cerrar');
     } finally {
       this.isLoadingResponse.set(false);
-    }
-  }
-
-  private checkForEditMode(): void {
-    const roundId = this.activatedRoute.snapshot.params['roundId'];
-    if (roundId) {
-      const parsedRoundId = Number(roundId);
-      if (!isNaN(parsedRoundId)) {
-        this.roundId.set(parsedRoundId);
-      }
     }
   }
 
@@ -380,6 +378,81 @@ export class RoundFormComponent {
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
   }
 
+  private setupRouteParamSubscription(): void {
+    // Subscribe to route param changes to handle navigation within the same component
+    this.activatedRoute.paramMap.subscribe((params) => {
+      const roundId = params.get('roundId');
+      if (roundId) {
+        const parsedRoundId = Number(roundId);
+        if (!isNaN(parsedRoundId)) {
+          this.roundId.set(parsedRoundId);
+          this.shouldForceFormUpdate.set(true);
+        }
+      } else {
+        // No roundId in route, ensure we're in create mode
+        this.resetComponentState();
+      }
+    });
+  }
+
+  public onCreateNew(): void {
+    if (!this.form.pristine) {
+      this.snackBar.open('Hay cambios sin guardar en el formulario', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Reset component state manually
+    this.resetComponentState();
+
+    // Navigate to create new round page, preserving query parameters
+    const competitionId = this.competitionStore.competition()?.id;
+    if (competitionId) {
+      const queryParams: Params = {};
+
+      // Preserve phase from current selection or query params
+      const currentPhase = this.selectedPhase();
+      if (currentPhase) {
+        queryParams['fase'] = currentPhase.id.toString();
+      } else {
+        // Fallback to query params if no phase is selected
+        const faseId = this.activatedRoute.snapshot.queryParams['fase'];
+        if (faseId) {
+          queryParams['fase'] = faseId;
+        }
+      }
+
+      this.router.navigate(['/admin/competicion', competitionId, 'jornada'], {
+        queryParams,
+      });
+    }
+  }
+
+  public onEditPhase(): void {
+    const phaseId = this.form.get('phase')?.value?.id;
+    if (!phaseId) {
+      return;
+    }
+    this.router.navigate([
+      '/admin/competicion',
+      this.competitionStore.competition()?.id,
+      'fase',
+      phaseId,
+    ]);
+  }
+
+  public onAddGroup(): void {
+    const competitionId = this.competitionStore.competition()?.id;
+    const phaseId = this.form.get('phase')?.value?.id;
+    if (!phaseId || !competitionId) {
+      return;
+    }
+    this.router.navigate(['/admin/competicion', competitionId, 'grupo'], {
+      queryParams: { fase: phaseId },
+    });
+  }
+
   public onAddMatch(): void {
     const competition = this.competitionStore.competition();
     const roundId = this.roundId();
@@ -394,5 +467,25 @@ export class RoundFormComponent {
     this.router.navigate(['/admin/competicion', competition.id, 'partido'], {
       queryParams,
     });
+  }
+
+  private resetComponentState(): void {
+    // Reset internal state
+    this.roundId.set(null);
+    this.round.set(null);
+    this.selectedPhase.set(null);
+    this.shouldForceFormUpdate.set(false);
+
+    // Reset form to pristine state but preserve phase selection
+    const currentPhase = this.form.get('phase')?.value;
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+
+    // Restore phase selection if it existed
+    if (currentPhase) {
+      this.form.patchValue({ phase: currentPhase });
+      this.selectedPhase.set(currentPhase);
+    }
   }
 }

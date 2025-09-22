@@ -16,7 +16,7 @@
   } @else if(isLoading()) {
     <app-full-spinner></app-full-spinner>
   } @else {
-    <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-lg" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-2xl" (ngSubmit)="onSubmit()">
       <mat-form-field class="w-full">
         <mat-label>Nombre</mat-label>
         <input matInput type="text" formControlName="name" />
@@ -48,7 +48,12 @@
           <mat-label>Activo</mat-label>
           <mat-slide-toggle formControlName="active" />
         </div>
-        <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading() || form.pristine">
+        @if(isEditMode() && shouldShowCreateButton()) {
+          <a matButton="outlined" matTooltip="Crear nuevo equipo" tabindex="0" [disabled]="isLoading()" (click)="onCreateNew()" (keyup)="onCreateNew()" (keypress)="onCreateNew()">
+            Nuevo equipo
+          </a>
+        }
+        <button matButton="filled" type="submit" [disabled]="isMainButtonDisabled()">
           {{ submitButtonText }}
         </button>
       </div>

@@ -88,7 +88,7 @@ export class GroupFormComponent {
     return this.teamsStore.teams()?.filter((team) => team.active) ?? [];
   });
 
-  private selectedPhase = signal<Phase | null>(null);
+  public selectedPhase = signal<Phase | null>(null);
   private groupId = signal<number | null>(null);
   private group = signal<Group | null>(null);
   public isEditMode = computed(() => !!this.groupId() || !!this.group()?.id);
@@ -115,6 +115,14 @@ export class GroupFormComponent {
     );
   });
 
+  public shouldShowCreateButton(): boolean {
+    return this.form.pristine;
+  }
+
+  public isMainButtonDisabled(): boolean {
+    return this.form.invalid || this.isLoading() || this.form.pristine;
+  }
+
   constructor() {
     this.form = new FormGroup({
       phase: new FormControl<Phase | null>(null, [Validators.required]),
@@ -123,7 +131,7 @@ export class GroupFormComponent {
     });
 
     this.getCompetition();
-    this.checkForEditMode();
+    this.setupRouteParamSubscription();
     this.setupFormPopulation();
     this.setupPhasePreSelection();
   }
@@ -243,7 +251,7 @@ export class GroupFormComponent {
       window.history.replaceState(
         {},
         '',
-        `/admin/competicion/${competitionId}/grupo/${groupId}`,
+        `/admin/competicion/${competitionId}/grupo/${groupId}?fase=${phase.id}`,
       );
     } catch (error) {
       console.error(error);
@@ -289,14 +297,20 @@ export class GroupFormComponent {
     }
   }
 
-  private checkForEditMode(): void {
-    const groupId = this.activatedRoute.snapshot.params['groupId'];
-    if (groupId) {
-      const parsedGroupId = Number(groupId);
-      if (!isNaN(parsedGroupId)) {
-        this.groupId.set(parsedGroupId);
+  private setupRouteParamSubscription(): void {
+    // Subscribe to route param changes to handle navigation within the same component
+    this.activatedRoute.paramMap.subscribe((params) => {
+      const groupId = params.get('groupId');
+      if (groupId) {
+        const parsedGroupId = Number(groupId);
+        if (!isNaN(parsedGroupId)) {
+          this.groupId.set(parsedGroupId);
+        }
+      } else {
+        // No groupId in route, ensure we're in create mode
+        this.resetComponentState();
       }
-    }
+    });
   }
 
   private setupFormPopulation(): void {
@@ -402,6 +416,63 @@ export class GroupFormComponent {
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
   }
 
+  public onCreateNew(): void {
+    if (!this.form.pristine) {
+      this.snackBar.open('Hay cambios sin guardar en el formulario', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Capture phase information before resetting state
+    const competitionId = this.competitionStore.competition()?.id;
+    const currentPhase = this.selectedPhase();
+    const fallbackFaseId = this.activatedRoute.snapshot.queryParams['fase'];
+
+    // Reset component state manually
+    this.resetComponentState();
+
+    // Navigate to create new group page, preserving query parameters
+    if (competitionId) {
+      const queryParams: Params = {};
+
+      // Preserve phase from current selection or query params
+      if (currentPhase) {
+        queryParams['fase'] = currentPhase.id.toString();
+      } else if (fallbackFaseId) {
+        queryParams['fase'] = fallbackFaseId;
+      }
+
+      this.router.navigate(['/admin/competicion', competitionId, 'grupo'], {
+        queryParams,
+      });
+    }
+  }
+
+  public onAddRound(): void {
+    const competitionId = this.competitionStore.competition()?.id;
+    const phaseId = this.form.get('phase')?.value?.id;
+    if (!phaseId || !competitionId) {
+      return;
+    }
+    this.router.navigate(['/admin/competicion', competitionId, 'jornada'], {
+      queryParams: { fase: phaseId },
+    });
+  }
+
+  public onEditPhase(): void {
+    const phaseId = this.form.get('phase')?.value?.id;
+    if (!phaseId) {
+      return;
+    }
+    this.router.navigate([
+      '/admin/competicion',
+      this.competitionStore.competition()?.id,
+      'fase',
+      phaseId,
+    ]);
+  }
+
   public onAddMatch(): void {
     const competition = this.competitionStore.competition();
     const groupId = this.groupId();
@@ -416,5 +487,25 @@ export class GroupFormComponent {
     this.router.navigate(['/admin/competicion', competition.id, 'partido'], {
       queryParams,
     });
+  }
+
+  private resetComponentState(): void {
+    // Reset internal state
+    this.groupId.set(null);
+    this.group.set(null);
+    this.selectedPhase.set(null);
+    this.shouldForceFormUpdate.set(false);
+
+    // Reset form to pristine state
+    const currentPhase = this.form.get('phase')?.value;
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+
+    // Restore phase selection if it existed
+    if (currentPhase) {
+      this.form.patchValue({ phase: currentPhase });
+      this.selectedPhase.set(currentPhase);
+    }
   }
 }

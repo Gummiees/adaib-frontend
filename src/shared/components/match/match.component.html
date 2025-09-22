@@ -1,7 +1,7 @@
 <div class="w-full max-w-200 flex" [ngClass]="{
   'bg-white rounded-md shadow-sm border border-gray-200': !compactView(),
 }">
-  @if(isMatchOngoing()) {
+  @if(isMatchOnGoing()) {
     <div class="bg-green-500 h-full w-[5px]" [ngClass]="{'rounded-tl-md rounded-bl-md': !compactView()}" aria-label="En juego" matTooltip="En juego" matTooltipPosition="above">
     </div>
   } @else {

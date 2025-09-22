@@ -73,7 +73,7 @@ export class TeamComponent {
         (match) =>
           match.status === 'Finished' ||
           match.status === 'Cancelled' ||
-          match.status === 'Ongoing' ||
+          match.status === 'OnGoing' ||
           (match.date && match.date <= new Date() && match.status === 'Rest'),
       ) || []
     );

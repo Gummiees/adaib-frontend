@@ -120,6 +120,14 @@ export class CompetitionFormComponent {
     return this.isEditMode() ? 'Guardar' : 'Crear';
   }
 
+  public shouldShowCreateButton(): boolean {
+    return this.form.pristine;
+  }
+
+  public isMainButtonDisabled(): boolean {
+    return this.form.invalid || this.isLoading() || this.form.pristine;
+  }
+
   constructor() {
     effect(() => {
       if (this.isLoading()) {
@@ -285,6 +293,30 @@ export class CompetitionFormComponent {
     } finally {
       this.isLoadingResponse.set(false);
     }
+  }
+
+  public onCreateNew(): void {
+    if (!this.form.pristine) {
+      this.snackBar.open('Hay cambios sin guardar en el formulario', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Reset component state
+    this.resetComponentState();
+
+    // Navigate to create new competition page
+    this.router.navigate(['/admin/competicion']);
+  }
+
+  private resetComponentState(): void {
+    this.competition.set(null);
+
+    // Reset form to pristine state
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
   }
 
   public onAddPhase(): void {

@@ -15,45 +15,66 @@
     } @else if(isLoading()) {
       <app-full-spinner></app-full-spinner>
     } @else {
-      <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-lg" (ngSubmit)="onSubmit()">
-        <mat-form-field class="w-full">
-          <mat-label>Fase</mat-label>
-          <mat-select formControlName="phase">
-            @for(phase of phases(); track phase.id) {
-              <mat-option [value]="phase">{{ phase.name }}</mat-option>
+      <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-2xl" (ngSubmit)="onSubmit()">
+        <div class="flex flex-row gap-2 items-center w-full">
+          <mat-form-field class="flex-1">
+            <mat-label>Fase</mat-label>
+            <mat-select formControlName="phase">
+              @for(phase of phases(); track phase.id) {
+                <mat-option [value]="phase">{{ phase.name }}</mat-option>
+              }
+            </mat-select>
+            @if(form.get('phase')?.errors?.['required']) {
+              <mat-error>La fase es requerida</mat-error>
             }
-          </mat-select>
-          @if(form.get('phase')?.errors?.['required']) {
-            <mat-error>La fase es requerida</mat-error>
+          </mat-form-field>
+          @if(!!form.get('phase')?.value) {
+            <a mat-mini-fab aria-label="Editar fase" matTooltip="Editar fase" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onEditPhase()" (keyup)="onEditPhase()" (keypress)="onEditPhase()">
+              <mat-icon>edit</mat-icon>
+            </a>
           }
-        </mat-form-field>
-        <mat-form-field class="w-full">
-          <mat-label>Grupo</mat-label>
-          <mat-select formControlName="group">
-            @for(group of groups(); track group.id) {
-              <mat-option [value]="group">{{ group.name }}</mat-option>
+        </div>
+        <div class="flex flex-row gap-2 items-center w-full">
+          <mat-form-field class="flex-1">
+            <mat-label>Grupo</mat-label>
+            <mat-select formControlName="group">
+              @for(group of groups(); track group.id) {
+                <mat-option [value]="group">{{ group.name }}</mat-option>
+              }
+            </mat-select>
+            @if(form.get('group')?.errors?.['required']) {
+              <mat-error>El grupo es requerido</mat-error>
             }
-          </mat-select>
-          @if(form.get('group')?.errors?.['required']) {
-            <mat-error>El grupo es requerido</mat-error>
+          </mat-form-field>
+          @if(!!form.get('group')?.value) {
+            <a mat-mini-fab aria-label="Editar grupo" matTooltip="Editar grupo" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onEditGroup()" (keyup)="onEditGroup()" (keypress)="onEditGroup()">
+              <mat-icon>edit</mat-icon>
+            </a>
           }
-        </mat-form-field>
-        <mat-form-field class="w-full">
-          <mat-label>Jornada</mat-label>
-          <mat-select formControlName="round">
-            @for(round of rounds(); track round.id) {
-              <mat-option [value]="round">{{ round.name }}</mat-option>
+        </div>
+        <div class="flex flex-row gap-2 items-center w-full">
+          <mat-form-field class="flex-1">
+            <mat-label>Jornada</mat-label>
+            <mat-select formControlName="round">
+              @for(round of rounds(); track round.id) {
+                <mat-option [value]="round">{{ round.name }}</mat-option>
+              }
+            </mat-select>
+            @if(form.get('round')?.errors?.['required']) {
+              <mat-error>La jornada es requerida</mat-error>
             }
-          </mat-select>
-          @if(form.get('round')?.errors?.['required']) {
-            <mat-error>La jornada es requerida</mat-error>
+          </mat-form-field>
+          @if(!!form.get('round')?.value) {
+            <a mat-mini-fab aria-label="Editar jornada" matTooltip="Editar jornada" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onEditRound()" (keyup)="onEditRound()" (keypress)="onEditRound()">
+              <mat-icon>edit</mat-icon>
+            </a>
           }
-        </mat-form-field>
+        </div>
         <mat-form-field class="w-full">
           <mat-label>Estado</mat-label>
           <mat-select formControlName="status">
             <mat-option value="NotStarted">No iniciado</mat-option>
-            <mat-option value="Ongoing">En curso</mat-option>
+            <mat-option value="OnGoing">En curso</mat-option>
             <mat-option value="Cancelled">Cancelado</mat-option>
             <mat-option value="Rest">Descanso</mat-option>
             <mat-option value="Finished">Finalizado</mat-option>
@@ -117,7 +138,12 @@
           </mat-form-field>
         </div>
         <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">
-          <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading() || form.pristine">
+          @if(isEditMode() && shouldShowCreateButton()) {
+            <a matButton="outlined" matTooltip="Crear nuevo partido" tabindex="0" [disabled]="isLoading()" (click)="onCreateNew()" (keyup)="onCreateNew()" (keypress)="onCreateNew()">
+              Nuevo partido
+            </a>
+          }
+          <button matButton="filled" type="submit" [disabled]="isMainButtonDisabled()">
             {{ isEditMode() ? 'Guardar' : 'Crear' }}
           </button>
         </div>

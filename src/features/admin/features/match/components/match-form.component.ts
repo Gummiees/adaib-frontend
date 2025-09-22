@@ -26,7 +26,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { CompetitionService } from '@features/competition/services/competition.service';
 import { competitionEvents } from '@features/competition/store/competition-events';
 import { CompetitionStore } from '@features/competition/store/competition-store';
@@ -147,6 +147,14 @@ export class MatchFormComponent {
     );
   });
 
+  public shouldShowCreateButton(): boolean {
+    return this.form.pristine;
+  }
+
+  public isMainButtonDisabled(): boolean {
+    return this.form.invalid || this.isLoading() || this.form.pristine;
+  }
+
   constructor() {
     this.form = new FormGroup({
       phase: new FormControl<Phase | null>(null, [Validators.required]),
@@ -181,7 +189,7 @@ export class MatchFormComponent {
     ]);
 
     this.getCompetition();
-    this.checkForEditMode();
+    this.setupRouteParamSubscription();
     this.setupFormControlDisabling();
     this.setupFormPopulation();
     this.setupAwayTeamValidator();
@@ -205,15 +213,29 @@ export class MatchFormComponent {
     }
     if (this.form.valid && !this.isLoading()) {
       const match = this.formToApiMatch(this.form);
+      const phase = this.selectedPhase();
+      const group = this.selectedGroup();
+      const round = this.form.get('round')?.value;
+      if (!phase || !group || !round) {
+        return;
+      }
+
       if (this.isEditMode()) {
         await this.handleUpdateMatch({
           match,
           competitionId,
-          phaseId,
-          groupId,
+          phase,
+          group,
+          round,
         });
       } else {
-        await this.handleAddMatch({ match, competitionId, phaseId, groupId });
+        await this.handleAddMatch({
+          match,
+          competitionId,
+          phase,
+          group,
+          round,
+        });
       }
     } else {
       this.form.markAllAsTouched();
@@ -324,21 +346,23 @@ export class MatchFormComponent {
   private async handleAddMatch({
     match,
     competitionId,
-    phaseId,
-    groupId,
+    phase,
+    group,
+    round,
   }: {
     match: FormApiMatch;
     competitionId: number;
-    phaseId: number;
-    groupId: number;
+    phase: Phase;
+    group: Group;
+    round: Round;
   }): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
       const matchId = await firstValueFrom(
         this.adminMatchService.addMatch({
           competitionId,
-          phaseId,
-          groupId,
+          phaseId: phase.id,
+          groupId: group.id,
           match,
         }),
       );
@@ -351,7 +375,7 @@ export class MatchFormComponent {
         awayTeamScore: match.awayTeamScore,
         location: match.location,
         status: match.status,
-        round: this.form.get('round')?.value,
+        round: round,
         phaseName: this.selectedPhase()?.name || '',
         groupName: this.selectedGroup()?.name || '',
       };
@@ -362,12 +386,18 @@ export class MatchFormComponent {
       this.snackBar.open('Partido añadido correctamente', 'Cerrar', {
         duration: 3000,
       });
+
       // Update the browser URL without navigation to reflect edit mode
       window.history.replaceState(
         {},
         '',
-        `/admin/competicion/${competitionId}/partido/${matchId}`,
+        `/admin/competicion/${competitionId}/partido/${matchId}?fase=${phase.id}&grupo=${group.id}&jornada=${round.id}`,
       );
+
+      // Manually trigger query parameter processing since we're not doing a real navigation
+      // The form should maintain its current state as it already has the correct values
+      // But we need to ensure the URL query params are processed for any future operations
+      this.processCurrentQueryParams();
     } catch (error) {
       console.error(error);
       this.snackBar.open('Hubo un error al añadir el partido', 'Cerrar');
@@ -379,21 +409,23 @@ export class MatchFormComponent {
   private async handleUpdateMatch({
     match,
     competitionId,
-    phaseId,
-    groupId,
+    phase,
+    group,
+    round,
   }: {
     match: FormApiMatch;
     competitionId: number;
-    phaseId: number;
-    groupId: number;
+    phase: Phase;
+    group: Group;
+    round: Round;
   }): Promise<void> {
     this.isLoadingResponse.set(true);
     try {
       await firstValueFrom(
         this.adminMatchService.updateMatch({
           competitionId,
-          phaseId,
-          groupId,
+          phaseId: phase.id,
+          groupId: group.id,
           match,
         }),
       );
@@ -406,7 +438,7 @@ export class MatchFormComponent {
         awayTeamScore: match.awayTeamScore,
         location: match.location,
         status: match.status,
-        round: this.form.get('round')?.value,
+        round: round,
         phaseName: this.selectedPhase()?.name || '',
         groupName: this.selectedGroup()?.name || '',
       };
@@ -483,16 +515,22 @@ export class MatchFormComponent {
       });
   }
 
-  private checkForEditMode(): void {
-    const matchId = this.activatedRoute.snapshot.params['matchId'];
-    if (matchId) {
-      const parsedMatchId = Number(matchId);
-      if (!isNaN(parsedMatchId)) {
-        this.matchId.set(parsedMatchId);
+  private setupRouteParamSubscription(): void {
+    // Subscribe to route param changes to handle navigation within the same component
+    this.activatedRoute.paramMap.subscribe((params) => {
+      const matchId = params.get('matchId');
+      if (matchId) {
+        const parsedMatchId = Number(matchId);
+        if (!isNaN(parsedMatchId)) {
+          this.matchId.set(parsedMatchId);
+        } else {
+          this.isMatchNotFound.set(true);
+        }
       } else {
-        this.isMatchNotFound.set(true);
+        // No matchId in route, ensure we're in create mode
+        this.resetComponentState();
       }
-    }
+    });
   }
 
   private setupFormPopulation(): void {
@@ -605,6 +643,13 @@ export class MatchFormComponent {
     // If no phase but group and/or round are provided, search for them
     if (grupoId || jornadaId) {
       this.handleMissingPhaseQueryParam(competition, grupoId, jornadaId);
+    }
+  }
+
+  private processCurrentQueryParams(): void {
+    const competition = this.competitionStore.competition();
+    if (competition) {
+      this.preSelectFromQueryParams(competition);
     }
   }
 
@@ -785,7 +830,7 @@ export class MatchFormComponent {
 
     if (
       statusControl?.value === 'Finished' ||
-      statusControl?.value === 'Ongoing'
+      statusControl?.value === 'OnGoing'
     ) {
       homeTeamScoreControl?.enable();
       awayTeamScoreControl?.enable();
@@ -866,6 +911,140 @@ export class MatchFormComponent {
       phase,
       group,
     });
+  }
+
+  public onCreateNew(): void {
+    if (!this.form.pristine) {
+      this.snackBar.open('Hay cambios sin guardar en el formulario', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Navigate to create new match page, preserving query parameters
+    const competitionId = this.competitionStore.competition()?.id;
+    if (competitionId) {
+      const queryParams: Params = {};
+
+      // Preserve current selections or fallback to query params
+      const currentPhase = this.selectedPhase();
+      const currentGroup = this.selectedGroup();
+      const currentRound = this.form.get('round')?.value;
+      const currentQueryParams = this.activatedRoute.snapshot.queryParams;
+
+      // Preserve phase
+      if (currentPhase) {
+        queryParams['fase'] = currentPhase.id.toString();
+      } else if (currentQueryParams['fase']) {
+        queryParams['fase'] = currentQueryParams['fase'];
+      }
+
+      // Preserve group
+      if (currentGroup) {
+        queryParams['grupo'] = currentGroup.id.toString();
+      } else if (currentQueryParams['grupo']) {
+        queryParams['grupo'] = currentQueryParams['grupo'];
+      }
+
+      // Preserve round
+      if (currentRound) {
+        queryParams['jornada'] = currentRound.id.toString();
+      } else if (currentQueryParams['jornada']) {
+        queryParams['jornada'] = currentQueryParams['jornada'];
+      }
+
+      // Reset component state manually
+      this.resetComponentState();
+
+      this.router.navigate(['/admin/competicion', competitionId, 'partido'], {
+        queryParams,
+      });
+    }
+  }
+
+  private resetComponentState(): void {
+    const currentPhase = this.selectedPhase();
+    const currentGroup = this.selectedGroup();
+    const currentRound = this.form.get('round')?.value;
+
+    // Reset internal state
+    this.matchId.set(null);
+    this.match.set(null);
+    this.selectedPhase.set(null);
+    this.selectedGroup.set(null);
+    this.isMatchNotFound.set(false);
+
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+
+    // Restore selections if they existed
+    if (currentPhase) {
+      this.form.patchValue({ phase: currentPhase });
+      this.selectedPhase.set(currentPhase);
+    }
+    if (currentGroup) {
+      this.form.patchValue({ group: currentGroup });
+      this.selectedGroup.set(currentGroup);
+    }
+    if (currentRound) {
+      this.form.patchValue({ round: currentRound });
+    }
+  }
+
+  public onEditPhase(): void {
+    const phaseId = this.form.get('phase')?.value?.id;
+    if (!phaseId) {
+      return;
+    }
+    this.router.navigate([
+      '/admin/competicion',
+      this.competitionStore.competition()?.id,
+      'fase',
+      phaseId,
+    ]);
+  }
+
+  public onEditGroup(): void {
+    const groupId = this.form.get('group')?.value?.id;
+    if (!groupId) {
+      return;
+    }
+    const phaseId = this.form.get('phase')?.value?.id;
+    const queryParams: Params = {};
+    if (phaseId) {
+      queryParams['fase'] = phaseId;
+    }
+    this.router.navigate(
+      [
+        '/admin/competicion',
+        this.competitionStore.competition()?.id,
+        'grupo',
+        groupId,
+      ],
+      { queryParams },
+    );
+  }
+
+  public onEditRound(): void {
+    const roundId = this.form.get('round')?.value?.id;
+    if (!roundId) {
+      return;
+    }
+    const phaseId = this.form.get('phase')?.value?.id;
+    const queryParams: Params = {};
+    if (phaseId) {
+      queryParams['fase'] = phaseId;
+    }
+    this.router.navigate(
+      [
+        '/admin/competicion',
+        this.competitionStore.competition()?.id,
+        'jornada',
+        roundId,
+      ],
+      { queryParams },
+    );
   }
 
   private selectPhaseAndRound(phase: Phase, round: Round): void {

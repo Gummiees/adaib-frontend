@@ -8,7 +8,7 @@
     }
   </div>
   @if(competitionStore.competition()!.phases.length > 0) {
-    <div class="flex flex-col lg:flex-row gap-2 w-full max-w-200 lg:max-w-none justify-center">
+    <div class="flex flex-col lg:flex-row gap-2 w-full max-w-200 lg:max-w-none justify-center overflow-x-hidden">
       <app-phase-filter class="w-full max-w-200"></app-phase-filter>
 
       @if(availableGroups().length > 0) {

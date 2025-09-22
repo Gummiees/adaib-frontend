@@ -65,8 +65,8 @@ export class MatchComponent {
     this.matchTeamClicked.emit(team);
   }
 
-  public isMatchOngoing(): boolean {
-    return this.match().status === 'Ongoing';
+  public isMatchOnGoing(): boolean {
+    return this.match().status === 'OnGoing';
   }
 
   public onEditMatch(): void {
