@@ -86,6 +86,8 @@ export const UserStore = signalStore(
       isLoading: false,
     })),
     on(userApiEvent.logoutFailure, ({ payload: error }) => ({
+      user: null,
+      userLogin: null,
       isLoading: false,
       error: error,
     })),
@@ -95,7 +97,6 @@ export const UserStore = signalStore(
       error: null,
     })),
     on(userApiEvent.tokenRefreshFailure, ({ payload: error }) => ({
-      user: null,
       isLoading: false,
       error: error,
     })),
@@ -152,7 +153,7 @@ export const UserStore = signalStore(
             }),
             catchError((error) => {
               userStorage.clearUser();
-              snackbar.open(getErrorMessage(error), 'Cerrar');
+              router.navigate(['/inicio']);
               return of(userApiEvent.logoutFailure(getErrorMessage(error)));
             }),
           ),
@@ -166,7 +167,6 @@ export const UserStore = signalStore(
               return of(userApiEvent.tokenRefreshSuccess(refreshedUser));
             }),
             catchError((error) => {
-              // On refresh failure, logout the user
               userStorage.clearUser();
               router.navigate(['/inicio']);
               snackbar.open(
