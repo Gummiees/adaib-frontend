@@ -11,7 +11,7 @@ export class TitleService {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  private readonly baseTitle = 'Basket Web';
+  private readonly baseTitle = 'ADAIB';
 
   public init(): void {
     this.router.events

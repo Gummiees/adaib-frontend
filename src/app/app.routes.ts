@@ -16,6 +16,14 @@ export const routes: Routes = [
   },
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
   {
+    path: 'contacto',
+    loadComponent: () =>
+      import('@features/contact/contact.component').then(
+        (m) => m.ContactComponent,
+      ),
+    data: { title: 'Contacto' },
+  },
+  {
     path: 'noticias',
     loadComponent: () =>
       import('@features/articles/components/all/articles.component').then(

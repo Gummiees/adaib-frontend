@@ -15,13 +15,14 @@
         </button>
       </div>
       <div class="self-center flex items-center justify-center">
-        <a routerLink="/inicio" class="text-white text-xl font-bold">Basket web</a>
+        <a routerLink="/inicio" class="text-white text-xl font-bold">ADAIB</a>
       </div>
       <div class="hidden sm:block sm:ml-6 flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
         <div class="flex space-x-4">
           <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Inicio</a>
           <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Noticias</a>
           <a routerLink="/competiciones" routerLinkActive #competitionsRla="routerLinkActive" [ngClass]="competitionsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="competitionsRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Competiciones</a>
+          <a routerLink="/contacto" routerLinkActive #contactRla="routerLinkActive" [ngClass]="contactRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="contactRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Contacto</a>
           @if(!!user) {
             <a routerLink="/admin/equipos" routerLinkActive #adminRla="routerLinkActive" [ngClass]="adminRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300']" [attr.aria-current]="adminRla.isActive ? 'page' : null" class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700 hover:text-white" (click)="closeMenus()">Admin equipos</a>
           }
@@ -39,6 +40,7 @@
         <a routerLink="/inicio" routerLinkActive #homeRla="routerLinkActive" [ngClass]="homeRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="homeRla.isActive ? 'page' : null" class="block rounded-md px-3 py-3 text-base text-base font-medium" (click)="closeMenus()">Inicio</a>
         <a routerLink="/noticias" routerLinkActive #newsRla="routerLinkActive" [ngClass]="newsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="newsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-3 text-base text-base font-medium" (click)="closeMenus()">Noticias</a>
         <a routerLink="/competiciones" routerLinkActive #competitionsRla="routerLinkActive" [ngClass]="competitionsRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="competitionsRla.isActive ? 'page' : null" class="block rounded-md px-3 py-3 text-base text-base font-medium" (click)="closeMenus()">Competiciones</a>
+        <a routerLink="/contacto" routerLinkActive #contactRla="routerLinkActive" [ngClass]="contactRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="contactRla.isActive ? 'page' : null" class="block rounded-md px-3 py-3 text-base text-base font-medium" (click)="closeMenus()">Contacto</a>
         @if(!!user) {
           <a routerLink="/admin/equipos" routerLinkActive #adminRla="routerLinkActive" [ngClass]="adminRla.isActive ? ['bg-gray-900', 'text-white'] : ['text-gray-300 hover:bg-gray-700 hover:text-white']" [attr.aria-current]="adminRla.isActive ? 'page' : null" class="block rounded-md px-3 py-3 text-base text-base font-medium" (click)="closeMenus()">Admin equipos</a>
         }
