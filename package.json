@@ -1,5 +1,5 @@
 {
-  "name": "asociacion-deportes",
+  "name": "adaib-frontend",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -16,7 +16,7 @@
     "test:coverage": "jest --coverage",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org basket-web --project basket-project ./dist && sentry-cli sourcemaps upload --org basket-web --project basket-project ./dist",
     "prepare": "husky",
-    "lint:staged": "ng lint asociacion-deportes"
+    "lint:staged": "ng lint adaib-frontend"
   },
   "engines": {
     "node": ">= 22.12.0 < 24.0.0"

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "asociacion-deportes": {
+    "adaib-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -75,10 +75,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "asociacion-deportes:build:production"
+              "buildTarget": "adaib-frontend:build:production"
             },
             "development": {
-              "buildTarget": "asociacion-deportes:build:development"
+              "buildTarget": "adaib-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"

@@ -8,7 +8,7 @@ const { execSync } = require("child_process");
 
 try {
   // Run Angular linting for the entire project
-  execSync("ng lint asociacion-deportes --fix", { stdio: "inherit" });
+  execSync("ng lint adaib-frontend --fix", { stdio: "inherit" });
   console.log("✅ Angular linting passed");
 } catch (error) {
   console.error("❌ Angular linting failed");
