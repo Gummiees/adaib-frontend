@@ -1,5 +1,5 @@
 
-<a class="relative flex flex-col bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer transition-all duration-300 ease-in-out hover:shadow-md"
+<a class="group relative flex flex-col bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer transition-all duration-300 ease-in-out hover:shadow-md"
 [routerLink]="routerLink()">
 <div class="flex flex-col">
   @if (card().imageUrl) {
@@ -7,7 +7,7 @@
     <img
       [src]="card().imageUrl"
       [alt]="card().imageAlt"
-      class="w-full h-full object-cover">
+      class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110">
     </div>
   }
   <div class="flex flex-col gap-y-2 p-4">
