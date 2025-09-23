@@ -91,7 +91,9 @@ export class CompetitionFormComponent {
       Validators.required,
       Validators.maxLength(100),
     ]),
-    description: new FormControl<string | null>(null),
+    description: new FormControl<string | null>(null, [
+      Validators.maxLength(1000),
+    ]),
     imageUrl: new FormControl<string | null>(null, [
       Validators.pattern(imageUrlRegex),
       Validators.maxLength(255),
@@ -110,6 +112,10 @@ export class CompetitionFormComponent {
 
   public get imageUrl(): FormControl {
     return this.form.get('imageUrl') as FormControl;
+  }
+
+  public get description(): FormControl {
+    return this.form.get('description') as FormControl;
   }
 
   public isLoading = computed(

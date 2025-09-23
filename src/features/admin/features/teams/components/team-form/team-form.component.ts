@@ -80,7 +80,9 @@ export class TeamFormComponent {
     shortName: new FormControl<string | null>(null, [
       Validators.maxLength(100),
     ]),
-    description: new FormControl<string | null>(null),
+    description: new FormControl<string | null>(null, [
+      Validators.maxLength(1000),
+    ]),
     location: new FormControl<string | null>(null, [Validators.maxLength(100)]),
     arena: new FormControl<string | null>(null, [Validators.maxLength(100)]),
     arenaUrl: new FormControl<string | null>(null, [
@@ -116,6 +118,10 @@ export class TeamFormComponent {
 
   public get imageUrl(): FormControl {
     return this.form.get('imageUrl') as FormControl;
+  }
+
+  public get description(): FormControl {
+    return this.form.get('description') as FormControl;
   }
 
   public isLoading = computed(
