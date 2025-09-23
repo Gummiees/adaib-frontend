@@ -33,6 +33,17 @@
         <input matInput type="text" formControlName="location" />
       </mat-form-field>
       <mat-form-field class="w-full">
+        <mat-label>Ubicación del pabellón</mat-label>
+        <input matInput type="text" formControlName="arena" />
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Maps URL del pabellón</mat-label>
+        <input matInput type="text" formControlName="arenaUrl" />
+        @if(arenaUrl.errors?.['pattern']) {
+          <mat-error>La URL del pabellón no es válida</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="w-full">
         <mat-label>URL de la imagen</mat-label>
         <input matInput type="text" formControlName="imageUrl" />
         @if(imageUrl.errors?.['pattern']) {

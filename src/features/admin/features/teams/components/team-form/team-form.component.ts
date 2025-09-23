@@ -27,7 +27,7 @@ import { DeleteDialogComponent } from '@shared/components/delete-dialog/delete-d
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Team } from '@shared/models/team';
-import { imageUrlRegex } from '@shared/utils/utils';
+import { imageUrlRegex, urlRegex } from '@shared/utils/utils';
 import { firstValueFrom } from 'rxjs';
 import { AdminTeamsService } from '../../services/admin-teams.service';
 import { adminTeamsEvent } from '../../store/admin-teams-events';
@@ -77,6 +77,10 @@ export class TeamFormComponent {
     shortName: new FormControl<string | null>(null),
     description: new FormControl<string | null>(null),
     location: new FormControl<string | null>(null),
+    arena: new FormControl<string | null>(null),
+    arenaUrl: new FormControl<string | null>(null, [
+      Validators.pattern(urlRegex),
+    ]),
     imageUrl: new FormControl<string | null>(null, [
       Validators.pattern(imageUrlRegex),
     ]),
@@ -85,6 +89,10 @@ export class TeamFormComponent {
 
   public get name(): FormControl {
     return this.form.get('name') as FormControl;
+  }
+
+  public get arenaUrl(): FormControl {
+    return this.form.get('arenaUrl') as FormControl;
   }
 
   public get imageUrl(): FormControl {
@@ -141,6 +149,8 @@ export class TeamFormComponent {
           shortName: team.shortName,
           description: team.description,
           location: team.location,
+          arena: team.arena,
+          arenaUrl: team.arenaUrl,
           imageUrl: team.imageUrl,
           active: team.active,
         });
@@ -198,6 +208,8 @@ export class TeamFormComponent {
       shortName: this.parseEmptyStringToNull(form.get('shortName')?.value),
       description: this.parseEmptyStringToNull(form.get('description')?.value),
       location: this.parseEmptyStringToNull(form.get('location')?.value),
+      arena: this.parseEmptyStringToNull(form.get('arena')?.value),
+      arenaUrl: this.parseEmptyStringToNull(form.get('arenaUrl')?.value),
       imageUrl: this.parseEmptyStringToNull(form.get('imageUrl')?.value),
       active: form.get('active')?.value || false,
     };

@@ -4,6 +4,8 @@ import { Classification } from '../models/classification';
 
 export const imageUrlRegex =
   '^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w%.-]*)*(?:\\.(jpg|jpeg|png|gif|bmp|webp|svg))?(?:\\?[\\w%&=.:-]*)*(?:#[\\w%-]*)?$';
+export const urlRegex =
+  '^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w%.-]*)*/?(?:\\?[\\w%&=.:-]*)*(?:#[\\w%-]*)?$';
 
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -32,44 +34,45 @@ export function sortMatches(matches: DetailedMatch[]): DetailedMatch[] {
       return 1;
     }
 
-    if (a.status === 'OnGoing' && b.status === 'OnGoing') {
-      if (a.date && !b.date) return 1;
-      if (!a.date && b.date) return -1;
-      if (a.date && b.date) return b.date.getTime() - a.date.getTime();
-      return 0;
+    const statusGroupFinished: MatchStatus[] = ['Finished', 'Rest', 'NoShow'];
+    if (
+      statusGroupFinished.includes(a.status) &&
+      !statusGroupFinished.includes(b.status)
+    ) {
+      return -1;
+    }
+    if (
+      !statusGroupFinished.includes(a.status) &&
+      statusGroupFinished.includes(b.status)
+    ) {
+      return 1;
     }
 
-    const statusGroup1: MatchStatus[] = ['NotStarted', 'Rest'];
-    const statusGroup2: MatchStatus[] = ['NotStarted', 'Rest'];
-
-    if (statusGroup1.includes(a.status) && statusGroup2.includes(b.status)) {
-      if (a.date && !b.date) return -1;
-      if (!a.date && b.date) return 1;
-      if (a.date && b.date) return b.date.getTime() - a.date.getTime();
-      return 0;
+    if (a.status === 'NotStarted' && b.status !== 'NotStarted') {
+      return -1;
+    }
+    if (a.status !== 'NotStarted' && b.status === 'NotStarted') {
+      return 1;
     }
 
-    if (a.status === 'Finished' && b.status === 'Finished') {
-      if (a.date && !b.date) return -1;
-      if (!a.date && b.date) return 1;
-      if (a.date && b.date) return b.date.getTime() - a.date.getTime();
-      return 0;
+    if (a.status === 'Rest' && b.status !== 'Rest') {
+      return -1;
+    }
+    if (a.status !== 'Rest' && b.status === 'Rest') {
+      return 1;
     }
 
-    if (a.status === 'Cancelled' && b.status === 'Cancelled') {
-      if (a.date && !b.date) return -1;
-      if (!a.date && b.date) return 1;
-      if (a.date && b.date) return b.date.getTime() - a.date.getTime();
-      return 0;
+    if (a.status === 'Cancelled' && b.status !== 'Cancelled') {
+      return -1;
+    }
+    if (a.status !== 'Cancelled' && b.status === 'Cancelled') {
+      return 1;
     }
 
-    const aTime = a.date
-      ? a.date.getTime() - (b.date?.getTime() ?? 0)
-      : -Infinity;
-    const bTime = b.date
-      ? b.date.getTime() - (a.date?.getTime() ?? 0)
-      : -Infinity;
-    return bTime - aTime;
+    if (a.date && !b.date) return 1;
+    if (!a.date && b.date) return -1;
+    if (a.date && b.date) return b.date.getTime() - a.date.getTime();
+    return 0;
   });
 }
 
