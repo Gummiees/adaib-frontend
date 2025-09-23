@@ -5,6 +5,9 @@ import { NotFoundComponent } from '@shared/components/not-found/not-found.compon
 import { AdminCompetitionService } from './features/competition/services/admin-competition.service';
 import { AdminGroupService } from './features/group/services/admin-group.service';
 import { AdminMatchService } from './features/match/services/admin-match.service';
+import { MatchFormDataService } from './features/match/services/match-form-data.service';
+import { MatchFormRouteService } from './features/match/services/match-form-route.service';
+import { MatchFormService } from './features/match/services/match-form.service';
 import { AdminPhaseService } from './features/phase/services/admin-phase.service';
 import { AdminRoundService } from './features/round/services/admin-round.service';
 import { AdminTeamsService } from './features/teams/services/admin-teams.service';
@@ -142,6 +145,9 @@ export const adminRoutes: Routes = [
       AdminMatchService,
       AdminTeamsService,
       AdminTeamsStore,
+      MatchFormService,
+      MatchFormRouteService,
+      MatchFormDataService,
     ],
     data: { title: 'Crear Partido' },
   },
@@ -157,6 +163,9 @@ export const adminRoutes: Routes = [
       AdminMatchService,
       AdminTeamsService,
       AdminTeamsStore,
+      MatchFormService,
+      MatchFormRouteService,
+      MatchFormDataService,
     ],
     data: { title: 'Editar Partido' },
   },

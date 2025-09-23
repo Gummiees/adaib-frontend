@@ -8,12 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -26,7 +21,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CompetitionService } from '@features/competition/services/competition.service';
 import { competitionEvents } from '@features/competition/store/competition-events';
 import { CompetitionStore } from '@features/competition/store/competition-store';
@@ -35,23 +30,17 @@ import { DeleteDialogComponent } from '@shared/components/delete-dialog/delete-d
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { Group } from '@shared/models/group';
-import {
-  DetailedMatch,
-  FormApiMatch,
-  Match,
-  MatchStatus,
-} from '@shared/models/match';
+import { DetailedMatch, FormApiMatch } from '@shared/models/match';
 import { Phase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
 import { Team } from '@shared/models/team';
-import { setHours, setMinutes } from 'date-fns';
 import { firstValueFrom } from 'rxjs';
 import { AdminTeamsService } from '../../teams/services/admin-teams.service';
 import { AdminTeamsStore } from '../../teams/store/admin-teams-store';
 import { AdminMatchService } from '../services/admin-match.service';
-import { awayTeamValidator } from '../validators/away-team.validator';
-import { noShowTeamValidator } from '../validators/no-show-team.validator';
-import { timeValidator } from '../validators/time.validator';
+import { MatchFormDataService } from '../services/match-form-data.service';
+import { MatchFormRouteService } from '../services/match-form-route.service';
+import { MatchFormService } from '../services/match-form.service';
 
 @Component({
   selector: 'app-match-form',
@@ -82,6 +71,9 @@ import { timeValidator } from '../validators/time.validator';
     AdminMatchService,
     AdminTeamsService,
     AdminTeamsStore,
+    MatchFormService,
+    MatchFormRouteService,
+    MatchFormDataService,
   ],
 })
 export class MatchFormComponent {
@@ -91,29 +83,27 @@ export class MatchFormComponent {
   private dispatcher = inject(Dispatcher);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
-  private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
+
+  // Injected services
+  private matchFormService = inject(MatchFormService);
+  private routeService = inject(MatchFormRouteService);
+  private dataService = inject(MatchFormDataService);
 
   private allTeams = computed<Team[]>(() => {
     return this.teamsStore.teams() ?? [];
   });
   public teams = computed<Team[]>(() => {
-    const group = this.selectedGroup();
-    return (
-      this.allTeams()?.filter((team) => group?.teamIds.includes(team.id)) ?? []
+    return this.dataService.getFilteredTeams(
+      this.allTeams(),
+      this.selectedGroup(),
     );
   });
   public selectedTeams = computed<Team[]>(() => {
-    const teams = [];
-    const homeTeam = this.selectedHomeTeam();
-    const awayTeam = this.selectedAwayTeam();
-    if (homeTeam) {
-      teams.push(homeTeam);
-    }
-    if (awayTeam) {
-      teams.push(awayTeam);
-    }
-    return teams;
+    return this.dataService.getSelectedTeams(
+      this.selectedHomeTeam(),
+      this.selectedAwayTeam(),
+    );
   });
   public phases = computed<Phase[]>(() => {
     return this.competitionStore.competition()?.phases ?? [];
@@ -135,6 +125,7 @@ export class MatchFormComponent {
 
   private selectedPhase = signal<Phase | null>(null);
   private selectedGroup = signal<Group | null>(null);
+  private selectedRound = signal<Round | null>(null);
   private selectedHomeTeam = signal<Team | null>(null);
   private selectedAwayTeam = signal<Team | null>(null);
   private matchId = signal<number | null>(null);
@@ -171,40 +162,8 @@ export class MatchFormComponent {
   }
 
   constructor() {
-    this.form = new FormGroup({
-      phase: new FormControl<Phase | null>(null, [Validators.required]),
-      group: new FormControl<Group | null>({ value: null, disabled: true }, [
-        Validators.required,
-      ]),
-      round: new FormControl<Round | null>({ value: null, disabled: true }, [
-        Validators.required,
-      ]),
-      homeTeam: new FormControl<Team | null>({ value: null, disabled: true }, [
-        Validators.required,
-      ]),
-      awayTeam: new FormControl<Team | null>({ value: null, disabled: true }),
-      date: new FormControl<Date | null>(null),
-      time: new FormControl<string | null>(null),
-      homeTeamScore: new FormControl<number | null>({
-        value: null,
-        disabled: true,
-      }),
-      awayTeamScore: new FormControl<number | null>({
-        value: null,
-        disabled: true,
-      }),
-      noShowTeam: new FormControl<Team | null>({
-        value: null,
-        disabled: true,
-      }),
-      status: new FormControl<MatchStatus>('NotStarted', [Validators.required]),
-    });
-    this.form.controls['awayTeam'].addValidators([
-      awayTeamValidator(this.form.get('status')?.value),
-    ]);
-    this.form.controls['time'].addValidators([
-      timeValidator(this.form.get('date')?.value),
-    ]);
+    this.form = this.matchFormService.createForm();
+    this.matchFormService.setupValidators(this.form);
 
     this.getCompetition();
     this.setupRouteParamSubscription();
@@ -215,25 +174,23 @@ export class MatchFormComponent {
 
   public async onSubmit(): Promise<void> {
     const competitionId = this.competitionStore.competition()?.id;
-    const phaseId = this.selectedPhase()?.id;
-    const groupId = this.selectedGroup()?.id;
-    if (!competitionId || !phaseId || !groupId) {
+    const phase = this.selectedPhase();
+    const group = this.selectedGroup();
+    const round = this.selectedRound();
+    if (!competitionId || !phase || !group || !round) {
       return;
     }
 
-    if (!this.isStatusCorrect()) {
+    if (!this.matchFormService.isStatusCorrect(this.form)) {
       this.form.get('awayTeam')?.setErrors({ awayTeamRequired: true });
       this.form.markAllAsTouched();
       return;
     }
     if (this.form.valid && !this.isLoading()) {
-      const match = this.formToApiMatch(this.form);
-      const phase = this.selectedPhase();
-      const group = this.selectedGroup();
-      const round = this.form.get('round')?.value;
-      if (!phase || !group || !round) {
-        return;
-      }
+      const match = this.matchFormService.formToApiMatch(
+        this.form,
+        this.matchId(),
+      );
 
       if (this.isEditMode()) {
         await this.handleUpdateMatch({
@@ -326,34 +283,6 @@ export class MatchFormComponent {
     }
   }
 
-  private formToApiMatch(form: FormGroup): FormApiMatch {
-    const date = form.get('date')?.value as Date | null;
-    const time = form.get('time')?.value as Date | null;
-    let combinedDate = date;
-
-    if (date && time) {
-      combinedDate = this.combineDateAndTime(date, time);
-    }
-
-    return {
-      id: this.isEditMode() ? this.matchId()! : 0,
-      roundId: form.get('round')?.value?.id,
-      homeTeamId: form.get('homeTeam')?.value?.id,
-      awayTeamId: form.get('awayTeam')?.value?.id,
-      noShowTeamId: this.getNoShowTeam()?.id,
-      status: form.get('status')?.value ?? 'NotStarted',
-      date: combinedDate ? combinedDate.toISOString() : null,
-      homeTeamScore: form.get('homeTeamScore')?.value,
-      awayTeamScore: form.get('awayTeamScore')?.value,
-    };
-  }
-
-  private combineDateAndTime(date: Date, time: Date): Date {
-    const hours = time.getHours();
-    const minutes = time.getMinutes();
-    return setMinutes(setHours(date, hours), minutes);
-  }
-
   private async handleAddMatch({
     match,
     competitionId,
@@ -381,14 +310,14 @@ export class MatchFormComponent {
         id: matchId,
         homeTeam: this.form.get('homeTeam')?.value,
         awayTeam: this.form.get('awayTeam')?.value,
-        noShowTeam: this.getNoShowTeam(),
+        noShowTeam: this.form.get('noShowTeam')?.value,
         date: match.date ? new Date(match.date) : null,
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
         status: match.status,
         round: round,
-        phaseName: this.selectedPhase()?.name || '',
-        groupName: this.selectedGroup()?.name || '',
+        phaseName: phase.name,
+        groupName: group.name,
       };
       this.match.set(newMatch);
       this.matchId.set(matchId);
@@ -399,15 +328,15 @@ export class MatchFormComponent {
       });
 
       // Update the browser URL without navigation to reflect edit mode
-      window.history.replaceState(
-        {},
-        '',
-        `/admin/competicion/${competitionId}/partido/${matchId}?fase=${phase.id}&grupo=${group.id}&jornada=${round.id}`,
+      this.routeService.navigateToMatch(
+        competitionId,
+        matchId,
+        phase,
+        group,
+        round,
       );
 
       // Manually trigger query parameter processing since we're not doing a real navigation
-      // The form should maintain its current state as it already has the correct values
-      // But we need to ensure the URL query params are processed for any future operations
       this.processCurrentQueryParams();
     } catch (error) {
       console.error(error);
@@ -444,14 +373,14 @@ export class MatchFormComponent {
         id: match.id,
         homeTeam: this.form.get('homeTeam')?.value,
         awayTeam: this.form.get('awayTeam')?.value,
-        noShowTeam: this.getNoShowTeam(),
+        noShowTeam: this.form.get('noShowTeam')?.value,
         date: match.date ? new Date(match.date) : null,
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
         status: match.status,
         round: round,
-        phaseName: this.selectedPhase()?.name || '',
-        groupName: this.selectedGroup()?.name || '',
+        phaseName: phase.name,
+        groupName: group.name,
       };
       this.match.set(updatedMatch);
       this.refreshCompetition();
@@ -465,14 +394,6 @@ export class MatchFormComponent {
     } finally {
       this.isLoadingResponse.set(false);
     }
-  }
-
-  private getNoShowTeam(): Team | null {
-    const status = this.form.get('status')?.value;
-    if (status === 'NoShow') {
-      return this.form.get('noShowTeam')?.value;
-    }
-    return null;
   }
 
   private setupRouteParamSubscription(): void {
@@ -514,56 +435,27 @@ export class MatchFormComponent {
       return;
     }
 
-    let foundMatch: DetailedMatch | null = null;
-    let foundPhase: Phase | null = null;
-    let foundGroup: Group | null = null;
-    let foundAwayTeam: Team | null = null;
-    let foundHomeTeam: Team | null = null;
-    let foundNoShowTeam: Team | null = null;
+    const matchData = this.dataService.findMatchInCompetition(
+      competition,
+      matchId,
+      teams,
+    );
 
-    for (const phase of competition.phases) {
-      for (const group of phase.groups) {
-        const match = group.matches.find((m: Match) => m.id === matchId);
-        if (match) {
-          foundMatch = {
-            ...match,
-            round: match.round,
-            phaseName: phase.name,
-            groupName: group.name,
-          };
-          foundPhase = phase;
-          foundGroup = group;
-          foundAwayTeam =
-            teams.find((t: Team) => t.id === match.awayTeam?.id) ?? null;
-          foundHomeTeam =
-            teams.find((t: Team) => t.id === match.homeTeam.id) ?? null;
-          foundNoShowTeam =
-            teams.find((t: Team) => t.id === match.noShowTeam?.id) ?? null;
-          break;
-        }
-        if (foundMatch) break;
-      }
-      if (foundMatch) break;
-    }
+    if (matchData) {
+      this.match.set(matchData.match);
+      this.selectedPhase.set(matchData.phase);
+      this.selectedGroup.set(matchData.group);
+      this.selectedRound.set(matchData.match.round);
+      this.selectedHomeTeam.set(matchData.homeTeam);
+      this.selectedAwayTeam.set(matchData.awayTeam);
 
-    if (foundMatch && foundPhase && foundGroup) {
-      this.match.set(foundMatch);
-      this.selectedPhase.set(foundPhase);
-      this.selectedGroup.set(foundGroup);
-      this.selectedHomeTeam.set(foundHomeTeam);
-      this.selectedAwayTeam.set(foundAwayTeam);
-      this.form.patchValue({
-        phase: foundPhase,
-        group: foundGroup,
-        round: foundMatch.round,
-        homeTeam: foundHomeTeam,
-        awayTeam: foundAwayTeam,
-        date: foundMatch.date,
-        time: foundMatch.date,
-        homeTeamScore: foundMatch.homeTeamScore,
-        awayTeamScore: foundMatch.awayTeamScore,
-        status: foundMatch.status,
-        noShowTeam: foundNoShowTeam,
+      this.dataService.populateFormFromMatch(this.form, {
+        match: matchData.match,
+        phaseId: matchData.phase.id,
+        groupId: matchData.group.id,
+        homeTeamId: matchData.homeTeam?.id ?? null,
+        awayTeamId: matchData.awayTeam?.id ?? null,
+        noShowTeamId: matchData.noShowTeam?.id ?? null,
       });
     }
   }
@@ -573,7 +465,7 @@ export class MatchFormComponent {
     effect(() => {
       const competition = this.competitionStore.competition();
       if (competition && !this.isEditMode()) {
-        this.preSelectFromQueryParams(competition);
+        this.routeService.preSelectFromQueryParams(competition, this.form);
       }
     });
   }
@@ -581,163 +473,14 @@ export class MatchFormComponent {
   private navigateToCompetition(): void {
     const competitionId = this.competitionStore.competition()?.id;
     if (competitionId) {
-      this.router.navigate(['/competiciones', competitionId], {
-        queryParams: { tab: 'resultados' },
-      });
-    }
-  }
-
-  private preSelectFromQueryParams(competition: { phases: Phase[] }): void {
-    const queryParams = this.activatedRoute.snapshot.queryParams;
-    const faseId = queryParams['fase'];
-    const grupoId = queryParams['grupo'];
-    const jornadaId = queryParams['jornada'];
-
-    // If all three parameters are provided, use existing logic
-    if (faseId) {
-      const phase = this.findAndSelectPhase(competition, faseId);
-      if (!phase) {
-        return;
-      }
-      // Pre-select group and round if provided
-      this.preSelectGroup(phase, grupoId);
-      this.preSelectRound(phase, jornadaId);
-      return;
-    }
-
-    // If no phase but group and/or round are provided, search for them
-    if (grupoId || jornadaId) {
-      this.handleMissingPhaseQueryParam(competition, grupoId, jornadaId);
+      this.routeService.navigateToCompetition(competitionId);
     }
   }
 
   private processCurrentQueryParams(): void {
     const competition = this.competitionStore.competition();
     if (competition) {
-      this.preSelectFromQueryParams(competition);
-    }
-  }
-
-  private handleMissingPhaseQueryParam(
-    competition: { phases: Phase[] },
-    grupoId: string | undefined,
-    jornadaId: string | undefined,
-  ): void {
-    // Parse IDs if provided
-    const parsedGrupoId = grupoId ? Number(grupoId) : null;
-    const parsedJornadaId = jornadaId ? Number(jornadaId) : null;
-
-    // Validate parsed IDs
-    if (grupoId && (isNaN(parsedGrupoId!) || parsedGrupoId === null)) {
-      console.warn('Invalid grupo ID in query params:', grupoId);
-      return;
-    }
-    if (jornadaId && (isNaN(parsedJornadaId!) || parsedJornadaId === null)) {
-      console.warn('Invalid jornada ID in query params:', jornadaId);
-      return;
-    }
-
-    // Case 1: Both group and round are provided - find phase that contains both
-    if (parsedGrupoId !== null && parsedJornadaId !== null) {
-      const foundPhase = this.findPhaseWithGroupAndRound(
-        competition,
-        parsedGrupoId,
-        parsedJornadaId,
-      );
-      if (foundPhase) {
-        this.selectPhaseGroupAndRound(
-          foundPhase.phase,
-          foundPhase.group,
-          foundPhase.round,
-        );
-      }
-      return;
-    }
-
-    // Case 2: Only group is provided - find phase that contains this group
-    if (parsedGrupoId !== null) {
-      const foundPhase = this.findPhaseWithGroup(competition, parsedGrupoId);
-      if (foundPhase) {
-        this.selectPhaseAndGroup(foundPhase.phase, foundPhase.group);
-      }
-      return;
-    }
-
-    // Case 3: Only round is provided - find phase that contains this round
-    if (parsedJornadaId !== null) {
-      const foundPhase = this.findPhaseWithRound(competition, parsedJornadaId);
-      if (foundPhase) {
-        this.selectPhaseAndRound(foundPhase.phase, foundPhase.round);
-      }
-    }
-  }
-
-  private findAndSelectPhase(
-    competition: { phases: Phase[] },
-    faseId: string,
-  ): Phase | null {
-    const parsedFaseId = Number(faseId);
-    if (isNaN(parsedFaseId)) {
-      console.warn('Invalid fase ID in query params:', faseId);
-      return null;
-    }
-
-    const phase = competition.phases.find((p: Phase) => p.id === parsedFaseId);
-    if (!phase) {
-      console.warn(
-        'Phase with ID',
-        parsedFaseId,
-        'not found in competition phases',
-      );
-      return null;
-    }
-
-    // Pre-select phase
-    this.form.patchValue({ phase });
-    this.selectedPhase.set(phase);
-    return phase;
-  }
-
-  private preSelectGroup(phase: Phase, grupoId: string | undefined): void {
-    if (!grupoId) {
-      return;
-    }
-
-    const parsedGrupoId = Number(grupoId);
-    if (isNaN(parsedGrupoId)) {
-      console.warn('Invalid grupo ID in query params:', grupoId);
-      return;
-    }
-
-    const group = phase.groups.find((g: Group) => g.id === parsedGrupoId);
-    if (group) {
-      this.form.patchValue({ group });
-      this.selectedGroup.set(group);
-    } else {
-      console.warn('Group with ID', parsedGrupoId, 'not found in phase groups');
-    }
-  }
-
-  private preSelectRound(phase: Phase, jornadaId: string | undefined): void {
-    if (!jornadaId) {
-      return;
-    }
-
-    const parsedJornadaId = Number(jornadaId);
-    if (isNaN(parsedJornadaId)) {
-      console.warn('Invalid jornada ID in query params:', jornadaId);
-      return;
-    }
-
-    const round = phase.rounds.find((r: Round) => r.id === parsedJornadaId);
-    if (round) {
-      this.form.patchValue({ round });
-    } else {
-      console.warn(
-        'Round with ID',
-        parsedJornadaId,
-        'not found in phase rounds',
-      );
+      this.routeService.processCurrentQueryParams(competition, this.form);
     }
   }
 
@@ -759,6 +502,7 @@ export class MatchFormComponent {
   private setupFormControlEffects(): void {
     this.setupPhaseChangeEffect();
     this.setupGroupChangeEffect();
+    this.setupRoundChangeEffect();
     this.setupStatusChangeEffect();
     this.setupDateChangeEffect();
     this.setupHomeTeamChangeEffect();
@@ -767,9 +511,13 @@ export class MatchFormComponent {
 
   private setupHomeTeamChangeEffect(): void {
     this.form
-      .get('homeTeam')
+      .get('homeTeamId')
       ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((homeTeam: Team | null) => {
+      .subscribe((homeTeamId: number | null) => {
+        const homeTeam = this.teams().find((team) => team.id === homeTeamId);
+        if (!homeTeam) {
+          return;
+        }
         this.selectedHomeTeam.set(homeTeam);
         this.updateNoShowTeamInput();
       });
@@ -777,9 +525,13 @@ export class MatchFormComponent {
 
   private setupAwayTeamChangeEffect(): void {
     this.form
-      .get('awayTeam')
+      .get('awayTeamId')
       ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((awayTeam: Team | null) => {
+      .subscribe((awayTeamId: number | null) => {
+        const awayTeam = this.teams().find((team) => team.id === awayTeamId);
+        if (!awayTeam) {
+          return;
+        }
         this.selectedAwayTeam.set(awayTeam);
         this.updateNoShowTeamInput();
       });
@@ -789,15 +541,8 @@ export class MatchFormComponent {
     this.form
       .get('date')
       ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((date: Date | null) => {
-        const timeControl = this.form.get('time');
-        if (!date) {
-          timeControl?.setValue(null);
-          timeControl?.disable();
-        } else {
-          timeControl?.enable();
-        }
-        timeControl?.updateValueAndValidity();
+      .subscribe(() => {
+        this.matchFormService.updateDateTimeInputs(this.form);
       });
   }
 
@@ -806,180 +551,63 @@ export class MatchFormComponent {
       .get('status')
       ?.valueChanges.pipe(takeUntilDestroyed())
       .subscribe(() => {
-        this.updateAwayTeamInput();
-        this.updateScoreInputs();
+        this.matchFormService.updateFormControlStates(this.form);
         this.updateNoShowTeamInput();
       });
   }
 
   private setupPhaseChangeEffect(): void {
     this.form
-      .get('phase')
+      .get('phaseId')
       ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((phase: Phase | null) => {
-        const groupControl = this.form.get('group');
-        const roundControl = this.form.get('round');
-        this.selectedPhase.set(phase);
-        if (phase) {
-          groupControl?.enable();
-          roundControl?.enable();
-        } else {
-          groupControl?.setValue(null);
-          groupControl?.disable();
-          roundControl?.setValue(null);
-          roundControl?.disable();
+      .subscribe((phaseId: number | null) => {
+        const phase = this.phases().find((phase) => phase.id === phaseId);
+        if (!phase) {
+          return;
         }
+        this.selectedPhase.set(phase);
+        this.matchFormService.updatePhaseInputs(this.form, phaseId);
       });
   }
 
   private setupGroupChangeEffect(): void {
     this.form
-      .get('group')
+      .get('groupId')
       ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((group: Group | null) => {
-        this.selectedGroup.set(group);
-        this.updateAwayTeamInput();
-
-        const homeTeamControl = this.form.get('homeTeam');
-
+      .subscribe((groupId: number | null) => {
+        const group = this.groups().find((group) => group.id === groupId);
         if (!group) {
-          homeTeamControl?.disable();
-          homeTeamControl?.setValue(null);
-        } else {
-          homeTeamControl?.enable();
+          return;
         }
+        this.selectedGroup.set(group);
+        this.matchFormService.updateGroupInputs(this.form, groupId);
+        this.updateAwayTeamInput();
+      });
+  }
+
+  private setupRoundChangeEffect(): void {
+    this.form
+      .get('roundId')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((roundId: number | null) => {
+        const round = this.rounds().find((round) => round.id === roundId);
+        if (!round) {
+          return;
+        }
+        this.selectedRound.set(round);
       });
   }
 
   private updateAwayTeamInput(): void {
-    const awayTeamControl = this.form.get('awayTeam');
-    const statusControl = this.form.get('status');
-    const groupControl = this.form.get('group');
-    if (statusControl?.value === 'Rest' || !groupControl?.value) {
-      awayTeamControl?.setValue(null);
-      awayTeamControl?.disable();
-    } else {
-      awayTeamControl?.enable();
-    }
-    awayTeamControl?.updateValueAndValidity();
-  }
-
-  private updateScoreInputs(): void {
-    const homeTeamScoreControl = this.form.get('homeTeamScore');
-    const awayTeamScoreControl = this.form.get('awayTeamScore');
-    const statusControl = this.form.get('status');
-
-    if (
-      statusControl?.value === 'Finished' ||
-      statusControl?.value === 'OnGoing'
-    ) {
-      homeTeamScoreControl?.enable();
-      awayTeamScoreControl?.enable();
-    } else {
-      homeTeamScoreControl?.disable();
-      awayTeamScoreControl?.disable();
-      this.form.patchValue({
-        homeTeamScore: null,
-        awayTeamScore: null,
-      });
-    }
+    this.matchFormService.updateAwayTeamInput(this.form);
   }
 
   private updateNoShowTeamInput(): void {
-    this.form.controls['noShowTeam'].clearValidators();
-    const noShowTeamControl = this.form.get('noShowTeam');
-    const statusControl = this.form.get('status');
-    if (statusControl?.value === 'NoShow') {
-      noShowTeamControl?.enable();
-      this.form.controls['noShowTeam'].addValidators([
-        noShowTeamValidator({
-          status: statusControl?.value,
-          homeTeam: this.selectedHomeTeam(),
-          awayTeam: this.selectedAwayTeam(),
-        }),
-      ]);
-    } else {
-      noShowTeamControl?.disable();
-      noShowTeamControl?.setValue(null);
-    }
-    noShowTeamControl?.updateValueAndValidity();
-  }
-
-  // Helper methods for finding phases that contain specific groups and rounds
-
-  private findPhaseWithGroupAndRound(
-    competition: { phases: Phase[] },
-    groupId: number,
-    roundId: number,
-  ): { phase: Phase; group: Group; round: Round } | null {
-    for (const phase of competition.phases) {
-      const group = phase.groups.find((g: Group) => g.id === groupId);
-      const round = phase.rounds.find((r: Round) => r.id === roundId);
-
-      if (group && round) {
-        return { phase, group, round };
-      }
-    }
-    return null;
-  }
-
-  private findPhaseWithGroup(
-    competition: { phases: Phase[] },
-    groupId: number,
-  ): { phase: Phase; group: Group } | null {
-    for (const phase of competition.phases) {
-      const group = phase.groups.find((g: Group) => g.id === groupId);
-      if (group) {
-        return { phase, group };
-      }
-    }
-    return null;
-  }
-
-  private findPhaseWithRound(
-    competition: { phases: Phase[] },
-    roundId: number,
-  ): { phase: Phase; round: Round } | null {
-    for (const phase of competition.phases) {
-      const round = phase.rounds.find((r: Round) => r.id === roundId);
-      if (round) {
-        return { phase, round };
-      }
-    }
-    return null;
-  }
-
-  // Helper methods for selecting found phase/group/round combinations
-
-  private selectPhaseGroupAndRound(
-    phase: Phase,
-    group: Group,
-    round: Round,
-  ): void {
-    this.selectedPhase.set(phase);
-    this.selectedGroup.set(group);
-    this.form.patchValue({
-      phase,
-      group,
-      round,
-    });
-  }
-
-  private selectPhaseAndGroup(phase: Phase, group: Group): void {
-    this.selectedPhase.set(phase);
-    this.selectedGroup.set(group);
-    this.form.patchValue({
-      phase,
-      group,
-    });
-  }
-
-  private selectPhaseAndRound(phase: Phase, round: Round): void {
-    this.selectedPhase.set(phase);
-    this.form.patchValue({
-      phase,
-      round,
-    });
+    this.matchFormService.updateNoShowTeamInput(
+      this.form,
+      this.selectedHomeTeam()?.id ?? null,
+      this.selectedAwayTeam()?.id ?? null,
+    );
   }
 
   public onCreateNew(): void {
@@ -990,43 +618,20 @@ export class MatchFormComponent {
       return;
     }
 
-    // Navigate to create new match page, preserving query parameters
     const competitionId = this.competitionStore.competition()?.id;
     if (competitionId) {
-      const queryParams: Params = {};
-
-      // Preserve current selections or fallback to query params
-      const currentPhase = this.selectedPhase();
-      const currentGroup = this.selectedGroup();
-      const currentRound = this.form.get('round')?.value;
-      const currentQueryParams = this.activatedRoute.snapshot.queryParams;
-
-      // Preserve phase
-      if (currentPhase) {
-        queryParams['fase'] = currentPhase.id.toString();
-      } else if (currentQueryParams['fase']) {
-        queryParams['fase'] = currentQueryParams['fase'];
-      }
-
-      // Preserve group
-      if (currentGroup) {
-        queryParams['grupo'] = currentGroup.id.toString();
-      } else if (currentQueryParams['grupo']) {
-        queryParams['grupo'] = currentQueryParams['grupo'];
-      }
-
-      // Preserve round
-      if (currentRound) {
-        queryParams['jornada'] = currentRound.id.toString();
-      } else if (currentQueryParams['jornada']) {
-        queryParams['jornada'] = currentQueryParams['jornada'];
-      }
+      const selectedPhaseId = this.form.get('phaseId')?.value as number | null;
+      const selectedGroupId = this.form.get('groupId')?.value as number | null;
+      const selectedRoundId = this.form.get('roundId')?.value as number | null;
 
       // Reset component state manually
       this.resetComponentState();
 
-      this.router.navigate(['/admin/competicion', competitionId, 'partido'], {
-        queryParams,
+      this.routeService.navigateToCreateMatch(competitionId, {
+        selectedPhaseId: selectedPhaseId,
+        selectedGroupId: selectedGroupId,
+        selectedRoundId: selectedRoundId,
+        currentQueryParams: this.activatedRoute.snapshot.queryParams,
       });
     }
   }
@@ -1034,87 +639,56 @@ export class MatchFormComponent {
   private resetComponentState(): void {
     const currentPhase = this.selectedPhase();
     const currentGroup = this.selectedGroup();
-    const currentRound = this.form.get('round')?.value;
+    const currentRound = this.selectedRound();
 
     // Reset internal state
     this.matchId.set(null);
     this.match.set(null);
     this.selectedPhase.set(null);
     this.selectedGroup.set(null);
+    this.selectedRound.set(null);
     this.selectedHomeTeam.set(null);
     this.selectedAwayTeam.set(null);
     this.isMatchNotFound.set(false);
 
-    this.form.reset();
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
+    this.dataService.resetFormState(this.form);
 
     // Restore selections if they existed
-    if (currentPhase) {
-      this.form.patchValue({ phase: currentPhase });
-      this.selectedPhase.set(currentPhase);
-    }
-    if (currentGroup) {
-      this.form.patchValue({ group: currentGroup });
-      this.selectedGroup.set(currentGroup);
-    }
-    if (currentRound) {
-      this.form.patchValue({ round: currentRound });
-    }
+    this.dataService.restoreFormSelections(this.form, {
+      phaseId: currentPhase?.id ?? null,
+      groupId: currentGroup?.id ?? null,
+      roundId: currentRound?.id ?? null,
+    });
+
+    // Update signals to match restored selections
+    this.selectedPhase.set(currentPhase);
+    this.selectedGroup.set(currentGroup);
+    this.selectedRound.set(currentRound);
   }
 
   public onEditPhase(): void {
-    const phaseId = this.form.get('phase')?.value?.id;
-    if (!phaseId) {
-      return;
+    const phaseId = this.form.get('phaseId')?.value;
+    const competitionId = this.competitionStore.competition()?.id;
+    if (phaseId && competitionId) {
+      this.routeService.navigateToEditPhase(competitionId, phaseId);
     }
-    this.router.navigate([
-      '/admin/competicion',
-      this.competitionStore.competition()?.id,
-      'fase',
-      phaseId,
-    ]);
   }
 
   public onEditGroup(): void {
-    const groupId = this.form.get('group')?.value?.id;
-    if (!groupId) {
-      return;
+    const groupId = this.form.get('groupId')?.value;
+    const competitionId = this.competitionStore.competition()?.id;
+    const phaseId = this.form.get('phaseId')?.value;
+    if (groupId && competitionId) {
+      this.routeService.navigateToEditGroup(competitionId, groupId, phaseId);
     }
-    const phaseId = this.form.get('phase')?.value?.id;
-    const queryParams: Params = {};
-    if (phaseId) {
-      queryParams['fase'] = phaseId;
-    }
-    this.router.navigate(
-      [
-        '/admin/competicion',
-        this.competitionStore.competition()?.id,
-        'grupo',
-        groupId,
-      ],
-      { queryParams },
-    );
   }
 
   public onEditRound(): void {
-    const roundId = this.form.get('round')?.value?.id;
-    if (!roundId) {
-      return;
+    const roundId = this.form.get('roundId')?.value;
+    const competitionId = this.competitionStore.competition()?.id;
+    const phaseId = this.form.get('phaseId')?.value;
+    if (roundId && competitionId) {
+      this.routeService.navigateToEditRound(competitionId, roundId, phaseId);
     }
-    const phaseId = this.form.get('phase')?.value?.id;
-    const queryParams: Params = {};
-    if (phaseId) {
-      queryParams['fase'] = phaseId;
-    }
-    this.router.navigate(
-      [
-        '/admin/competicion',
-        this.competitionStore.competition()?.id,
-        'jornada',
-        roundId,
-      ],
-      { queryParams },
-    );
   }
 }

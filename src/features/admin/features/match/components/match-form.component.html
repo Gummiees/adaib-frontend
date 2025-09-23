@@ -19,16 +19,16 @@
         <div class="flex flex-row gap-2 items-center w-full">
           <mat-form-field class="flex-1">
             <mat-label>Fase</mat-label>
-            <mat-select formControlName="phase">
+            <mat-select formControlName="phaseId">
               @for(phase of phases(); track phase.id) {
-                <mat-option [value]="phase">{{ phase.name }}</mat-option>
+                <mat-option [value]="phase.id">{{ phase.name }}</mat-option>
               }
             </mat-select>
-            @if(form.get('phase')?.errors?.['required']) {
+            @if(form.get('phaseId')?.errors?.['required']) {
               <mat-error>La fase es requerida</mat-error>
             }
           </mat-form-field>
-          @if(!!form.get('phase')?.value) {
+          @if(!!form.get('phaseId')?.value) {
             <a mat-mini-fab aria-label="Editar fase" matTooltip="Editar fase" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onEditPhase()" (keyup)="onEditPhase()" (keypress)="onEditPhase()">
               <mat-icon>edit</mat-icon>
             </a>
@@ -37,16 +37,16 @@
         <div class="flex flex-row gap-2 items-center w-full">
           <mat-form-field class="flex-1">
             <mat-label>Grupo</mat-label>
-            <mat-select formControlName="group">
+            <mat-select formControlName="groupId">
               @for(group of groups(); track group.id) {
-                <mat-option [value]="group">{{ group.name }}</mat-option>
+                <mat-option [value]="group.id">{{ group.name }}</mat-option>
               }
             </mat-select>
-            @if(form.get('group')?.errors?.['required']) {
+            @if(form.get('groupId')?.errors?.['required']) {
               <mat-error>El grupo es requerido</mat-error>
             }
           </mat-form-field>
-          @if(!!form.get('group')?.value) {
+          @if(!!form.get('groupId')?.value) {
             <a mat-mini-fab aria-label="Editar grupo" matTooltip="Editar grupo" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onEditGroup()" (keyup)="onEditGroup()" (keypress)="onEditGroup()">
               <mat-icon>edit</mat-icon>
             </a>
@@ -55,16 +55,16 @@
         <div class="flex flex-row gap-2 items-center w-full">
           <mat-form-field class="flex-1">
             <mat-label>Jornada</mat-label>
-            <mat-select formControlName="round">
+            <mat-select formControlName="roundId">
               @for(round of rounds(); track round.id) {
-                <mat-option [value]="round">{{ round.name }}</mat-option>
+                <mat-option [value]="round.id">{{ round.name }}</mat-option>
               }
             </mat-select>
-            @if(form.get('round')?.errors?.['required']) {
+            @if(form.get('roundId')?.errors?.['required']) {
               <mat-error>La jornada es requerida</mat-error>
             }
           </mat-form-field>
-          @if(!!form.get('round')?.value) {
+          @if(!!form.get('roundId')?.value) {
             <a mat-mini-fab aria-label="Editar jornada" matTooltip="Editar jornada" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onEditRound()" (keyup)="onEditRound()" (keypress)="onEditRound()">
               <mat-icon>edit</mat-icon>
             </a>
@@ -88,12 +88,12 @@
           @if(form.get('status')?.value === 'NoShow') {
             <mat-form-field class="flex-1">
               <mat-label>Equipo no presentado</mat-label>
-              <mat-select formControlName="noShowTeam">
+              <mat-select formControlName="noShowTeamId">
                 @for(team of selectedTeams(); track team.id) {
-                  <mat-option [value]="team">{{ team.name }}</mat-option>
+                  <mat-option [value]="team.id">{{ team.name }}</mat-option>
                 }
               </mat-select>
-              @if(form.get('noShowTeam')?.errors?.['required']) {
+              @if(form.get('noShowTeamId')?.errors?.['required']) {
                 <mat-error>El equipo no presentado es requerido</mat-error>
               }
             </mat-form-field>
@@ -101,23 +101,23 @@
         </div>
         <mat-form-field class="w-full">
           <mat-label>Equipo local</mat-label>
-          <mat-select formControlName="homeTeam">
+          <mat-select formControlName="homeTeamId">
             @for(team of teams(); track team.id) {
-              <mat-option [value]="team">{{ team.name }}</mat-option>
+              <mat-option [value]="team.id">{{ team.name }}</mat-option>
             }
           </mat-select>
-          @if(form.get('homeTeam')?.errors?.['required']) {
+          @if(form.get('homeTeamId')?.errors?.['required']) {
             <mat-error>El equipo local es requerido</mat-error>
           }
         </mat-form-field>
         <mat-form-field class="w-full">
           <mat-label>Equipo visitante*</mat-label>
-          <mat-select formControlName="awayTeam">
+          <mat-select formControlName="awayTeamId">
             @for(team of teams(); track team.id) {
-              <mat-option [value]="team">{{ team.name }}</mat-option>
+              <mat-option [value]="team.id">{{ team.name }}</mat-option>
             }
           </mat-select>
-          @if(form.get('awayTeam')?.errors?.['awayTeamRequired']) {
+          @if(form.get('awayTeamId')?.errors?.['awayTeamRequired']) {
             <mat-error>El equipo visitante es requerido</mat-error>
           }
         </mat-form-field>
