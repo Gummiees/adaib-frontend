@@ -1,6 +1,11 @@
 <a class="cursor-pointer" tabindex="0" (click)="onTeamClick()" (keydown.enter)="onTeamClick()" aria-label="Ver equipo" [ngClass]="{'opacity-50': !team().active}">
   <div class="p-4 relative flex flex-col justify-center h-full bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer transition-all duration-300 ease-in-out hover:shadow-md hover:bg-gray-100">
     <div class="flex flex-col items-center gap-y-4">
+      @if(!!userStore.user()) {
+        <button class="absolute! top-2 right-2" matTooltip="Editar" matTooltipPosition="above" matIconButton aria-label="Editar" type="button" (click)="onEditTeamClick($event)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
       @if (team().imageUrl) {
         <div class="aspect-square overflow-hidden rounded-t-md shrink-0">
           <img

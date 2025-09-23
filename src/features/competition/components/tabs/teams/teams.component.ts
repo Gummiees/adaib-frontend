@@ -46,7 +46,7 @@ export class TeamsComponent {
     this.teamSelected.emit(teamId);
   }
 
-  public onEditTeamsClick(): void {
-    this.router.navigate(['/admin/equipos']);
+  public onAddTeamClick(): void {
+    this.router.navigate(['/admin/equipo']);
   }
 }

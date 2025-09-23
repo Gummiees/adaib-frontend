@@ -3,8 +3,8 @@
   <div class="w-full flex flex-row justify-center items-center gap-4">
     <h2 class="text-4xl font-bold text-center">Equipos</h2>
     @if(!!userStore.user()) {
-      <a mat-mini-fab aria-label="Editar equipos" matTooltip="Editar equipos" matTooltipPosition="right" tabindex="0" (click)="onEditTeamsClick()" (keyup)="onEditTeamsClick()" (keypress)="onEditTeamsClick()">
-        <mat-icon>edit</mat-icon>
+      <a mat-mini-fab aria-label="Crear equipo" matTooltip="Crear equipo" matTooltipPosition="right" tabindex="0" (click)="onAddTeamClick()" (keyup)="onAddTeamClick()" (keypress)="onAddTeamClick()">
+        <mat-icon>add</mat-icon>
       </a>
     }
   </div>
