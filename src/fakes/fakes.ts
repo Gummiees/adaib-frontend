@@ -191,10 +191,11 @@ export const fakeMatches: ApiMatch[] = [
     homeTeamId: 5,
     awayTeamId: 6,
     date: getRelativeDate(-19, '18:30:00'), // 19 days ago
-    homeTeamScore: 76,
-    awayTeamScore: 82,
-    result: 'Away',
-    status: 'Finished',
+    homeTeamScore: 20,
+    awayTeamScore: 0,
+    result: 'Home',
+    status: 'NoShow',
+    noShowTeamId: 5,
   },
   {
     id: 4,

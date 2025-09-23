@@ -2,29 +2,23 @@
 @if(!match().awayTeam) {
   <p class="text-base uppercase font-semibold">Descansa</p>
 } @else {
-  @switch (match().status) {
-    @case ('Finished') {
-      <div class="flex items-center gap-2">
-        <p class="text-lg font-semibold">{{ match().homeTeamScore || 0 }}</p>
-        <p class="text-lg font-semibold">-</p>
-        <p class="text-lg font-semibold">{{ match().awayTeamScore || 0 }}</p>
-      </div>
-    }
-    @case ('OnGoing') {
-      <div class="flex items-center gap-2">
-        <p class="text-lg font-semibold">{{ match().homeTeamScore || 0 }}</p>
-        <p class="text-lg font-semibold">-</p>
-        <p class="text-lg font-semibold">{{ match().awayTeamScore || 0 }}</p>
-      </div>
-    }
-    @case ('NotStarted') {
-      <p class="text-base uppercase font-semibold">Pendiente</p>
-    }
-    @case ('Rest') {
-      <p class="text-base uppercase font-semibold">Descansa</p>
-    }
-    @case ('Cancelled') {
-      <p class="text-base uppercase font-semibold">Cancelado</p>
+  @if(match().status === 'NoShow' || match().status === 'OnGoing' || match().status === 'Finished') {
+    <div class="flex items-center gap-2">
+      <p class="text-lg font-semibold">{{ match().homeTeamScore || 0 }}</p>
+      <p class="text-lg font-semibold">-</p>
+      <p class="text-lg font-semibold">{{ match().awayTeamScore || 0 }}</p>
+    </div>
+  } @else {
+    @switch (match().status) {
+      @case ('NotStarted') {
+        <p class="text-base uppercase font-semibold">Pendiente</p>
+      }
+      @case ('Rest') {
+        <p class="text-base uppercase font-semibold">Descansa</p>
+      }
+      @case ('Cancelled') {
+        <p class="text-base uppercase font-semibold">Cancelado</p>
+      }
     }
   }
 }

@@ -6,7 +6,8 @@ export type MatchStatus =
   | 'OnGoing'
   | 'Finished'
   | 'Cancelled'
-  | 'Rest';
+  | 'Rest'
+  | 'NoShow';
 
 export type MatchResult = 'Home' | 'Away';
 
@@ -20,6 +21,7 @@ export interface ApiMatch {
   awayTeamScore?: number | null;
   result?: MatchResult | null;
   status: MatchStatus;
+  noShowTeamId?: number | null;
 }
 
 export type FormApiMatch = Omit<ApiMatch, 'result'>;
@@ -34,6 +36,7 @@ export interface Match {
   awayTeamScore?: number | null;
   result?: MatchResult | null;
   status: MatchStatus;
+  noShowTeam?: Team | null;
 }
 
 export interface DetailedMatch extends Match {

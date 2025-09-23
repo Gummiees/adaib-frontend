@@ -74,6 +74,7 @@ export class TeamComponent {
           match.status === 'Finished' ||
           match.status === 'Cancelled' ||
           match.status === 'OnGoing' ||
+          match.status === 'NoShow' ||
           (match.date && match.date <= new Date() && match.status === 'Rest'),
       ) || []
     );
