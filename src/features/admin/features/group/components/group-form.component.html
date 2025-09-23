@@ -21,11 +21,11 @@
               <mat-option [value]="phase">{{ phase.name }}</mat-option>
             }
           </mat-select>
-          @if(form.get('phase')?.errors?.['required']) {
+          @if(phase.errors?.['required']) {
             <mat-error>La fase es requerida</mat-error>
           }
         </mat-form-field>
-        @if(!!form.get('phase')?.value) {
+        @if(!!phase.value) {
           <a mat-mini-fab aria-label="Editar fase" matTooltip="Editar fase" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onEditPhase()" (keyup)="onEditPhase()" (keypress)="onEditPhase()">
             <mat-icon>edit</mat-icon>
           </a>
@@ -33,9 +33,12 @@
       </div>
       <mat-form-field class="w-full">
         <mat-label>Nombre del grupo</mat-label>
-        <input matInput type="text" formControlName="name" />
-        @if(form.get('name')?.errors?.['required']) {
+        <input matInput type="text" formControlName="name" maxlength="100" />
+        @if(name.errors?.['required']) {
           <mat-error>El nombre es requerido</mat-error>
+        }
+        @if(name.errors?.['maxlength']) {
+          <mat-error>El nombre no puede tener más de 100 caracteres</mat-error>
         }
       </mat-form-field>
       <mat-form-field class="w-full">

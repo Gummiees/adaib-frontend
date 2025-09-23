@@ -102,12 +102,19 @@ export class PhaseFormComponent {
 
   constructor() {
     this.form = new FormGroup({
-      name: new FormControl<string | null>(null, [Validators.required]),
+      name: new FormControl<string | null>(null, [
+        Validators.required,
+        Validators.maxLength(100),
+      ]),
     });
 
     this.getCompetition();
     this.setupRouteParamSubscription();
     this.setupFormPopulation();
+  }
+
+  public get name(): FormControl {
+    return this.form.get('name') as FormControl;
   }
 
   public async onSubmit(): Promise<void> {

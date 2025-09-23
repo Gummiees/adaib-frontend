@@ -73,22 +73,41 @@ export class TeamFormComponent {
   });
 
   public form = new FormGroup({
-    name: new FormControl<string | null>(null, [Validators.required]),
-    shortName: new FormControl<string | null>(null),
+    name: new FormControl<string | null>(null, [
+      Validators.required,
+      Validators.maxLength(100),
+    ]),
+    shortName: new FormControl<string | null>(null, [
+      Validators.maxLength(100),
+    ]),
     description: new FormControl<string | null>(null),
-    location: new FormControl<string | null>(null),
-    arena: new FormControl<string | null>(null),
+    location: new FormControl<string | null>(null, [Validators.maxLength(100)]),
+    arena: new FormControl<string | null>(null, [Validators.maxLength(100)]),
     arenaUrl: new FormControl<string | null>(null, [
       Validators.pattern(urlRegex),
+      Validators.maxLength(255),
     ]),
     imageUrl: new FormControl<string | null>(null, [
       Validators.pattern(imageUrlRegex),
+      Validators.maxLength(255),
     ]),
     active: new FormControl<boolean>(false, [Validators.required]),
   });
 
   public get name(): FormControl {
     return this.form.get('name') as FormControl;
+  }
+
+  public get shortName(): FormControl {
+    return this.form.get('shortName') as FormControl;
+  }
+
+  public get location(): FormControl {
+    return this.form.get('location') as FormControl;
+  }
+
+  public get arena(): FormControl {
+    return this.form.get('arena') as FormControl;
   }
 
   public get arenaUrl(): FormControl {

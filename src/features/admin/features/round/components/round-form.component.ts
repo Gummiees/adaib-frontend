@@ -117,13 +117,24 @@ export class RoundFormComponent {
   constructor() {
     this.form = new FormGroup({
       phase: new FormControl<Phase | null>(null, [Validators.required]),
-      name: new FormControl<string | null>(null, [Validators.required]),
+      name: new FormControl<string | null>(null, [
+        Validators.required,
+        Validators.maxLength(100),
+      ]),
     });
 
     this.getCompetition();
     this.setupRouteParamSubscription();
     this.setupFormPopulation();
     this.setupPhasePreSelection();
+  }
+
+  public get name(): FormControl {
+    return this.form.get('name') as FormControl;
+  }
+
+  public get phase(): FormControl {
+    return this.form.get('phase') as FormControl;
   }
 
   public async onSubmit(): Promise<void> {

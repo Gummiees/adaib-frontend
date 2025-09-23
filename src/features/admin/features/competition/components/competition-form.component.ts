@@ -87,10 +87,14 @@ export class CompetitionFormComponent {
   });
 
   public form = new FormGroup({
-    name: new FormControl<string | null>(null, [Validators.required]),
+    name: new FormControl<string | null>(null, [
+      Validators.required,
+      Validators.maxLength(100),
+    ]),
     description: new FormControl<string | null>(null),
     imageUrl: new FormControl<string | null>(null, [
       Validators.pattern(imageUrlRegex),
+      Validators.maxLength(255),
     ]),
     active: new FormControl<boolean>(false, [Validators.required]),
     status: new FormControl<CompetitionStatus>('NotStarted', [

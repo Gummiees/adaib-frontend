@@ -31,14 +31,20 @@ export class MatchFormService {
       }),
       date: new FormControl<Date | null>(null),
       time: new FormControl<string | null>(null),
-      homeTeamScore: new FormControl<number | null>({
-        value: null,
-        disabled: true,
-      }),
-      awayTeamScore: new FormControl<number | null>({
-        value: null,
-        disabled: true,
-      }),
+      homeTeamScore: new FormControl<number | null>(
+        {
+          value: null,
+          disabled: true,
+        },
+        [Validators.min(0)],
+      ),
+      awayTeamScore: new FormControl<number | null>(
+        {
+          value: null,
+          disabled: true,
+        },
+        [Validators.min(0)],
+      ),
       status: new FormControl<MatchStatus>('NotStarted', [Validators.required]),
     });
 

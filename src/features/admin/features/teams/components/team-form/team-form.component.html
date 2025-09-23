@@ -19,35 +19,53 @@
     <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-2xl" (ngSubmit)="onSubmit()">
       <mat-form-field class="w-full">
         <mat-label>Nombre</mat-label>
-        <input matInput type="text" formControlName="name" />
+        <input matInput type="text" formControlName="name" maxlength="100" />
         @if(name.errors?.['required']) {
           <mat-error>El nombre es requerido</mat-error>
+        }
+        @if(name.errors?.['maxlength']) {
+          <mat-error>El nombre no puede tener más de 100 caracteres</mat-error>
         }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Nombre corto</mat-label>
-        <input matInput type="text" formControlName="shortName" />
+        <input matInput type="text" formControlName="shortName" maxlength="100" />
+        @if(shortName.errors?.['maxlength']) {
+          <mat-error>El nombre corto no puede tener más de 100 caracteres</mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Ubicación</mat-label>
-        <input matInput type="text" formControlName="location" />
+        <input matInput type="text" formControlName="location" maxlength="100" />
+        @if(location.errors?.['maxlength']) {
+          <mat-error>La ubicación no puede tener más de 100 caracteres</mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Ubicación del pabellón</mat-label>
-        <input matInput type="text" formControlName="arena" />
+        <input matInput type="text" formControlName="arena" maxlength="100" />
+        @if(arena.errors?.['maxlength']) {
+          <mat-error>El pabellón no puede tener más de 100 caracteres</mat-error>
+        }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Maps URL del pabellón</mat-label>
-        <input matInput type="text" formControlName="arenaUrl" />
+        <input matInput type="text" formControlName="arenaUrl" maxlength="255" />
         @if(arenaUrl.errors?.['pattern']) {
           <mat-error>La URL del pabellón no es válida</mat-error>
+        }
+        @if(arenaUrl.errors?.['maxlength']) {
+          <mat-error>La URL del pabellón no puede tener más de 255 caracteres</mat-error>
         }
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>URL de la imagen</mat-label>
-        <input matInput type="text" formControlName="imageUrl" />
+        <input matInput type="text" formControlName="imageUrl" maxlength="255" />
         @if(imageUrl.errors?.['pattern']) {
           <mat-error>La URL de la imagen no es válida</mat-error>
+        }
+        @if(imageUrl.errors?.['maxlength']) {
+          <mat-error>La URL de la imagen no puede tener más de 255 caracteres</mat-error>
         }
       </mat-form-field>
       <mat-form-field class="w-full">

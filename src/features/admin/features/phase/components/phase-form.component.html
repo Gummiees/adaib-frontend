@@ -15,9 +15,12 @@
     <form [formGroup]="form" class="flex flex-col items-center justify-center gap-2 w-full max-w-2xl" (ngSubmit)="onSubmit()">
       <mat-form-field class="w-full">
         <mat-label>Nombre de la fase</mat-label>
-        <input matInput type="text" formControlName="name" />
-        @if(form.get('name')?.errors?.['required']) {
+        <input matInput type="text" formControlName="name" maxlength="100" />
+        @if(name.errors?.['required']) {
           <mat-error>El nombre es requerido</mat-error>
+        }
+        @if(name.errors?.['maxlength']) {
+          <mat-error>El nombre no puede tener más de 100 caracteres</mat-error>
         }
       </mat-form-field>
       <div class="flex flex-row gap-2 items-center pt-2 justify-between w-full">

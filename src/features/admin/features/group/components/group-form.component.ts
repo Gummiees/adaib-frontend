@@ -123,10 +123,21 @@ export class GroupFormComponent {
     return this.form.invalid || this.isLoading() || this.form.pristine;
   }
 
+  public get name(): FormControl {
+    return this.form.get('name') as FormControl;
+  }
+
+  public get phase(): FormControl {
+    return this.form.get('phase') as FormControl;
+  }
+
   constructor() {
     this.form = new FormGroup({
       phase: new FormControl<Phase | null>(null, [Validators.required]),
-      name: new FormControl<string | null>(null, [Validators.required]),
+      name: new FormControl<string | null>(null, [
+        Validators.required,
+        Validators.maxLength(100),
+      ]),
       teamIds: new FormControl<number[]>([]),
     });
 
