@@ -550,6 +550,8 @@ export class MatchFormComponent {
       this.match.set(foundMatch);
       this.selectedPhase.set(foundPhase);
       this.selectedGroup.set(foundGroup);
+      this.selectedHomeTeam.set(foundHomeTeam);
+      this.selectedAwayTeam.set(foundAwayTeam);
       this.form.patchValue({
         phase: foundPhase,
         group: foundGroup,

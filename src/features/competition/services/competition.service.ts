@@ -130,6 +130,9 @@ export class CompetitionService {
     return matches.map<DetailedMatch>((match) => {
       const homeTeam = teams.find((team) => team.id === match.homeTeamId);
       const awayTeam = teams.find((team) => team.id === match.awayTeamId);
+      const noShowTeam = match.noShowTeamId
+        ? teams.find((team) => team.id === match.noShowTeamId)
+        : null;
       const round = rounds.find((round) => round.id === match.roundId);
       if (!round) {
         throw new Error('Round not found');
@@ -142,6 +145,7 @@ export class CompetitionService {
         status: match.status,
         homeTeam: homeTeam,
         awayTeam: awayTeam,
+        noShowTeam: noShowTeam,
         round: round,
         phaseName: phaseName,
         groupName: groupName,
