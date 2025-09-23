@@ -50,6 +50,7 @@ import { AdminTeamsService } from '../../teams/services/admin-teams.service';
 import { AdminTeamsStore } from '../../teams/store/admin-teams-store';
 import { AdminMatchService } from '../services/admin-match.service';
 import { awayTeamValidator } from '../validators/away-team.validator';
+import { noShowTeamValidator } from '../validators/no-show-team.validator';
 import { timeValidator } from '../validators/time.validator';
 
 @Component({
@@ -102,6 +103,18 @@ export class MatchFormComponent {
       this.allTeams()?.filter((team) => group?.teamIds.includes(team.id)) ?? []
     );
   });
+  public selectedTeams = computed<Team[]>(() => {
+    const teams = [];
+    const homeTeam = this.selectedHomeTeam();
+    const awayTeam = this.selectedAwayTeam();
+    if (homeTeam) {
+      teams.push(homeTeam);
+    }
+    if (awayTeam) {
+      teams.push(awayTeam);
+    }
+    return teams;
+  });
   public phases = computed<Phase[]>(() => {
     return this.competitionStore.competition()?.phases ?? [];
   });
@@ -122,6 +135,8 @@ export class MatchFormComponent {
 
   private selectedPhase = signal<Phase | null>(null);
   private selectedGroup = signal<Group | null>(null);
+  private selectedHomeTeam = signal<Team | null>(null);
+  private selectedAwayTeam = signal<Team | null>(null);
   private matchId = signal<number | null>(null);
   private match = signal<DetailedMatch | null>(null);
   public isEditMode = computed(() => !!this.matchId() || !!this.match()?.id);
@@ -178,6 +193,10 @@ export class MatchFormComponent {
         value: null,
         disabled: true,
       }),
+      noShowTeam: new FormControl<Team | null>({
+        value: null,
+        disabled: true,
+      }),
       status: new FormControl<MatchStatus>('NotStarted', [Validators.required]),
     });
     this.form.controls['awayTeam'].addValidators([
@@ -189,12 +208,9 @@ export class MatchFormComponent {
 
     this.getCompetition();
     this.setupRouteParamSubscription();
-    this.setupFormControlDisabling();
+    this.setupFormControlEffects();
     this.setupFormPopulation();
-    this.setupAwayTeamValidator();
-    this.setupTimeValidator();
     this.setupQueryParameterPreSelection();
-    this.setupGroupChangeEffect();
   }
 
   public async onSubmit(): Promise<void> {
@@ -324,6 +340,7 @@ export class MatchFormComponent {
       roundId: form.get('round')?.value?.id,
       homeTeamId: form.get('homeTeam')?.value?.id,
       awayTeamId: form.get('awayTeam')?.value?.id,
+      noShowTeamId: this.getNoShowTeam()?.id,
       status: form.get('status')?.value ?? 'NotStarted',
       date: combinedDate ? combinedDate.toISOString() : null,
       homeTeamScore: form.get('homeTeamScore')?.value,
@@ -364,6 +381,7 @@ export class MatchFormComponent {
         id: matchId,
         homeTeam: this.form.get('homeTeam')?.value,
         awayTeam: this.form.get('awayTeam')?.value,
+        noShowTeam: this.getNoShowTeam(),
         date: match.date ? new Date(match.date) : null,
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
@@ -426,6 +444,7 @@ export class MatchFormComponent {
         id: match.id,
         homeTeam: this.form.get('homeTeam')?.value,
         awayTeam: this.form.get('awayTeam')?.value,
+        noShowTeam: this.getNoShowTeam(),
         date: match.date ? new Date(match.date) : null,
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
@@ -448,63 +467,12 @@ export class MatchFormComponent {
     }
   }
 
-  private setupAwayTeamValidator(): void {
-    this.form
-      .get('status')
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.form.get('awayTeam')?.updateValueAndValidity();
-      });
-  }
-
-  private setupTimeValidator(): void {
-    this.form
-      .get('date')
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.form.get('time')?.updateValueAndValidity();
-      });
-  }
-
-  private setupFormControlDisabling(): void {
-    this.form
-      .get('phase')
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((phase: Phase | null) => {
-        const groupControl = this.form.get('group');
-        const roundControl = this.form.get('round');
-        this.selectedPhase.set(phase);
-        if (phase) {
-          groupControl?.enable();
-          roundControl?.enable();
-        } else {
-          groupControl?.setValue(null);
-          groupControl?.disable();
-          roundControl?.setValue(null);
-          roundControl?.disable();
-        }
-      });
-    this.form
-      .get('status')
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.updateAwayTeamInput();
-        this.updateScoreInputs();
-      });
-
-    this.form
-      .get('date')
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((date: Date | null) => {
-        const timeControl = this.form.get('time');
-        if (!date) {
-          timeControl?.setValue(null);
-          timeControl?.disable();
-        } else {
-          timeControl?.enable();
-        }
-        timeControl?.updateValueAndValidity();
-      });
+  private getNoShowTeam(): Team | null {
+    const status = this.form.get('status')?.value;
+    if (status === 'NoShow') {
+      return this.form.get('noShowTeam')?.value;
+    }
+    return null;
   }
 
   private setupRouteParamSubscription(): void {
@@ -551,6 +519,7 @@ export class MatchFormComponent {
     let foundGroup: Group | null = null;
     let foundAwayTeam: Team | null = null;
     let foundHomeTeam: Team | null = null;
+    let foundNoShowTeam: Team | null = null;
 
     for (const phase of competition.phases) {
       for (const group of phase.groups) {
@@ -568,6 +537,8 @@ export class MatchFormComponent {
             teams.find((t: Team) => t.id === match.awayTeam?.id) ?? null;
           foundHomeTeam =
             teams.find((t: Team) => t.id === match.homeTeam.id) ?? null;
+          foundNoShowTeam =
+            teams.find((t: Team) => t.id === match.noShowTeam?.id) ?? null;
           break;
         }
         if (foundMatch) break;
@@ -590,6 +561,7 @@ export class MatchFormComponent {
         homeTeamScore: foundMatch.homeTeamScore,
         awayTeamScore: foundMatch.awayTeamScore,
         status: foundMatch.status,
+        noShowTeam: foundNoShowTeam,
       });
     }
   }
@@ -782,6 +754,82 @@ export class MatchFormComponent {
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
   }
 
+  private setupFormControlEffects(): void {
+    this.setupPhaseChangeEffect();
+    this.setupGroupChangeEffect();
+    this.setupStatusChangeEffect();
+    this.setupDateChangeEffect();
+    this.setupHomeTeamChangeEffect();
+    this.setupAwayTeamChangeEffect();
+  }
+
+  private setupHomeTeamChangeEffect(): void {
+    this.form
+      .get('homeTeam')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((homeTeam: Team | null) => {
+        this.selectedHomeTeam.set(homeTeam);
+        this.updateNoShowTeamInput();
+      });
+  }
+
+  private setupAwayTeamChangeEffect(): void {
+    this.form
+      .get('awayTeam')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((awayTeam: Team | null) => {
+        this.selectedAwayTeam.set(awayTeam);
+        this.updateNoShowTeamInput();
+      });
+  }
+
+  private setupDateChangeEffect(): void {
+    this.form
+      .get('date')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((date: Date | null) => {
+        const timeControl = this.form.get('time');
+        if (!date) {
+          timeControl?.setValue(null);
+          timeControl?.disable();
+        } else {
+          timeControl?.enable();
+        }
+        timeControl?.updateValueAndValidity();
+      });
+  }
+
+  private setupStatusChangeEffect(): void {
+    this.form
+      .get('status')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.updateAwayTeamInput();
+        this.updateScoreInputs();
+        this.updateNoShowTeamInput();
+      });
+  }
+
+  private setupPhaseChangeEffect(): void {
+    this.form
+      .get('phase')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((phase: Phase | null) => {
+        const groupControl = this.form.get('group');
+        const roundControl = this.form.get('round');
+        this.selectedPhase.set(phase);
+        if (phase) {
+          groupControl?.enable();
+          roundControl?.enable();
+        } else {
+          groupControl?.setValue(null);
+          groupControl?.disable();
+          roundControl?.setValue(null);
+          roundControl?.disable();
+        }
+      });
+  }
+
   private setupGroupChangeEffect(): void {
     this.form
       .get('group')
@@ -833,6 +881,26 @@ export class MatchFormComponent {
         awayTeamScore: null,
       });
     }
+  }
+
+  private updateNoShowTeamInput(): void {
+    this.form.controls['noShowTeam'].clearValidators();
+    const noShowTeamControl = this.form.get('noShowTeam');
+    const statusControl = this.form.get('status');
+    if (statusControl?.value === 'NoShow') {
+      noShowTeamControl?.enable();
+      this.form.controls['noShowTeam'].addValidators([
+        noShowTeamValidator({
+          status: statusControl?.value,
+          homeTeam: this.selectedHomeTeam(),
+          awayTeam: this.selectedAwayTeam(),
+        }),
+      ]);
+    } else {
+      noShowTeamControl?.disable();
+      noShowTeamControl?.setValue(null);
+    }
+    noShowTeamControl?.updateValueAndValidity();
   }
 
   // Helper methods for finding phases that contain specific groups and rounds
@@ -904,6 +972,14 @@ export class MatchFormComponent {
     });
   }
 
+  private selectPhaseAndRound(phase: Phase, round: Round): void {
+    this.selectedPhase.set(phase);
+    this.form.patchValue({
+      phase,
+      round,
+    });
+  }
+
   public onCreateNew(): void {
     if (!this.form.pristine) {
       this.snackBar.open('Hay cambios sin guardar en el formulario', 'Cerrar', {
@@ -963,6 +1039,8 @@ export class MatchFormComponent {
     this.match.set(null);
     this.selectedPhase.set(null);
     this.selectedGroup.set(null);
+    this.selectedHomeTeam.set(null);
+    this.selectedAwayTeam.set(null);
     this.isMatchNotFound.set(false);
 
     this.form.reset();
@@ -1036,13 +1114,5 @@ export class MatchFormComponent {
       ],
       { queryParams },
     );
-  }
-
-  private selectPhaseAndRound(phase: Phase, round: Round): void {
-    this.selectedPhase.set(phase);
-    this.form.patchValue({
-      phase,
-      round,
-    });
   }
 }

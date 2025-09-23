@@ -70,19 +70,35 @@
             </a>
           }
         </div>
-        <mat-form-field class="w-full">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="status">
-            <mat-option value="NotStarted">No iniciado</mat-option>
-            <mat-option value="OnGoing">En curso</mat-option>
-            <mat-option value="Cancelled">Cancelado</mat-option>
-            <mat-option value="Rest">Descanso</mat-option>
-            <mat-option value="Finished">Finalizado</mat-option>
-          </mat-select>
-          @if(form.get('status')?.errors?.['required']) {
-            <mat-error>El estado es requerido</mat-error>
+        <div class="flex flex-row gap-2 items-center w-full">
+          <mat-form-field class="flex-1">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="NotStarted">No iniciado</mat-option>
+              <mat-option value="OnGoing">En curso</mat-option>
+              <mat-option value="Cancelled">Cancelado</mat-option>
+              <mat-option value="Rest">Descanso</mat-option>
+              <mat-option value="Finished">Finalizado</mat-option>
+              <mat-option value="NoShow">No presentado</mat-option>
+            </mat-select>
+            @if(form.get('status')?.errors?.['required']) {
+              <mat-error>El estado es requerido</mat-error>
+            }
+          </mat-form-field>
+          @if(form.get('status')?.value === 'NoShow') {
+            <mat-form-field class="flex-1">
+              <mat-label>Equipo no presentado</mat-label>
+              <mat-select formControlName="noShowTeam">
+                @for(team of selectedTeams(); track team.id) {
+                  <mat-option [value]="team">{{ team.name }}</mat-option>
+                }
+              </mat-select>
+              @if(form.get('noShowTeam')?.errors?.['required']) {
+                <mat-error>El equipo no presentado es requerido</mat-error>
+              }
+            </mat-form-field>
           }
-        </mat-form-field>
+        </div>
         <mat-form-field class="w-full">
           <mat-label>Equipo local</mat-label>
           <mat-select formControlName="homeTeam">
