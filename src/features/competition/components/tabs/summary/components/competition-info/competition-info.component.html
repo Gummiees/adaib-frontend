@@ -4,11 +4,11 @@
   } @else if(store.competition()) {
   <div class="flex gap-4 items-center flex-wrap justify-center flex-shrink-0">
     @if(store.competition()!.imageUrl) {
-      <div class="aspect-square overflow-hidden rounded-t-md">
+      <div class="aspect-square overflow-hidden rounded-t-md shrink-0">
         <img [src]="store.competition()!.imageUrl" class="w-[100px] h-[100px] object-contain" [alt]="'Imagen para la competición ' + store.competition()!.name" />
       </div>
     } @else {
-      <mat-icon class="!w-[100px] !h-[100px] !text-[100px] border-[5px] box-content rounded-full flex items-center justify-center" aria-hidden="false" aria-label="Icono de la competición" fontIcon="emoji_events"></mat-icon>
+      <mat-icon class="!w-[100px] !h-[100px] !text-[100px] border-[5px] box-content rounded-full flex items-center justify-center shrink-0" aria-hidden="false" aria-label="Icono de la competición" fontIcon="emoji_events"></mat-icon>
     }
     <div class="flex sm:hidden flex-col gap-2">
       <p class="font-semibold uppercase text-lg">

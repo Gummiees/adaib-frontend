@@ -22,4 +22,14 @@ export class TeamCardComponent {
   public onTeamClick(): void {
     this.teamClick.emit();
   }
+
+  public onArenaClick(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const arenaUrl = this.team().arenaUrl;
+    if (arenaUrl) {
+      window.open(arenaUrl, '_blank');
+    }
+  }
 }

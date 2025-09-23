@@ -58,8 +58,15 @@
           <ng-template matTabContent>
             @if(showTeamComponent() && competitionStore.competition()) {
               <div class="py-4 w-full flex flex-col gap-4">
-                <div class="w-full sm:w-fit">
-                  <button matButton="filled" (click)="onBackToTeams()"> Volver a equipos </button>
+                <div class="flex flex-col sm:flex-row gap-2 items-center justify-between">
+                  <div class="w-full sm:w-fit">
+                    <button class="w-full" matButton="filled" (click)="onBackToTeams()"> Volver a equipos </button>
+                  </div>
+                  @if(!!userStore.user()) {
+                    <a class="sm:mr-4" mat-mini-fab aria-label="Editar equipo" matTooltip="Editar equipo" matTooltipPosition="above" tabindex="0" (click)="onEditTeamClicked()" (keyup)="onEditTeamClicked()" (keypress)="onEditTeamClicked()">
+                      <mat-icon>edit</mat-icon>
+                    </a>
+                  }
                 </div>
 
                 <app-team [teamId]="selectedTeamId()!" [competition]="competitionStore.competition()!" (errorButtonClick)="onBackToTeams()"></app-team>

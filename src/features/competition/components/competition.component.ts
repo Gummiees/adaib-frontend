@@ -8,7 +8,9 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TeamComponent } from '@features/competition/components/tabs/teams/team/team.component';
 import { TeamsComponent } from '@features/competition/components/tabs/teams/teams.component';
@@ -44,6 +46,8 @@ import { SummaryComponent } from './tabs/summary/summary.component';
     FullSpinnerComponent,
     TeamsComponent,
     TeamComponent,
+    MatIconModule,
+    MatTooltipModule,
     MatTabsModule,
     ResultsComponent,
     MatButtonModule,
@@ -317,5 +321,12 @@ export class CompetitionComponent {
       return;
     }
     this.dispatcher.dispatch(competitionNavEvents.toEditRound(round.id));
+  }
+
+  public onEditTeamClicked(): void {
+    const selectedTeamId = this.selectedTeamId();
+    if (selectedTeamId) {
+      this.router.navigate(['/admin/equipo', selectedTeamId]);
+    }
   }
 }

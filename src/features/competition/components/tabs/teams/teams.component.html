@@ -9,9 +9,9 @@
     }
   </div>
   @if(activeTeams().length > 0) {
-    <div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-stretch">
       @for (team of activeTeams(); track team.id) {
-        <app-team-card [team]="team" (teamClick)="onTeamClick(team.id)"></app-team-card>
+        <app-team-card class="h-full" [team]="team" (teamClick)="onTeamClick(team.id)"></app-team-card>
       }
     </div>
   } @else {

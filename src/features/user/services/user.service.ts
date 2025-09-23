@@ -1,12 +1,8 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpStatusCode,
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { jwtDecode } from 'jwt-decode';
-import { catchError, map, Observable, of, throwError } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Token } from '../models/token';
 import { ApiUser, User, UserRequest } from '../models/user';
 
@@ -15,20 +11,6 @@ import { ApiUser, User, UserRequest } from '../models/user';
 })
 export class UserService {
   private httpClient = inject(HttpClient);
-
-  check(): Observable<User | null> {
-    return this.httpClient
-      .get<ApiUser>(`${environment.apiUrl}/auth/check`)
-      .pipe(
-        map((apiUser) => this.parseUser(apiUser)),
-        catchError((error: HttpErrorResponse) => {
-          if (error.status === HttpStatusCode.Unauthorized) {
-            return of(null);
-          }
-          return throwError(() => error);
-        }),
-      );
-  }
 
   login(userRequest: UserRequest): Observable<User> {
     return this.httpClient
