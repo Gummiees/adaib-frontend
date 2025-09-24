@@ -16,7 +16,7 @@
   <meta property="og:description" content="ADAIB - Asociación Deportistas Aficionados De Las Illes Balears - Competiciones, equipos, resultados y noticias.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://adaib.com">
-  <meta property="og:image" content="/assets/logo/full/transparent/white-letters/1280.png">
+  <meta property="og:image" content="/assets/logo/full/transparent/white-letters/1280.webp">
   <meta property="og:site_name" content="ADAIB">
   <meta property="og:locale" content="es_ES">
 
@@ -24,7 +24,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ADAIB - Asociación Deportistas Aficionados De Las Illes Balears">
   <meta name="twitter:description" content="ADAIB - Asociación Deportistas Aficionados De Las Illes Balears - Competiciones, equipos, resultados y noticias.">
-  <meta name="twitter:image" content="/assets/logo/full/transparent/white-letters/1280.png">
+  <meta name="twitter:image" content="/assets/logo/full/transparent/white-letters/1280.webp">
 
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -34,7 +34,7 @@
     "name": "ADAIB - Asociación Deportistas Aficionados De Las Illes Balears",
     "description": "ADAIB - Asociación Deportistas Aficionados De Las Illes Balears - Competiciones, equipos, resultados y noticias.",
     "url": "https://adaib.com",
-    "logo": "https://adaib.com/assets/logo/full/transparent/white-letters/1280.png",
+    "logo": "https://adaib.com/assets/logo/full/transparent/white-letters/1280.webp",
     "sport": "Basketball",
     "address": {
       "@type": "PostalAddress",
@@ -47,10 +47,39 @@
   <link rel="preconnect" href="https://o4510073749700608.ingest.de.sentry.io" crossorigin>
 
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="preload" fetchpriority="high" as="image" href="assets/bg-main/basketball-bg_1280.jpg" type="image/jpeg">
-  <link rel="preload" fetchpriority="high" as="image" href="assets/logo/full/transparent/white-letters/1280.png" type="image/png">
-  <link rel="preload" fetchpriority="high" as="image" href="assets/logo/42.png" type="image/png">
-  <link rel="preload" fetchpriority="high" as="image" href="assets/logo/84.png" type="image/png">
+  <link rel="preload" as="image" href="assets/bg-main/basketball-bg_640.webp"
+    type="image/webp" media="(max-width: 768px)">
+  <link rel="preload" fetchpriority="high" as="image" href="assets/logo/full/transparent/white-letters/640.webp"
+  type="image/webp" media="(max-width: 768px)">
+
+  <link rel="preload" as="image" href="assets/bg-main/basketball-bg_1280.webp"
+    type="image/webp" media="(min-width: 769px) and (max-width: 1440px)">
+  <link rel="preload" fetchpriority="high" as="image" href="assets/logo/full/transparent/white-letters/1280.webp"
+  type="image/webp" media="(min-width: 769px) and (max-width: 1440px)">
+
+  <link rel="preload" as="image" href="assets/bg-main/basketball-bg_1920.webp"
+      type="image/webp" media="(min-width: 1441px) and (max-width: 1920px)">
+  <link rel="preload" fetchpriority="high" as="image" href="assets/logo/full/transparent/white-letters/1920.webp"
+  type="image/webp" media="(min-width: 1441px) and (max-width: 1920px)">
+
+  <link rel="preload" as="image" href="assets/bg-main/basketball-bg_2400.webp"
+      type="image/webp" media="(min-width: 1921px)">
+  <link rel="preload" fetchpriority="high" as="image" href="assets/logo/full/transparent/white-letters/3840.webp"
+  type="image/webp" media="(min-width: 1921px)">
+
+  <script>
+    const pixelRatio = window.devicePixelRatio || 1;
+    const width = window.innerWidth;
+
+    let imageToPreload= pixelRatio >= 2 ? 'assets/logo/84.webp' : 'assets/logo/42.webp';
+
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = imageToPreload;
+    link.type = 'image/webp';
+    document.head.appendChild(link);
+  </script>
 
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">

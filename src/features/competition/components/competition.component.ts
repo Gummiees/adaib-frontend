@@ -99,7 +99,7 @@ export class CompetitionComponent {
           keywords: keywords,
           image:
             competition.imageUrl ||
-            '/assets/logo/full/transparent/white-letters/1280.png',
+            '/assets/logo/full/transparent/white-letters/1280.webp',
           type: 'website',
           structuredData:
             this.seoService.generateSportsEventSchema(competition),

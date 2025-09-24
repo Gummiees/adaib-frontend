@@ -31,7 +31,7 @@ export class SEOUtils {
       return `${baseUrl}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
     }
     // Fallback to default logo
-    return `${baseUrl}/assets/logo/full/transparent/white-letters/1280.png`;
+    return `${baseUrl}/assets/logo/full/transparent/white-letters/1280.webp`;
   }
 
   /**

@@ -32,7 +32,7 @@ export class SEOService {
     'Asociación Deportistas Aficionados De Las Illes Balears - Competiciones, equipos, resultados y noticias.';
   private readonly baseUrl = 'https://adaib.com';
   private readonly defaultImage =
-    '/assets/logo/full/transparent/white-letters/1280.png';
+    '/assets/logo/full/transparent/white-letters/1280.webp';
 
   public init(): void {
     this.router.events
