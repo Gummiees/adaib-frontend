@@ -39,7 +39,8 @@ body {
 
 // Hide the Material Design form field subscript wrapper globally
 // This removes the unnecessary bottom space from mat-select and other form fields
-.mat-mdc-form-field-subscript-wrapper {
+// Only apply when the form field is NOT invalid (to preserve error message space)
+.mat-mdc-form-field:not(.mat-form-field-invalid) .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
 }
 

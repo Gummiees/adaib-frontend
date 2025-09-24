@@ -87,13 +87,13 @@
           </mat-form-field>
           @if(form.get('status')?.value === 'NoShow') {
             <mat-form-field class="flex-1">
-              <mat-label>Equipo no presentado</mat-label>
+              <mat-label>Equipo no presentado*</mat-label>
               <mat-select formControlName="noShowTeamId">
                 @for(team of selectedTeams(); track team.id) {
                   <mat-option [value]="team.id">{{ team.name }}</mat-option>
                 }
               </mat-select>
-              @if(form.get('noShowTeamId')?.errors?.['required']) {
+              @if(form.get('noShowTeamId')?.errors?.['noShowTeamRequired']) {
                 <mat-error>El equipo no presentado es requerido</mat-error>
               }
             </mat-form-field>
@@ -106,7 +106,7 @@
               <mat-option [value]="team.id">{{ team.name }}</mat-option>
             }
           </mat-select>
-          @if(form.get('homeTeamId')?.errors?.['required']) {
+          @if(form.get('homeTeamId')?.errors?.['noShowTeamRequired']) {
             <mat-error>El equipo local es requerido</mat-error>
           }
         </mat-form-field>
@@ -123,16 +123,22 @@
         </mat-form-field>
         <div class="flex flex-row gap-2 items-center w-full">
           <mat-form-field class="w-full">
-            <mat-label>Puntos equipo local</mat-label>
+            <mat-label>Puntos equipo local*</mat-label>
             <input matInput type="number" formControlName="homeTeamScore" min="0" />
+            @if(form.get('homeTeamScore')?.errors?.['scoreRequired']) {
+              <mat-error>Los puntos son requeridos</mat-error>
+            }
             @if(form.get('homeTeamScore')?.errors?.['min']) {
               <mat-error>Los puntos no pueden ser negativos</mat-error>
             }
           </mat-form-field>
           <mat-form-field class="w-full">
-            <mat-label>Puntos equipo visitante</mat-label>
+            <mat-label>Puntos equipo visitante*</mat-label>
             <input matInput type="number" formControlName="awayTeamScore" min="0" />
-            @if(form.get('awayTeamScore')?.errors?.['min']) {
+            @if(form.get('awayTeamScore')?.errors?.['scoreRequired']) {
+              <mat-error>Los puntos son requeridos</mat-error>
+            }
+            @if(!!form.get('awayTeamScore')?.errors?.['min']) {
               <mat-error>Los puntos no pueden ser negativos</mat-error>
             }
           </mat-form-field>
@@ -146,11 +152,11 @@
             <mat-datepicker #datepicker></mat-datepicker>
           </mat-form-field>
           <mat-form-field class="w-full">
-            <mat-label>Hora del partido</mat-label>
+            <mat-label>Hora del partido*</mat-label>
             <input matInput [matTimepicker]="timepicker" formControlName="time">
             <mat-timepicker-toggle matIconSuffix [for]="timepicker"></mat-timepicker-toggle>
             <mat-timepicker interval="15min" #timepicker></mat-timepicker>
-            @if(form.get('time')?.errors?.['required']) {
+            @if(form.get('time')?.errors?.['timeRequired']) {
               <mat-error>La hora es requerida</mat-error>
             }
           </mat-form-field>
