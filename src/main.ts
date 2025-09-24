@@ -12,6 +12,7 @@ import { appConfig } from './app/app.config';
 registerLocaleData(localeEs, 'es-ES');
 
 Sentry.init({
+  debug: true,
   dsn: 'hhttps://dfc8cd33d0a05fca1bd5dd738930ca68@o4510073749700608.ingest.de.sentry.io/4510073757761616',
   release: 'adaib-frontend@' + version,
   tunnel: '/tunnel',
