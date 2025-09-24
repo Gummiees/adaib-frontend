@@ -13,9 +13,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { UserStore } from '@features/user/store/user-store';
+import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { CompetitionStatus } from '@shared/models/competition';
+import { competitionsEvent } from '../store/competitions-events';
 import { CompetitionsStore } from '../store/competitions-store';
 import { CompetitionCardComponent } from './competition-card/competition-card.component';
 
@@ -40,6 +42,7 @@ export class CompetitionsComponent {
   public competitionsStore = inject(CompetitionsStore);
   public userStore = inject(UserStore);
   private router = inject(Router);
+  private dispatcher = inject(Dispatcher);
 
   public statusFilter = signal<CompetitionStatus | 'all' | null>(null);
   public seasonFilter = signal<number | null>(null);
@@ -97,5 +100,9 @@ export class CompetitionsComponent {
 
   public onAddCompetitionClick(): void {
     this.router.navigate(['/admin/competicion']);
+  }
+
+  public onReloadCompetitions(): void {
+    this.dispatcher.dispatch(competitionsEvent.getCompetitions());
   }
 }

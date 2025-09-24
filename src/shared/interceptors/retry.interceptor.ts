@@ -1,4 +1,5 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import * as Sentry from '@sentry/angular';
 import { catchError, retry, throwError } from 'rxjs';
 
 export const retryInterceptor: HttpInterceptorFn = (req, next) => {
@@ -21,6 +22,7 @@ export const retryInterceptor: HttpInterceptorFn = (req, next) => {
       },
     }),
     catchError((error: HttpErrorResponse) => {
+      Sentry.captureException('Request failed after 3 attempts');
       console.error('Request failed after 3 attempts:', error);
       return throwError(() => error);
     }),

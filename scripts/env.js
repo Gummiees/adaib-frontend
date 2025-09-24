@@ -18,7 +18,7 @@ const writeEnvFile = (filePath, content) => {
   console.log(`Generated ${path.basename(filePath)}`);
 };
 
-const mainEnvContent = generateEnvFileContent(true);
+const mainEnvContent = generateEnvFileContent(false);
 const devEnvContent = generateEnvFileContent(false);
 const productionEnvContent = generateEnvFileContent(true);
 
