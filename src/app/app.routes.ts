@@ -12,7 +12,16 @@ export const routes: Routes = [
   {
     path: 'inicio',
     component: LandingComponent,
-    data: { title: 'Inicio' },
+    data: {
+      title: 'Inicio',
+      seo: {
+        description:
+          'ADAIB - Asociación Deportistas Aficionados De Las Illes Balears. Descubre nuestras competiciones de baloncesto, equipos y últimas noticias.',
+        keywords:
+          'ADAIB, baloncesto, Illes Balears, Baleares, deportistas aficionados, inicio',
+        type: 'website',
+      },
+    },
   },
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
   {
@@ -21,7 +30,16 @@ export const routes: Routes = [
       import('@features/contact/contact.component').then(
         (m) => m.ContactComponent,
       ),
-    data: { title: 'Contacto' },
+    data: {
+      title: 'Contacto',
+      seo: {
+        description:
+          'Ponte en contacto con ADAIB. Información de contacto y ubicación para consultas sobre baloncesto en las Illes Balears.',
+        keywords:
+          'contacto, ADAIB, información, Illes Balears, baloncesto, consultas',
+        type: 'website',
+      },
+    },
   },
   {
     path: 'noticias',
@@ -29,7 +47,16 @@ export const routes: Routes = [
       import('@features/articles/components/all/articles.component').then(
         (m) => m.ArticlesComponent,
       ),
-    data: { title: 'Noticias' },
+    data: {
+      title: 'Noticias',
+      seo: {
+        description:
+          'Últimas noticias del baloncesto en las Illes Balears. Mantente informado sobre competiciones, equipos y eventos de ADAIB.',
+        keywords:
+          'noticias, baloncesto, ADAIB, Illes Balears, actualidad, deportes',
+        type: 'website',
+      },
+    },
   },
   {
     path: 'noticias/:id',
@@ -37,7 +64,13 @@ export const routes: Routes = [
       import('@features/articles/components/individual/article.component').then(
         (m) => m.ArticleComponent,
       ),
-    data: { title: 'Noticia' },
+    data: {
+      title: 'Noticia',
+      seo: {
+        type: 'article',
+        section: 'Deportes',
+      },
+    },
   },
   {
     path: 'login',
@@ -55,7 +88,16 @@ export const routes: Routes = [
         (m) => m.CompetitionsComponent,
       ),
     providers: [CompetitionsService, CompetitionsStore],
-    data: { title: 'Competiciones' },
+    data: {
+      title: 'Competiciones',
+      seo: {
+        description:
+          'Todas las competiciones de baloncesto de ADAIB en las Illes Balears. Consulta torneos, ligas y campeonatos activos.',
+        keywords:
+          'competiciones, torneos, ligas, baloncesto, ADAIB, Illes Balears, campeonatos',
+        type: 'website',
+      },
+    },
   },
   {
     path: 'competiciones/:id',
@@ -64,18 +106,39 @@ export const routes: Routes = [
         (m) => m.CompetitionComponent,
       ),
     providers: [CompetitionService, CompetitionStore],
-    data: { title: 'Competición' },
+    data: {
+      title: 'Competición',
+      seo: {
+        type: 'website',
+      },
+    },
   },
   {
     path: 'admin',
     loadChildren: () =>
       import('@features/admin/admin.routes').then((m) => m.adminRoutes),
     canActivate: [AdminGuard],
-    data: { title: 'Administración' },
+    data: {
+      title: 'Administración',
+      seo: {
+        description:
+          'Panel de administración de ADAIB para gestión de competiciones, equipos y contenido.',
+        keywords: 'administración, gestión, ADAIB, panel, competiciones',
+        type: 'website',
+      },
+    },
   },
   {
     path: '**',
     component: NotFoundComponent,
-    data: { title: 'Página No Encontrada' },
+    data: {
+      title: 'Página No Encontrada',
+      seo: {
+        description:
+          'La página que buscas no existe. Regresa a ADAIB para explorar nuestras competiciones y noticias de baloncesto.',
+        keywords: 'error 404, página no encontrada, ADAIB',
+        type: 'website',
+      },
+    },
   },
 ];

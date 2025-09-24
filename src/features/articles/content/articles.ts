@@ -27,6 +27,7 @@ export const articles: Article[] = [
     `,
     imageUrl:
       'https://i.postimg.cc/HLMkxKYd/9-Tzi8yw-Rz924-XE3u-Ha-D6-DZ3-Ef-Idb-Oi-Ylv-IROR5vlq-Ue-Rrex-Toc-ZGob-KRJ9od-gnk3-B-Ce-KTm-TAs-Ijj6-Q0-Ya-YTHEBe5u-X-28-Sva-P.webp',
+    publishDate: new Date('2024-03-01'),
   },
 
   {
@@ -67,6 +68,7 @@ export const articles: Article[] = [
     `,
     imageUrl:
       'https://i.postimg.cc/90mmLQGQ/4-K1-JIJO-250905-Manly-Warriors-008-jpg.webp',
+    publishDate: new Date('2024-03-01'),
   },
 
   {
@@ -125,6 +127,7 @@ export const articles: Article[] = [
     `,
     imageUrl:
       'https://i.postimg.cc/jqcdLybw/uleb-statement-on-recent-discussions-regarding-the-future-of-european-basketball.jpg',
+    publishDate: new Date('2024-03-01'),
   },
 
   {
@@ -182,5 +185,6 @@ export const articles: Article[] = [
     `,
     imageUrl:
       'https://i.postimg.cc/HLMkxKYd/9-Tzi8yw-Rz924-XE3u-Ha-D6-DZ3-Ef-Idb-Oi-Ylv-IROR5vlq-Ue-Rrex-Toc-ZGob-KRJ9od-gnk3-B-Ce-KTm-TAs-Ijj6-Q0-Ya-YTHEBe5u-X-28-Sva-P.webp',
+    publishDate: new Date('2024-03-01'),
   },
 ];

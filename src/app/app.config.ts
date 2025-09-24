@@ -16,6 +16,7 @@ import * as Sentry from '@sentry/angular';
 import { contentTypeInterceptor } from '@shared/interceptors/content-type.interceptor';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
 import { retryInterceptor } from '@shared/interceptors/retry.interceptor';
+import { SEOService } from '@shared/services/seo.service';
 import { TitleService } from '@shared/services/title.service';
 import { routes } from './app.routes';
 
@@ -47,7 +48,9 @@ export const appConfig: ApplicationConfig = {
     },
     provideAppInitializer(() => {
       inject(Sentry.TraceService);
+      const seoService = inject(SEOService);
       const titleService = inject(TitleService);
+      seoService.init();
       titleService.init();
     }),
   ],

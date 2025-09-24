@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Main pages
+Allow: /inicio
+Allow: /competiciones
+Allow: /noticias
+Allow: /contacto
+
+# Dynamic content
+Allow: /competiciones/*
+Allow: /noticias/*
+
+# Block admin area
+Disallow: /admin
+Disallow: /login
+
+# Sitemap location
+Sitemap: https://adaib.com/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
