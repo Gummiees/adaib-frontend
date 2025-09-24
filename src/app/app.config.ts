@@ -3,11 +3,13 @@ import {
   ApplicationConfig,
   ErrorHandler,
   inject,
+  isDevMode,
   LOCALE_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
+import { provideServiceWorker } from '@angular/service-worker';
 
 import { Title } from '@angular/platform-browser';
 import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
@@ -16,6 +18,7 @@ import * as Sentry from '@sentry/angular';
 import { contentTypeInterceptor } from '@shared/interceptors/content-type.interceptor';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
 import { retryInterceptor } from '@shared/interceptors/retry.interceptor';
+import { PwaUpdateService } from '@shared/services/pwa-update.service';
 import { SEOService } from '@shared/services/seo.service';
 import { TitleService } from '@shared/services/title.service';
 import { routes } from './app.routes';
@@ -48,10 +51,15 @@ export const appConfig: ApplicationConfig = {
     },
     provideAppInitializer(() => {
       inject(Sentry.TraceService);
+      inject(PwaUpdateService);
       const seoService = inject(SEOService);
       const titleService = inject(TitleService);
       seoService.init();
       titleService.init();
+    }),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
 };
