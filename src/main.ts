@@ -13,15 +13,17 @@ registerLocaleData(localeEs, 'es-ES');
 
 Sentry.init({
   dsn: 'hhttps://dfc8cd33d0a05fca1bd5dd738930ca68@o4510073749700608.ingest.de.sentry.io/4510073757761616',
-  release: 'basket-project@' + version,
+  release: 'adaib-frontend@' + version,
   integrations: [
     Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
   ],
   enableLogs: true,
   beforeSendLog: (logEvent) => {
     if (environment.isProduction) {
+      console.log('Production environment detected');
       return logEvent;
     }
+    console.log('Development environment detected');
     return null;
   },
 });

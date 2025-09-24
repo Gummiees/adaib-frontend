@@ -47,8 +47,6 @@ export const appConfig: ApplicationConfig = {
     },
     provideAppInitializer(() => {
       inject(Sentry.TraceService);
-    }),
-    provideAppInitializer(() => {
       const titleService = inject(TitleService);
       titleService.init();
     }),
