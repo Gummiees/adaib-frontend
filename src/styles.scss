@@ -58,12 +58,13 @@ body {
   margin: 0 auto;
 }
 
-// Override for landing page - make it full width
+// Override for landing page - make it full width and height
 .content-container:has(app-landing),
 .content-container app-landing {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
+  height: 100% !important;
 }
 
 // Also target the parent container when landing page is present
@@ -71,6 +72,7 @@ body {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
+  height: 100% !important;
 }
 
 @media (width >= 640px) {
