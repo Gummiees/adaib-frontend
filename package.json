@@ -14,7 +14,7 @@
     "lint:fix": "ng lint --fix && npm run stylelint --fix",
     "test": "npm run lint && jest",
     "test:coverage": "jest --coverage",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org basket-web --project basket-project ./dist && sentry-cli sourcemaps upload --org basket-web --project basket-project ./dist",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org adaib --project adaib-frontend ./dist && sentry-cli sourcemaps upload --org adaib --project adaib-frontend ./dist",
     "prepare": "husky",
     "lint:staged": "ng lint adaib-frontend"
   },

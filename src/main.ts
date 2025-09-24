@@ -12,7 +12,7 @@ import { appConfig } from './app/app.config';
 registerLocaleData(localeEs, 'es-ES');
 
 Sentry.init({
-  dsn: 'https://4b5eae1f296ef561f19699170b60cfd6@o4509965930594304.ingest.de.sentry.io/4509965931708496',
+  dsn: 'hhttps://dfc8cd33d0a05fca1bd5dd738930ca68@o4510073749700608.ingest.de.sentry.io/4510073757761616',
   release: 'basket-project@' + version,
   integrations: [
     Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
