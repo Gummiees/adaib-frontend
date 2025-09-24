@@ -15,11 +15,8 @@ Sentry.init({
   dsn: 'https://dfc8cd33d0a05fca1bd5dd738930ca68@o4510073749700608.ingest.de.sentry.io/4510073757761616',
   release: 'adaib-frontend@' + version,
   integrations: [
-    Sentry.consoleLoggingIntegration(),
-    Sentry.browserTracingIntegration(),
-    Sentry.browserSessionIntegration(),
+    Sentry.consoleLoggingIntegration({ levels: ['error', 'warn'] }),
     Sentry.httpClientIntegration(),
-    Sentry.replayIntegration(),
   ],
   beforeSend: (event) => {
     if (environment.isProduction) {
@@ -27,19 +24,8 @@ Sentry.init({
     }
     return null;
   },
-  // Tracing
-  tracesSampleRate: 0.25,
-  tracePropagationTargets: [
-    'localhost',
-    'adaib.com',
-    /^https:\/\/basketwebapi-production\.up\.railway\.app\/api/,
-  ],
-  // Session Replay
-  replaysSessionSampleRate: 0.25,
-  replaysOnErrorSampleRate: 1.0,
   enableLogs: true,
 });
-
 inject();
 injectSpeedInsights();
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));
