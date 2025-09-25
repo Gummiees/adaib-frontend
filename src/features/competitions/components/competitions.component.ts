@@ -86,6 +86,16 @@ export class CompetitionsComponent {
     );
   });
 
+  constructor() {
+    if (
+      !this.competitionsStore.isLoading() &&
+      !this.competitionsStore.competitions() &&
+      this.competitionsStore.error()
+    ) {
+      this.onReloadCompetitions();
+    }
+  }
+
   public onNotFoundButtonClick = (): void => {
     this.router.navigate(['/competiciones']);
   };

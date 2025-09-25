@@ -3,14 +3,13 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { ApiCompetition, Competition } from '@shared/models/competition';
 import { parseISO } from 'date-fns';
-import { map, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable()
 export class CompetitionsService {
   private http = inject(HttpClient);
 
   getAllCompetitions(): Observable<Competition[]> {
-    return of([]);
     return this.http
       .get<ApiCompetition[]>(`${environment.apiUrl}/Competition/all`)
       .pipe(map((competitions) => this.parseCompetitionDates(competitions)));
