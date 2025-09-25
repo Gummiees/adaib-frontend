@@ -24,9 +24,9 @@
         <app-competition-progress [status]="competition().status" [startDate]="competition().startDate" [endDate]="competition().endDate"></app-competition-progress>
       </div>
       @if(!!userStore.user()) {
-        <button matTooltip="Editar" matTooltipPosition="above" matIconButton aria-label="Editar" type="button" (click)="onEditCompetitionClick($event)">
+        <a matTooltip="Editar" matTooltipPosition="above" matIconButton aria-label="Editar" tabindex="0" (click)="onEditCompetitionClick($event)" (keyup)="onEditCompetitionClick($event)" (keypress)="onEditCompetitionClick($event)">
           <mat-icon>edit</mat-icon>
-        </button>
+        </a>
       }
     </div>
   </div>

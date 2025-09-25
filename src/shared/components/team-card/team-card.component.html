@@ -2,9 +2,9 @@
   <div class="p-4 relative flex flex-col justify-center h-full bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer transition-all duration-300 ease-in-out hover:shadow-md hover:bg-gray-100">
     <div class="flex flex-col items-center gap-y-4">
       @if(!!userStore.user()) {
-        <button class="absolute! top-2 right-2" matTooltip="Editar" matTooltipPosition="above" matIconButton aria-label="Editar" type="button" (click)="onEditTeamClick($event)">
+        <a class="absolute! top-2 right-2" matTooltip="Editar" matTooltipPosition="above" matIconButton aria-label="Editar" tabindex="0" (click)="onEditTeamClick($event)" (keyup)="onEditTeamClick($event)" (keypress)="onEditTeamClick($event)">
           <mat-icon>edit</mat-icon>
-        </button>
+        </a>
       }
       @if (team().imageUrl) {
         <div class="aspect-square overflow-hidden rounded-t-md shrink-0">
