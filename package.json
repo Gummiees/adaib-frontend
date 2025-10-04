@@ -47,7 +47,7 @@
     "@angular/forms": "^20.2.4",
     "@angular/material": "^20.2.2",
     "@angular/platform-browser": "^20.2.4",
-    "@angular/router": "^20.2.4",
+    "@angular/router": "^20.3.3",
     "@angular/service-worker": "^20.2.4",
     "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.0.1",
