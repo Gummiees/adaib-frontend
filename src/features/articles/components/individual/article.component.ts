@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { articles } from '@features/articles/content/articles';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
+import { SEOService } from '@shared/services/seo.service';
 import { TitleService } from '@shared/services/title.service';
 import { map, Observable, of, startWith, tap } from 'rxjs';
 import { Article } from '../../models/article';
@@ -30,6 +31,7 @@ export class ArticleComponent {
   private sanitizer = inject(DomSanitizer);
   private router = inject(Router);
   private titleService = inject(TitleService);
+  private seoService = inject(SEOService);
   public articleWithLoading$ = this.getArticle();
 
   public onNotFoundButtonClick(): void {
@@ -69,6 +71,24 @@ export class ArticleComponent {
       tap(({ article }) => {
         if (article) {
           this.titleService.setDynamicTitle(article.title);
+
+          // Update SEO for the article
+          const description = this.seoService.extractDescription(
+            article.content,
+          );
+          this.seoService.setDynamicSEO({
+            title: article.title,
+            description: description,
+            keywords: `${article.title}, noticias, baloncesto, ADAIB, Illes Balears, deportes`,
+            image: article.imageUrl,
+            type: 'article',
+            author:
+              'ADAIB - Asociación Deportistas Aficionados De Las Illes Balears',
+            publishedTime: article.publishDate.toISOString(),
+            section: 'Deportes',
+            tags: ['baloncesto', 'ADAIB', 'deportes'],
+            structuredData: this.seoService.generateArticleSchema(article),
+          });
         }
       }),
       startWith({ article: null, safeContent: null, isLoading: true }),

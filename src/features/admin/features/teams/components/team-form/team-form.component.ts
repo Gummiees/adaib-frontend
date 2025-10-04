@@ -93,7 +93,7 @@ export class TeamFormComponent {
       Validators.pattern(imageUrlRegex),
       Validators.maxLength(255),
     ]),
-    active: new FormControl<boolean>(false, [Validators.required]),
+    active: new FormControl<boolean>(false),
   });
 
   public get name(): FormControl {
@@ -155,6 +155,8 @@ export class TeamFormComponent {
         this.searchTeam();
       }
     });
+
+    this.setupRouteParamSubscription();
   }
 
   private searchTeam(): void {
@@ -222,7 +224,7 @@ export class TeamFormComponent {
       return;
     }
 
-    // Navigate to create new team page
+    this.resetComponentState();
     this.router.navigate(['/admin/equipo']);
   }
 
@@ -299,5 +301,27 @@ export class TeamFormComponent {
     } finally {
       this.isLoadingResponse.set(false);
     }
+  }
+
+  private setupRouteParamSubscription(): void {
+    this.activatedRoute.paramMap.subscribe((params) => {
+      const teamId = params.get('id');
+      if (teamId) {
+        const parsedTeamId = Number(teamId);
+        if (!isNaN(parsedTeamId)) {
+          return;
+        }
+      } else {
+        this.resetComponentState();
+      }
+    });
+  }
+
+  private resetComponentState(): void {
+    this.team.set(null);
+
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
   }
 }

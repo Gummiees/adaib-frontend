@@ -1,7 +1,14 @@
+// Ensure the component host takes full height
+:host(.landing-page) {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .landing-container {
   position: relative;
   width: 100%;
-  height: calc(100vh - 4rem); /* Subtract navbar height (h-16 = 4rem = 64px) */
+  height: 100%; /* Use full height of the flex container */
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -26,18 +33,56 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .content-overlay * {
   text-shadow: 2px 2px 4px rgb(0 0 0 / 70%);
 }
 
+/* Logo styling to prevent overflow */
+.content-overlay img {
+  max-width: 90%;
+  max-height: calc(100vh - 4rem - 3rem); /* Full height minus navbar (4rem) minus padding (1.5rem * 2) */
+  height: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Responsive adjustments */
+@media screen and (width <= 640px) {
+  :host(.landing-page) {
+    height: 100% !important;
+    min-height: calc(100svh - 4rem); /* Ensure full height minus navbar on mobile */
+  }
+
+  .content-overlay {
+    padding: 1rem;
+  }
+
+  .content-overlay img {
+    max-height: calc(100vh - 4rem - 2rem); /* Fallback for browsers without svh */
+    max-height: calc(100svh - 4rem - 2rem); /* Use svh for mobile to account for address bar */
+  }
+}
+
 /* Ensure full height on mobile devices */
 @media screen and (height <= 600px) {
   .landing-container {
-    min-height: calc(100vh - 4rem); /* Account for navbar on small screens too */
+    min-height: 100%; /* Use full height of the flex container */
+  }
+
+  .content-overlay {
+    padding: 1rem;
+  }
+
+  .content-overlay img {
+    max-height: calc(100vh - 4rem - 2rem); /* Fallback for browsers without svh */
+    max-height: calc(100svh - 4rem - 2rem); /* Use svh for mobile to account for address bar */
   }
 }
 

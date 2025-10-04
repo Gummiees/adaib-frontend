@@ -98,7 +98,7 @@ export class CompetitionFormComponent {
       Validators.pattern(imageUrlRegex),
       Validators.maxLength(255),
     ]),
-    active: new FormControl<boolean>(false, [Validators.required]),
+    active: new FormControl<boolean>(false),
     status: new FormControl<CompetitionStatus>('NotStarted', [
       Validators.required,
     ]),

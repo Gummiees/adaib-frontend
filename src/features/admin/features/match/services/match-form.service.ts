@@ -4,6 +4,7 @@ import { FormApiMatch, MatchStatus } from '@shared/models/match';
 import { setHours, setMinutes } from 'date-fns';
 import { awayTeamValidator } from '../validators/away-team.validator';
 import { noShowTeamValidator } from '../validators/no-show-team.validator';
+import { scoreValidator } from '../validators/score.validator';
 import { timeValidator } from '../validators/time.validator';
 
 @Injectable()
@@ -30,7 +31,7 @@ export class MatchFormService {
         disabled: true,
       }),
       date: new FormControl<Date | null>(null),
-      time: new FormControl<string | null>(null),
+      time: new FormControl<Date | null>({ value: null, disabled: true }),
       homeTeamScore: new FormControl<number | null>(
         {
           value: null,
@@ -57,6 +58,12 @@ export class MatchFormService {
     ]);
     form.controls['time'].addValidators([
       timeValidator(form.get('date')?.value),
+    ]);
+    form.controls['homeTeamScore'].addValidators([
+      scoreValidator(form.get('status')?.value),
+    ]);
+    form.controls['awayTeamScore'].addValidators([
+      scoreValidator(form.get('status')?.value),
     ]);
   }
 
@@ -107,12 +114,22 @@ export class MatchFormService {
     const awayTeamScoreControl = form.get('awayTeamScore');
     const statusControl = form.get('status');
 
+    homeTeamScoreControl?.clearValidators();
+    awayTeamScoreControl?.clearValidators();
     if (
       statusControl?.value === 'Finished' ||
       statusControl?.value === 'OnGoing'
     ) {
       homeTeamScoreControl?.enable();
       awayTeamScoreControl?.enable();
+      homeTeamScoreControl?.addValidators([
+        scoreValidator(statusControl?.value),
+        Validators.min(0),
+      ]);
+      awayTeamScoreControl?.addValidators([
+        scoreValidator(statusControl?.value),
+        Validators.min(0),
+      ]);
     } else {
       homeTeamScoreControl?.disable();
       awayTeamScoreControl?.disable();
@@ -121,6 +138,9 @@ export class MatchFormService {
         awayTeamScore: null,
       });
     }
+
+    homeTeamScoreControl?.updateValueAndValidity();
+    awayTeamScoreControl?.updateValueAndValidity();
   }
 
   updateNoShowTeamInput(
@@ -152,11 +172,13 @@ export class MatchFormService {
     const timeControl = form.get('time');
     const date = form.get('date')?.value;
 
+    timeControl?.clearValidators();
     if (!date) {
       timeControl?.setValue(null);
       timeControl?.disable();
     } else {
       timeControl?.enable();
+      timeControl?.addValidators([timeValidator(date)]);
     }
     timeControl?.updateValueAndValidity();
   }
@@ -169,10 +191,12 @@ export class MatchFormService {
       groupIdControl?.enable();
       roundIdControl?.enable();
     } else {
-      groupIdControl?.setValue(null);
       groupIdControl?.disable();
-      roundIdControl?.setValue(null);
       roundIdControl?.disable();
+      form.patchValue({
+        homeTeamScore: null,
+        awayTeamScore: null,
+      });
     }
   }
 
@@ -188,7 +212,26 @@ export class MatchFormService {
   }
 
   isStatusCorrect(form: FormGroup): boolean {
+    const date = form.get('date')?.value;
+    const time = form.get('time')?.value;
+
+    if (date && !time) {
+      return false;
+    }
+
     const status = form.get('status')?.value;
+    const homeTeamScore = form.get('homeTeamScore')?.value;
+    const awayTeamScore = form.get('awayTeamScore')?.value;
+
+    if (status === 'Finished' || status === 'OnGoing') {
+      return !!homeTeamScore && !!awayTeamScore;
+    }
+
+    const noShowTeamId = form.get('noShowTeamId')?.value;
+    if (status === 'NoShow') {
+      return !!noShowTeamId;
+    }
+
     const awayTeamId = form.get('awayTeamId')?.value;
     return status === 'Rest' || !!awayTeamId;
   }

@@ -552,7 +552,6 @@ export class MatchFormComponent {
       ?.valueChanges.pipe(takeUntilDestroyed())
       .subscribe(() => {
         this.matchFormService.updateFormControlStates(this.form);
-        this.updateNoShowTeamInput();
       });
   }
 
@@ -603,11 +602,7 @@ export class MatchFormComponent {
   }
 
   private updateNoShowTeamInput(): void {
-    this.matchFormService.updateNoShowTeamInput(
-      this.form,
-      this.selectedHomeTeam()?.id ?? null,
-      this.selectedAwayTeam()?.id ?? null,
-    );
+    this.matchFormService.updateNoShowTeamInput(this.form);
   }
 
   public onCreateNew(): void {

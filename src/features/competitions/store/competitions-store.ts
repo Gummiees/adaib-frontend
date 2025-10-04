@@ -1,4 +1,5 @@
 import { inject } from '@angular/core';
+import { mapResponse } from '@ngrx/operators';
 import {
   patchState,
   signalStore,
@@ -6,12 +7,14 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { on, withReducer } from '@ngrx/signals/events';
+import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
 import { Competition } from '@shared/models/competition';
 import { getErrorMessage } from '@shared/utils/utils';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, switchMap } from 'rxjs';
 import { CompetitionsService } from '../services/competitions.service';
 import { adminCompetitionsEvent } from './admin-competitions-events';
+import { apiCompetitionsEvent } from './api-competitions-events';
+import { competitionsEvent } from './competitions-events';
 
 type CompetitionsState = {
   competitions: Competition[] | null;
@@ -45,6 +48,22 @@ export const CompetitionsStore = signalStore(
     on(adminCompetitionsEvent.deleteCompetition, ({ payload: id }, state) => ({
       competitions: state.competitions?.filter((c) => c.id !== id),
     })),
+    on(competitionsEvent.getCompetitions, () => ({
+      competitions: null,
+      isLoading: true,
+      error: null,
+    })),
+    on(
+      apiCompetitionsEvent.getCompetitionsSuccess,
+      ({ payload: competitions }) => ({
+        competitions: competitions,
+        isLoading: false,
+      }),
+    ),
+    on(apiCompetitionsEvent.getCompetitionsFailure, ({ payload: error }) => ({
+      isLoading: false,
+      error: error,
+    })),
   ),
   withMethods((store) => ({
     getCompetitionsSuccess: (competitions: Competition[]) => {
@@ -77,4 +96,26 @@ export const CompetitionsStore = signalStore(
       }
     },
   }),
+  withEffects(
+    (
+      _,
+      events = inject(Events),
+      competitionsService = inject(CompetitionsService),
+    ) => ({
+      getCompetitions$: events.on(competitionsEvent.getCompetitions).pipe(
+        switchMap(() =>
+          competitionsService.getAllCompetitions().pipe(
+            mapResponse({
+              next: (competitions) =>
+                apiCompetitionsEvent.getCompetitionsSuccess(competitions),
+              error: (error) =>
+                apiCompetitionsEvent.getCompetitionsFailure(
+                  getErrorMessage(error),
+                ),
+            }),
+          ),
+        ),
+      ),
+    }),
+  ),
 );

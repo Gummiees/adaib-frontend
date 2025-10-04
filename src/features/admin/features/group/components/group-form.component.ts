@@ -7,6 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -145,6 +146,16 @@ export class GroupFormComponent {
     this.setupRouteParamSubscription();
     this.setupFormPopulation();
     this.setupPhasePreSelection();
+    this.setupPhaseChangeEffects();
+  }
+
+  private setupPhaseChangeEffects(): void {
+    this.form
+      .get('phase')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((phase: Phase | null) => {
+        this.selectedPhase.set(phase);
+      });
   }
 
   public async onSubmit(): Promise<void> {

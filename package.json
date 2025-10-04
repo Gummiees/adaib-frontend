@@ -1,6 +1,6 @@
 {
   "name": "adaib-frontend",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "ng": "ng",
@@ -14,7 +14,7 @@
     "lint:fix": "ng lint --fix && npm run stylelint --fix",
     "test": "npm run lint && jest",
     "test:coverage": "jest --coverage",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org basket-web --project basket-project ./dist && sentry-cli sourcemaps upload --org basket-web --project basket-project ./dist",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org adaib --project adaib-frontend ./dist && sentry-cli sourcemaps upload --org adaib --project adaib-frontend ./dist",
     "prepare": "husky",
     "lint:staged": "ng lint adaib-frontend"
   },
@@ -48,6 +48,7 @@
     "@angular/material": "^20.2.2",
     "@angular/platform-browser": "^20.2.4",
     "@angular/router": "^20.2.4",
+    "@angular/service-worker": "^20.2.4",
     "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.0.1",
     "@ngrx/operators": "^20.0.1",

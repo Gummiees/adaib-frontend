@@ -39,7 +39,8 @@ body {
 
 // Hide the Material Design form field subscript wrapper globally
 // This removes the unnecessary bottom space from mat-select and other form fields
-.mat-mdc-form-field-subscript-wrapper {
+// Only apply when the form field is NOT invalid (to preserve error message space)
+.mat-mdc-form-field:not(.mat-form-field-invalid) .mat-mdc-form-field-subscript-wrapper {
   display: none !important;
 }
 
@@ -58,12 +59,13 @@ body {
   margin: 0 auto;
 }
 
-// Override for landing page - make it full width
+// Override for landing page - make it full width and height
 .content-container:has(app-landing),
 .content-container app-landing {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
+  height: 100% !important;
 }
 
 // Also target the parent container when landing page is present
@@ -71,6 +73,7 @@ body {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
+  height: 100% !important;
 }
 
 @media (width >= 640px) {

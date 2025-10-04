@@ -21,6 +21,7 @@ import { NotFoundComponent } from '@shared/components/not-found/not-found.compon
 import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
 import { Round } from '@shared/models/round';
+import { SEOService } from '@shared/services/seo.service';
 import { TitleService } from '@shared/services/title.service';
 import { map } from 'rxjs';
 import {
@@ -62,6 +63,7 @@ export class CompetitionComponent {
   private router = inject(Router);
   private dispatcher = inject(Dispatcher);
   private titleService = inject(TitleService);
+  private seoService = inject(SEOService);
 
   constructor() {
     this.getCompetition();
@@ -78,11 +80,30 @@ export class CompetitionComponent {
       this.dispatchRoundChange();
     });
 
-    // Update title when competition changes
+    // Update title and SEO when competition changes
     effect(() => {
       const competition = this.competitionStore.competition();
       if (competition?.name) {
         this.titleService.setDynamicTitle(competition.name);
+
+        // Generate dynamic SEO data for competition
+        const description =
+          competition.description ||
+          `Competición de ${competition.sportName} - ${competition.name}. Consulta equipos, clasificación, resultados y calendario en ADAIB.`;
+
+        const keywords = `${competition.name}, ${competition.sportName}, competición, ADAIB, Illes Balears, equipos, clasificación, resultados`;
+
+        this.seoService.setDynamicSEO({
+          title: competition.name,
+          description: description,
+          keywords: keywords,
+          image:
+            competition.imageUrl ||
+            '/assets/logo/full/transparent/white-letters/1280.webp',
+          type: 'website',
+          structuredData:
+            this.seoService.generateSportsEventSchema(competition),
+        });
       }
     });
   }

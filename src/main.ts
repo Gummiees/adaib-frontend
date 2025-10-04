@@ -12,20 +12,20 @@ import { appConfig } from './app/app.config';
 registerLocaleData(localeEs, 'es-ES');
 
 Sentry.init({
-  dsn: 'https://4b5eae1f296ef561f19699170b60cfd6@o4509965930594304.ingest.de.sentry.io/4509965931708496',
-  release: 'basket-project@' + version,
+  dsn: 'https://dfc8cd33d0a05fca1bd5dd738930ca68@o4510073749700608.ingest.de.sentry.io/4510073757761616',
+  release: 'adaib-frontend@' + version,
   integrations: [
-    Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
+    Sentry.consoleLoggingIntegration({ levels: ['error', 'warn'] }),
+    Sentry.httpClientIntegration(),
   ],
-  enableLogs: true,
-  beforeSendLog: (logEvent) => {
+  beforeSend: (event) => {
     if (environment.isProduction) {
-      return logEvent;
+      return event;
     }
     return null;
   },
+  enableLogs: true,
 });
-
 inject();
 injectSpeedInsights();
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));

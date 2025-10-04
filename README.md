@@ -1,3 +1,3 @@
 # ADAIB frontend
 
-Moved to https://github.com/DevADAIB/adaib-frontend/
+Issues + project: https://github.com/users/Gummiees/projects/4
