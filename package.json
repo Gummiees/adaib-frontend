@@ -73,7 +73,7 @@
   "devDependencies": {
     "@angular-eslint/template-parser": "^20.2.0",
     "@angular/build": "^20.2.2",
-    "@angular/cli": "^20.2.2",
+    "@angular/cli": "^20.3.3",
     "@angular/compiler-cli": "^20.2.4",
     "@ngrx/eslint-plugin": "^20.0.1",
     "@types/jest": "^30.0.0",
