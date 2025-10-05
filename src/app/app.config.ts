@@ -1,7 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
-  ErrorHandler,
   inject,
   isDevMode,
   LOCALE_ID,
@@ -12,7 +11,7 @@ import {
 import { provideServiceWorker } from '@angular/service-worker';
 
 import { Title } from '@angular/platform-browser';
-import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import { contentTypeInterceptor } from '@shared/interceptors/content-type.interceptor';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
