@@ -14,7 +14,6 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { Title } from '@angular/platform-browser';
 import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
 import { provideStore } from '@ngrx/store';
-import * as Sentry from '@sentry/angular';
 import { contentTypeInterceptor } from '@shared/interceptors/content-type.interceptor';
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
 import { retryInterceptor } from '@shared/interceptors/retry.interceptor';
@@ -41,16 +40,7 @@ export const appConfig: ApplicationConfig = {
       routes,
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),
-    {
-      provide: ErrorHandler,
-      useValue: Sentry.createErrorHandler(),
-    },
-    {
-      provide: Sentry.TraceService,
-      deps: [Router],
-    },
     provideAppInitializer(() => {
-      inject(Sentry.TraceService);
       inject(PwaUpdateService);
       const seoService = inject(SEOService);
       const titleService = inject(TitleService);
