@@ -11,16 +11,18 @@
     @if(isDetailedMatch() && showExtraInfo()) {
       <app-match-extra-info [match]="detailedMatch()"></app-match-extra-info>
     }
-    <div class="w-full flex justify-between items-center gap-2">
-      <app-compact-team class="flex-1" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)" (teamClicked)="onMatchTeamClicked(match().homeTeam)"></app-compact-team>
-      <div class="flex flex-col items-center">
+    <div class="w-full grid grid-cols-[minmax(120px,1fr)_minmax(0,max-content)_minmax(120px,1fr)] items-center gap-1 sm:gap-2">
+      <app-compact-team class="min-w-0" [team]="match().homeTeam" [isWinner]="isTeamWinner(match().homeTeam)" (teamClicked)="onMatchTeamClicked(match().homeTeam)"></app-compact-team>
+      <div class="flex flex-col items-center min-w-0 px-1">
         <app-match-score [match]="match()"></app-match-score>
         <app-match-info [match]="match()" [homeTeam]="match().homeTeam"></app-match-info>
       </div>
       @if(match().awayTeam) {
-        <app-compact-team class="flex-1" [team]="match().awayTeam!" position="right" [isWinner]="isTeamWinner(match().awayTeam!)" (teamClicked)="onMatchTeamClicked(match().awayTeam!)"></app-compact-team>
+        <app-compact-team class="min-w-0" [team]="match().awayTeam!" position="right" [isWinner]="isTeamWinner(match().awayTeam!)" (teamClicked)="onMatchTeamClicked(match().awayTeam!)"></app-compact-team>
       } @else {
-        <p class="flex-1 text-base italic text-gray-500 text-right mr-[2px]">Descansa</p>
+        <div class="min-w-0">
+          <p class="text-base italic text-gray-500 text-right mr-[2px]">Descansa</p>
+        </div>
       }
 
       @if(!!userStore.user()) {

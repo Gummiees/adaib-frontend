@@ -1,6 +1,6 @@
 
 <div class="flex items-center" [ngClass]="{'flex-row-reverse': position() === 'right'}">
-  <a class="flex items-center gap-2 cursor-pointer text-gray-900 hover:text-blue-700 shrink-0" [ngClass]="{'flex-row-reverse': position() === 'right'}" aria-label="Ver equipo" tabindex="0" (click)="onTeamClicked()" (keypress)="onTeamClicked()">
+  <a class="flex items-center gap-2 cursor-pointer text-gray-900 hover:text-blue-700" [ngClass]="{'flex-row-reverse': position() === 'right'}" aria-label="Ver equipo" tabindex="0" (click)="onTeamClicked()" (keypress)="onTeamClicked()">
     <app-team-image class="flex-shrink-0 flex items-center" [team]="team()"></app-team-image>
     <p class="text-wrap" [ngClass]="{
       'font-bold': isWinner(),

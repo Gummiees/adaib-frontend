@@ -3,7 +3,7 @@
 } @else {
   <div class="flex flex-col items-center justify-center flex-wrap">
     @if(match().date) {
-    <p class="text-xs text-gray-500 text-center">{{ match().date | date: 'EEEE, dd/MM/yyyy HH:mm' | titlecase }}</p>
+    <p class="text-xs text-gray-500 text-center break-words">{{ match().date | date: 'EEEE, dd/MM/yyyy HH:mm' | titlecase }}</p>
     }
     @if(homeTeam().arena) {
       @if(homeTeam()!.arenaUrl) {
