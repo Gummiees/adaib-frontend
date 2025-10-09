@@ -202,6 +202,8 @@ export class SEOService {
       name: 'ADAIB - Asociación Deportistas Aficionados De Las Illes Balears',
       description: this.baseDescription,
       url: this.baseUrl,
+      email: 'fran@adaib.com',
+      phone: '+34625556874',
       logo: `${this.baseUrl}${this.defaultImage}`,
       sameAs: [
         // Add your social media URLs here
@@ -223,6 +225,7 @@ export class SEOService {
     content: string;
     imageUrl: string;
     id: number;
+    author: string;
   }): Record<string, unknown> {
     const currentUrl = `${this.baseUrl}/noticias/${article.id}`;
     return {
@@ -234,11 +237,11 @@ export class SEOService {
       url: currentUrl,
       author: {
         '@type': 'Organization',
-        name: 'ADAIB - Asociación Deportistas Aficionados De Las Illes Balears',
+        name: article.author,
       },
       publisher: {
         '@type': 'Organization',
-        name: 'ADAIB - Asociación Deportistas Aficionados De Las Illes Balears',
+        name: article.author,
         logo: {
           '@type': 'ImageObject',
           url: `${this.baseUrl}${this.defaultImage}`,

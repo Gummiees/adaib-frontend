@@ -82,8 +82,7 @@ export class ArticleComponent {
             keywords: `${article.title}, noticias, baloncesto, ADAIB, Illes Balears, deportes`,
             image: article.imageUrl,
             type: 'article',
-            author:
-              'ADAIB - Asociación Deportistas Aficionados De Las Illes Balears',
+            author: article.author,
             publishedTime: article.publishDate.toISOString(),
             section: 'Deportes',
             tags: ['baloncesto', 'ADAIB', 'deportes'],
