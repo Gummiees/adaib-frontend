@@ -87,13 +87,7 @@ export class CompetitionsComponent {
   });
 
   constructor() {
-    if (
-      !this.competitionsStore.isLoading() &&
-      !this.competitionsStore.competitions() &&
-      this.competitionsStore.error()
-    ) {
-      this.onReloadCompetitions();
-    }
+    this.onReloadCompetitions();
   }
 
   public onNotFoundButtonClick = (): void => {
