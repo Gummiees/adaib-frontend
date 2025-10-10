@@ -394,9 +394,7 @@ export class RoundFormComponent {
     if (isNaN(parsedId)) {
       return;
     }
-    if (this.competitionStore.competition()?.id === parsedId) {
-      return;
-    }
+
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
   }
 
