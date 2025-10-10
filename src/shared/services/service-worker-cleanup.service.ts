@@ -15,7 +15,15 @@ export class ServiceWorkerCleanupService {
 
         for (const registration of registrations) {
           console.log('Unregistering service worker:', registration.scope);
-          await registration.unregister();
+
+          // Force immediate activation of any waiting worker to bypass it
+          if (registration.waiting) {
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+
+          // Unregister the service worker
+          const unregistered = await registration.unregister();
+          console.log('Service worker unregistered:', unregistered);
         }
 
         // Clear any cached data
@@ -29,7 +37,17 @@ export class ServiceWorkerCleanupService {
           );
         }
 
-        console.log('All service workers and caches have been cleaned up');
+        // Force page reload to ensure service worker is completely removed
+        if (registrations.length > 0) {
+          console.log(
+            'Service workers found and removed. Reloading page to complete cleanup...',
+          );
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          console.log('No service workers found - cleanup complete');
+        }
       } catch (error) {
         console.warn('Failed to unregister service worker:', error);
       }
