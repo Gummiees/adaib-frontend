@@ -15,22 +15,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- 2. PWA Manifest (for install prompt) -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="ADAIB">
-  <link rel="apple-touch-icon" href="assets/logo/192.webp">
-  <link rel="apple-touch-icon" sizes="152x152" href="assets/logo/152.webp">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/192.webp">
-  <meta name="msapplication-TileImage" content="assets/logo/144.webp">
-  <meta name="msapplication-TileColor" content="#1976d2">
 
-  <!-- 3. Critical font preloads (render-blocking) -->
+  <!-- 2. Critical font preloads (render-blocking) -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" as="style">
   <link rel="preload" href="https://fonts.googleapis.com/icon?family=Material+Icons" as="style">
 
-  <!-- 4. Critical image preloads (above the fold) -->
+  <!-- 3. Critical image preloads (above the fold) -->
   <link rel="preload" href="assets/logo/192.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/logo/512.webp" as="image" type="image/webp">
   <link rel="preload" fetchpriority="high" as="image" href="assets/logo/full/transparent/white-letters/640.webp"
@@ -42,7 +32,7 @@
   <link rel="preload" fetchpriority="high" as="image" href="assets/logo/full/transparent/white-letters/3840.webp"
     type="image/webp" media="(min-width: 1921px)">
 
-  <!-- 5. Background image preloads (lower priority) -->
+  <!-- 4. Background image preloads (lower priority) -->
   <link rel="preload" as="image" href="assets/bg-main/basketball-bg_640.webp"
     type="image/webp" media="(max-width: 768px)">
   <link rel="preload" as="image" href="assets/bg-main/basketball-bg_1280.webp"

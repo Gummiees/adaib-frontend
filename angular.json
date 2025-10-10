@@ -31,11 +31,6 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
-              },
-              {
-                "glob": "manifest.webmanifest",
-                "input": "src",
-                "output": "/"
               }
             ],
             "styles": ["src/styles.scss"]
@@ -55,7 +50,6 @@
                 }
               ],
               "outputHashing": "all",
-              "serviceWorker": "src/ngsw-config.json",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
