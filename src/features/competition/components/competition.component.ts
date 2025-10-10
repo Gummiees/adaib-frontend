@@ -273,10 +273,6 @@ export class CompetitionComponent {
       return;
     }
 
-    if (this.competitionStore.competition()?.id === parsedId) {
-      return;
-    }
-
     this.dispatcher.dispatch(competitionEvents.getCompetition(parsedId));
   }
 
