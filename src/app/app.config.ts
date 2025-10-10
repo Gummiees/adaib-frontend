@@ -15,6 +15,7 @@ import { contentTypeInterceptor } from '@shared/interceptors/content-type.interc
 import { credentialsInterceptor } from '@shared/interceptors/credentials.interceptor';
 import { retryInterceptor } from '@shared/interceptors/retry.interceptor';
 import { SEOService } from '@shared/services/seo.service';
+import { ServiceWorkerCleanupService } from '@shared/services/service-worker-cleanup.service';
 import { TitleService } from '@shared/services/title.service';
 import { routes } from './app.routes';
 
@@ -37,6 +38,7 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
     ),
     provideAppInitializer(() => {
+      inject(ServiceWorkerCleanupService);
       const seoService = inject(SEOService);
       const titleService = inject(TitleService);
       seoService.init();
