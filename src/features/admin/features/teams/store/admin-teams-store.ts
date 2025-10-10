@@ -1,4 +1,5 @@
 import { inject } from '@angular/core';
+import { mapResponse } from '@ngrx/operators';
 import {
   patchState,
   signalStore,
@@ -6,12 +7,13 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { on, withReducer } from '@ngrx/signals/events';
+import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
 import { Team } from '@shared/models/team';
 import { getErrorMessage } from '@shared/utils/utils';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, switchMap } from 'rxjs';
 import { AdminTeamsService } from '../services/admin-teams.service';
 import { adminTeamsEvent } from './admin-teams-events';
+import { apiAdminTeamsEvent } from './api-admin-teams-events';
 
 type AdminTeamsState = {
   teams: Team[] | null;
@@ -37,6 +39,19 @@ export const AdminTeamsStore = signalStore(
     }),
     on(adminTeamsEvent.deleteTeam, ({ payload: id }, state) => ({
       teams: state.teams?.filter((t) => t.id !== id),
+    })),
+    on(adminTeamsEvent.getTeams, () => ({
+      teams: null,
+      isLoading: true,
+      error: null,
+    })),
+    on(apiAdminTeamsEvent.getTeamsSuccess, ({ payload: teams }) => ({
+      teams: teams,
+      isLoading: false,
+    })),
+    on(apiAdminTeamsEvent.getTeamsFailure, ({ payload: error }) => ({
+      isLoading: false,
+      error: error,
     })),
   ),
   withMethods((store) => ({
@@ -65,4 +80,23 @@ export const AdminTeamsStore = signalStore(
       }
     },
   }),
+  withEffects(
+    (
+      _,
+      events = inject(Events),
+      adminTeamsService = inject(AdminTeamsService),
+    ) => ({
+      getCompetitions$: events.on(adminTeamsEvent.getTeams).pipe(
+        switchMap(() =>
+          adminTeamsService.getAllTeams().pipe(
+            mapResponse({
+              next: (teams) => apiAdminTeamsEvent.getTeamsSuccess(teams),
+              error: (error) =>
+                apiAdminTeamsEvent.getTeamsFailure(getErrorMessage(error)),
+            }),
+          ),
+        ),
+      ),
+    }),
+  ),
 );

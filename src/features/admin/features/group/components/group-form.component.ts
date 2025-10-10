@@ -40,6 +40,7 @@ import { ApiFormGroup, Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
 import { Team } from '@shared/models/team';
 import { firstValueFrom } from 'rxjs';
+import { adminTeamsEvent } from '../../teams/store/admin-teams-events';
 import { AdminGroupService } from '../services/admin-group.service';
 
 @Component({
@@ -143,6 +144,7 @@ export class GroupFormComponent {
     });
 
     this.getCompetition();
+    this.dispatcher.dispatch(adminTeamsEvent.getTeams());
     this.setupRouteParamSubscription();
     this.setupFormPopulation();
     this.setupPhasePreSelection();

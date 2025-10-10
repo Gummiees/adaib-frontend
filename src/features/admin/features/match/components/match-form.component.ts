@@ -36,6 +36,7 @@ import { Round } from '@shared/models/round';
 import { Team } from '@shared/models/team';
 import { firstValueFrom } from 'rxjs';
 import { AdminTeamsService } from '../../teams/services/admin-teams.service';
+import { adminTeamsEvent } from '../../teams/store/admin-teams-events';
 import { AdminTeamsStore } from '../../teams/store/admin-teams-store';
 import { AdminMatchService } from '../services/admin-match.service';
 import { MatchFormDataService } from '../services/match-form-data.service';
@@ -166,6 +167,7 @@ export class MatchFormComponent {
     this.matchFormService.setupValidators(this.form);
 
     this.getCompetition();
+    this.dispatcher.dispatch(adminTeamsEvent.getTeams());
     this.setupRouteParamSubscription();
     this.setupFormControlEffects();
     this.setupFormPopulation();

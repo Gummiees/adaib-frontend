@@ -4,10 +4,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
+import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { TeamCardComponent } from '@shared/components/team-card/team-card.component';
 import { AdminTeamsService } from '../../services/admin-teams.service';
+import { adminTeamsEvent } from '../../store/admin-teams-events';
 import { AdminTeamsStore } from '../../store/admin-teams-store';
 
 @Component({
@@ -28,7 +30,12 @@ import { AdminTeamsStore } from '../../store/admin-teams-store';
 })
 export class AdminTeamsComponent {
   public adminTeamsStore = inject(AdminTeamsStore);
+  public dispatcher = inject(Dispatcher);
   private router = inject(Router);
+
+  constructor() {
+    this.dispatcher.dispatch(adminTeamsEvent.getTeams());
+  }
 
   public onTeamClick(teamId: number): void {
     this.router.navigate(['/admin/equipo', teamId]);

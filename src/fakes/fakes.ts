@@ -24,7 +24,6 @@ let _fakeTeams: DetailedTeam[] = [
   {
     id: 1,
     name: 'CB Palma',
-    shortName: 'PAL',
     description: 'Club de Baloncesto Palma - Equipo histórico de la capital',
     location: 'Palma',
     imageUrl:
@@ -37,7 +36,6 @@ let _fakeTeams: DetailedTeam[] = [
   {
     id: 2,
     name: 'Manacor Basket',
-    shortName: 'MAN',
     description:
       'Club de baloncesto de Manacor - Tradición deportiva del Llevant',
     location: 'Manacor',
@@ -51,7 +49,6 @@ let _fakeTeams: DetailedTeam[] = [
   {
     id: 3,
     name: 'Inca Basketball',
-    shortName: 'INC',
     description:
       'Club de baloncesto de Inca - Representando el centro de Mallorca',
     location: 'Inca',
@@ -64,7 +61,6 @@ let _fakeTeams: DetailedTeam[] = [
   {
     id: 4,
     name: 'Sóller Basket',
-    shortName: 'SOL',
     description: 'Club de baloncesto de Sóller - De la Serra de Tramuntana',
     location: 'Sóller',
     imageUrl:
@@ -76,14 +72,13 @@ let _fakeTeams: DetailedTeam[] = [
   },
   {
     id: 5,
-    name: 'CB Calvià',
+    name: 'LLIBRERIA LLUNA-ATLETIC ESPORLES',
     active: true,
     matches: [],
   },
   {
     id: 6,
     name: 'Marratxí Basket',
-    shortName: 'MAR',
     description: 'Club de baloncesto de Marratxí - Tradición deportiva local',
     location: 'Marratxí',
     imageUrl:
@@ -95,7 +90,6 @@ let _fakeTeams: DetailedTeam[] = [
   {
     id: 7,
     name: 'CB Llucmajor',
-    shortName: 'LLU',
     description: 'Club de Baloncesto Llucmajor - Del sur de Mallorca',
     location: 'Llucmajor',
     imageUrl:
@@ -107,7 +101,6 @@ let _fakeTeams: DetailedTeam[] = [
   {
     id: 8,
     name: 'Alcúdia Basket',
-    shortName: 'ALC',
     description: 'Club de baloncesto de Alcúdia - Del norte de la isla',
     location: 'Alcúdia',
     imageUrl:

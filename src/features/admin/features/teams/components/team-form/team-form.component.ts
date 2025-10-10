@@ -156,6 +156,7 @@ export class TeamFormComponent {
       }
     });
 
+    this.dispatcher.dispatch(adminTeamsEvent.getTeams());
     this.setupRouteParamSubscription();
   }
 
