@@ -23,7 +23,7 @@ import { Match } from '@shared/models/match';
 import { Phase } from '@shared/models/phase';
 import { Round, RoundWithMatches } from '@shared/models/round';
 import { Team } from '@shared/models/team';
-import { sortMatches } from '@shared/utils/utils';
+import { sortMatchesByDateOldestToNewest } from '@shared/utils/utils';
 
 @Component({
   selector: 'app-group-results',
@@ -60,7 +60,7 @@ export class GroupResultsComponent {
     if (phase) {
       return phase.rounds.map((round) => ({
         ...round,
-        matches: sortMatches(
+        matches: sortMatchesByDateOldestToNewest(
           phase.groups
             .flatMap((group) => group.matches)
             .filter((match) => match.round.id === round.id),
@@ -78,7 +78,7 @@ export class GroupResultsComponent {
     return (
       groupPhase.rounds.map((round) => ({
         ...round,
-        matches: sortMatches(
+        matches: sortMatchesByDateOldestToNewest(
           group!.matches.filter((match) => match.round.id === round.id),
         ),
       })) ?? []
@@ -116,7 +116,9 @@ export class GroupResultsComponent {
         .filter((roundWithMatches) => roundWithMatches.id === currentRound.id)
         .flatMap((roundWithMatches) => roundWithMatches.matches);
     }
-    return sortMatches(phase.groups.flatMap((group) => group.matches));
+    return sortMatchesByDateOldestToNewest(
+      phase.groups.flatMap((group) => group.matches),
+    );
   }
 
   private filterMatchesByGroup(group: Group): Match[] {
@@ -126,7 +128,7 @@ export class GroupResultsComponent {
         .filter((roundWithMatches) => roundWithMatches.id === currentRound.id)
         .flatMap((roundWithMatches) => roundWithMatches.matches);
     }
-    return sortMatches(group.matches);
+    return sortMatchesByDateOldestToNewest(group.matches);
   }
 
   public onTeamClicked(team: Team): void {

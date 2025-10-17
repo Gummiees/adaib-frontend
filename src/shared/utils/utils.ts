@@ -76,6 +76,17 @@ export function sortMatches(matches: DetailedMatch[]): DetailedMatch[] {
   });
 }
 
+export function sortMatchesByDateOldestToNewest(
+  matches: DetailedMatch[],
+): DetailedMatch[] {
+  return [...matches].sort((a, b) => {
+    if (a.date && !b.date) return -1;
+    if (!a.date && b.date) return 1;
+    if (a.date && b.date) return a.date.getTime() - b.date.getTime();
+    return 0;
+  });
+}
+
 export function sortClassification(
   classification: Classification[],
 ): Classification[] {
