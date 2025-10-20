@@ -16,7 +16,10 @@ import { NotFoundComponent } from '@shared/components/not-found/not-found.compon
 import { DetailedCompetition } from '@shared/models/competition';
 import { DetailedMatch } from '@shared/models/match';
 import { DetailedTeam, Team } from '@shared/models/team';
-import { sortMatches } from '@shared/utils/utils';
+import {
+  sortMatches,
+  sortMatchesByDateOldestToNewest,
+} from '@shared/utils/utils';
 import { TeamInfoComponent } from './components/team-info.component';
 
 @Component({
@@ -58,12 +61,12 @@ export class TeamComponent {
   });
 
   public futureMatches = computed<DetailedMatch[]>(() => {
-    return (
+    return sortMatchesByDateOldestToNewest(
       this.team()?.matches.filter(
         (match) =>
           match.status === 'NotStarted' ||
           (match.date && match.date > new Date() && match.status === 'Rest'),
-      ) || []
+      ) || [],
     );
   });
 
