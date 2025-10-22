@@ -47,7 +47,9 @@
 /* Logo styling to prevent overflow */
 .content-overlay img {
   max-width: 90%;
-  max-height: calc(100vh - 4rem - 3rem); /* Full height minus navbar (4rem) minus padding (1.5rem * 2) */
+
+  /* Full height minus navbar (4rem) minus padding (1.5rem * 2) minus dynamic footer */
+  max-height: calc(100vh - 4rem - 3rem - var(--footer-h, 0px));
   height: auto;
   width: auto;
   object-fit: contain;
@@ -57,7 +59,6 @@
 @media screen and (width <= 640px) {
   :host(.landing-page) {
     height: 100% !important;
-    min-height: calc(100svh - 4rem); /* Ensure full height minus navbar on mobile */
   }
 
   .content-overlay {
@@ -65,8 +66,11 @@
   }
 
   .content-overlay img {
-    max-height: calc(100vh - 4rem - 2rem); /* Fallback for browsers without svh */
-    max-height: calc(100svh - 4rem - 2rem); /* Use svh for mobile to account for address bar */
+    /* Fallback for browsers without svh */
+    max-height: calc(100vh - 4rem - 2rem - var(--footer-h, 0px));
+
+    /* Use svh for mobile to account for address bar */
+    max-height: calc(100svh - 4rem - 2rem - var(--footer-h, 0px));
   }
 }
 

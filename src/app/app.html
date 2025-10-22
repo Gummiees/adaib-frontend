@@ -1,4 +1,4 @@
-<main role="main" class="h-screen flex flex-col relative" [ngClass]="{'overflow-hidden': userStore.isLoading()}">
+<main role="main" class="min-h-screen flex flex-col relative" [ngClass]="{'overflow-hidden': userStore.isLoading()}">
   @if(userStore.isLoading()) {
     <app-full-screen-spinner class="absolute z-10"></app-full-screen-spinner>
   }
@@ -8,4 +8,5 @@
       <router-outlet />
     </div>
   </div>
+  <app-footer #footer />
 </main>
