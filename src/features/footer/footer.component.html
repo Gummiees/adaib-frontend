@@ -1,0 +1,22 @@
+<footer class="footer">
+  <div class="sponsors" role="list">
+    <a
+      *ngFor="let sponsor of sponsors; trackBy: trackById"
+      class="sponsor"
+      [href]="sponsor.url"
+      target="_blank"
+      rel="noopener noreferrer"
+      role="listitem"
+      [attr.aria-label]="sponsor.name"
+    >
+      <img
+        class="sponsor-logo"
+        [src]="sponsor.logo"
+        [alt]="sponsor.name"
+        loading="lazy"
+      />
+    </a>
+  </div>
+</footer>
+
+
