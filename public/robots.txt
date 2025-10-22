@@ -6,6 +6,7 @@ Allow: /inicio
 Allow: /competiciones
 Allow: /noticias
 Allow: /contacto
+Allow: /historia
 
 # Dynamic content
 Allow: /competiciones/*

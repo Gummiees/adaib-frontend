@@ -42,6 +42,22 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'historia',
+    loadComponent: () =>
+      import('@features/history/history.component').then(
+        (m) => m.HistoryComponent,
+      ),
+    data: {
+      title: 'Historia',
+      seo: {
+        description:
+          'Historia de ADAIB. Descubre la historia de la asociación de deportistas aficionados de las Illes Balears.',
+        keywords: 'historia, ADAIB, historia, Illes Balears, baloncesto',
+        type: 'website',
+      },
+    },
+  },
+  {
     path: 'noticias',
     loadComponent: () =>
       import('@features/articles/components/all/articles.component').then(
