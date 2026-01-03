@@ -23,7 +23,10 @@ import { Match } from '@shared/models/match';
 import { Phase } from '@shared/models/phase';
 import { Round, RoundWithMatches } from '@shared/models/round';
 import { Team } from '@shared/models/team';
-import { sortMatchesByDateOldestToNewest } from '@shared/utils/utils';
+import {
+  naturalSort,
+  sortMatchesByDateOldestToNewest,
+} from '@shared/utils/utils';
 
 @Component({
   selector: 'app-group-results',
@@ -58,14 +61,16 @@ export class GroupResultsComponent {
     }
 
     if (phase) {
-      return phase.rounds.map((round) => ({
-        ...round,
-        matches: sortMatchesByDateOldestToNewest(
-          phase.groups
-            .flatMap((group) => group.matches)
-            .filter((match) => match.round.id === round.id),
-        ),
-      }));
+      return [...phase.rounds]
+        .sort((a, b) => naturalSort(a.name, b.name))
+        .map((round) => ({
+          ...round,
+          matches: sortMatchesByDateOldestToNewest(
+            phase.groups
+              .flatMap((group) => group.matches)
+              .filter((match) => match.round.id === round.id),
+          ),
+        }));
     }
 
     const groupPhase = competition.phases.find((phase) =>
@@ -76,12 +81,14 @@ export class GroupResultsComponent {
     }
 
     return (
-      groupPhase.rounds.map((round) => ({
-        ...round,
-        matches: sortMatchesByDateOldestToNewest(
-          group!.matches.filter((match) => match.round.id === round.id),
-        ),
-      })) ?? []
+      [...groupPhase.rounds]
+        .sort((a, b) => naturalSort(a.name, b.name))
+        .map((round) => ({
+          ...round,
+          matches: sortMatchesByDateOldestToNewest(
+            group!.matches.filter((match) => match.round.id === round.id),
+          ),
+        })) ?? []
     );
   });
   public firstRound = computed<RoundWithMatches | null>(() => {

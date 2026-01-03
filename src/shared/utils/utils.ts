@@ -92,3 +92,11 @@ export function sortClassification(
 ): Classification[] {
   return [...classification].sort((a, b) => a.position - b.position);
 }
+
+/**
+ * Natural sort function that handles numeric values within strings.
+ * For example: "Jornada 2" comes before "Jornada 10"
+ */
+export function naturalSort(a: string, b: string): number {
+  return a.localeCompare(b, undefined, { numeric: true });
+}
