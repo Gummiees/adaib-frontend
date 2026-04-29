@@ -153,6 +153,7 @@ export class CompetitionService {
         homeTeamScore: match.homeTeamScore,
         awayTeamScore: match.awayTeamScore,
         date: match.date ? parseISO(match.date) : null,
+        location: match.location ?? null,
       };
     });
   }

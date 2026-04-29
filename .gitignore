@@ -12,6 +12,7 @@ yarn.lock
 
 # Environment files
 /.env
+src/.env
 
 src/environments/
 

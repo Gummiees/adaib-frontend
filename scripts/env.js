@@ -22,7 +22,7 @@ const mainEnvContent = generateEnvFileContent(false);
 const devEnvContent = generateEnvFileContent(false);
 const productionEnvContent = generateEnvFileContent(true);
 
-console.log("creating env file with dev env content", devEnvContent);
+console.log("Creating Angular environment files");
 
 const envDir = path.join(__dirname, "..", "src", "environments");
 

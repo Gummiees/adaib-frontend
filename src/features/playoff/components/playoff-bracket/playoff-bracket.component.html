@@ -1,0 +1,247 @@
+<section class="playoff-wrapper">
+  @if(isBusy()) {
+    <app-full-spinner></app-full-spinner>
+  } @else if(playoffPhase()) {
+    @if(leagueGroups().length > 1) {
+      <mat-form-field class="league-select">
+        <mat-label>Grupo de Segunda fase</mat-label>
+        <mat-select
+          [value]="selectedLeagueGroup()?.id"
+          (selectionChange)="onLeagueGroupChange($event.value)">
+          @for(group of leagueGroups(); track group.id) {
+            <mat-option [value]="group.id">{{ group.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
+    @if(isAdmin()) {
+      <div class="playoff-admin-panel">
+        <div>
+          <h2 class="text-xl font-semibold">Orden del Play-Off</h2>
+          <p class="text-sm text-gray-600">
+            Arrastra los equipos de {{ selectedLeagueGroup()?.name }} para
+            colocar cada cruce inicial.
+          </p>
+        </div>
+        <button
+          matButton="filled"
+          type="button"
+          [disabled]="!canSaveSeeds()"
+          (click)="onSaveSeeds()">
+          Guardar bracket
+        </button>
+      </div>
+
+      <div class="team-palette">
+        <h3 class="palette-title">Equipos disponibles</h3>
+        <div
+          id="available-playoff-teams"
+          cdkDropList
+          class="available-team-list"
+          [cdkDropListConnectedTo]="seedDropListIds()"
+          (cdkDropListDropped)="onAvailableTeamsDrop($event)">
+          @for(team of availableTeams(); track team.id) {
+            <div class="available-team" cdkDrag [cdkDragData]="team">
+              <span>{{ team.name }}</span>
+              <mat-icon class="text-gray-400" aria-hidden="true">
+                drag_indicator
+              </mat-icon>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="bracket-scroll">
+      <div class="bracket-grid" [style.--round-count]="bracketRounds().length">
+        @for(round of bracketRounds(); track round.index) {
+          <div class="round-column">
+            <h3 class="round-title">{{ round.name }}</h3>
+            <div class="round-matches">
+              @for(matchView of round.matches; track matchView.index) {
+                <article class="bracket-match">
+                  @if(matchView.isTwoLegged) {
+                    <div class="tie-summary">
+                      <span>Ida y vuelta</span>
+                      @if(matchView.aggregateHomeScore !== null && matchView.aggregateAwayScore !== null) {
+                        <strong>
+                          Global {{ matchView.aggregateHomeScore }} -
+                          {{ matchView.aggregateAwayScore }}
+                        </strong>
+                      }
+                    </div>
+                  }
+
+                  @for(leg of matchView.legs; track leg.index) {
+                    <div class="match-leg">
+                      @if(matchView.isTwoLegged) {
+                        <h4 class="leg-title">
+                          {{ leg.index === 0 ? 'Ida' : 'Vuelta' }}
+                        </h4>
+                      }
+
+                      @if(isAdmin() && round.index === 0 && leg.index === 0) {
+                        <div
+                          cdkDropList
+                          class="team-line bracket-slot"
+                          [id]="getSeedDropListId(getSeedSlotIndex(matchView.index, 'home'))"
+                          [cdkDropListConnectedTo]="seedDropListIds()"
+                          (cdkDropListDropped)="onBracketSlotDrop($event, getSeedSlotIndex(matchView.index, 'home'))"
+                          [class.winner]="matchView.winner?.id === leg.homeTeam?.id">
+                          @if(leg.homeTeam) {
+                            <div class="slot-team" cdkDrag [cdkDragData]="leg.homeTeam">
+                              <span>{{ leg.homeTeam.name }}</span>
+                              <mat-icon class="text-gray-400" aria-hidden="true">
+                                drag_indicator
+                              </mat-icon>
+                            </div>
+                          } @else {
+                            <span class="text-gray-500 italic">Descanso</span>
+                          }
+                          @if(leg.match?.homeTeamScore !== null && leg.match?.homeTeamScore !== undefined) {
+                            <strong>{{ leg.match?.homeTeamScore }}</strong>
+                          }
+                        </div>
+                        <div
+                          cdkDropList
+                          class="team-line bracket-slot"
+                          [id]="getSeedDropListId(getSeedSlotIndex(matchView.index, 'away'))"
+                          [cdkDropListConnectedTo]="seedDropListIds()"
+                          (cdkDropListDropped)="onBracketSlotDrop($event, getSeedSlotIndex(matchView.index, 'away'))"
+                          [class.winner]="matchView.winner?.id === leg.awayTeam?.id">
+                          @if(leg.awayTeam) {
+                            <div class="slot-team" cdkDrag [cdkDragData]="leg.awayTeam">
+                              <span>{{ leg.awayTeam.name }}</span>
+                              <mat-icon class="text-gray-400" aria-hidden="true">
+                                drag_indicator
+                              </mat-icon>
+                            </div>
+                          } @else {
+                            <span class="text-gray-500 italic">Descanso</span>
+                          }
+                          @if(leg.match?.awayTeamScore !== null && leg.match?.awayTeamScore !== undefined) {
+                            <strong>{{ leg.match?.awayTeamScore }}</strong>
+                          }
+                        </div>
+                      } @else {
+                        <div
+                          class="team-line"
+                          [class.winner]="matchView.winner?.id === leg.homeTeam?.id">
+                          <span>{{ leg.homeTeam?.name || 'Por definir' }}</span>
+                          @if(leg.match?.homeTeamScore !== null && leg.match?.homeTeamScore !== undefined) {
+                            <strong>{{ leg.match?.homeTeamScore }}</strong>
+                          }
+                        </div>
+                        <div
+                          class="team-line"
+                          [class.winner]="matchView.winner?.id === leg.awayTeam?.id">
+                          <span>{{ leg.awayTeam?.name || 'Por definir' }}</span>
+                          @if(leg.match?.awayTeamScore !== null && leg.match?.awayTeamScore !== undefined) {
+                            <strong>{{ leg.match?.awayTeamScore }}</strong>
+                          }
+                        </div>
+                      }
+
+                      @if(leg.match?.date) {
+                        <div class="match-date">
+                          {{ leg.match!.date | date:'dd/MM/yyyy HH:mm' }}
+                        </div>
+                      }
+                      @if(getLegLocation(leg)) {
+                        <div class="match-location">
+                          {{ getLegLocation(leg) }}
+                        </div>
+                      }
+
+                      @if(isAdmin()) {
+                        <div class="date-editor">
+                          <mat-form-field>
+                            <mat-label>Fecha y hora</mat-label>
+                            <input
+                              matInput
+                              type="datetime-local"
+                              [value]="getDateDraft(leg.dateDraftKey)"
+                              (input)="onDateChange(leg.dateDraftKey, $event)" />
+                          </mat-form-field>
+                          @if(leg.match) {
+                            <button
+                              matButton="outlined"
+                              type="button"
+                              [disabled]="!canSaveDate(leg)"
+                              (click)="onSaveMatchDate(leg.match, leg.dateDraftKey)">
+                              Guardar fecha
+                            </button>
+                          }
+                        </div>
+                        <div class="location-editor">
+                          <mat-form-field>
+                            <mat-label>Ubicación</mat-label>
+                            <input
+                              matInput
+                              type="text"
+                              maxlength="100"
+                              [value]="getLocationDraft(leg.locationDraftKey)"
+                              (input)="onLocationChange(leg.locationDraftKey, $event)" />
+                          </mat-form-field>
+                          @if(leg.match) {
+                            <button
+                              matButton="outlined"
+                              type="button"
+                              [disabled]="!canSaveLocation(leg)"
+                              (click)="onSaveMatchLocation(leg.match, leg.locationDraftKey)">
+                              Guardar ubicación
+                            </button>
+                          }
+                        </div>
+                      }
+
+                      @if(isAdmin() && leg.match && leg.awayTeam) {
+                        <div class="score-editor">
+                          <mat-form-field>
+                            <mat-label>Local</mat-label>
+                            <input
+                              matInput
+                              type="number"
+                              min="0"
+                              [value]="getScoreDraft(leg.match.id).home"
+                              (input)="onScoreChange(leg.match.id, 'home', $event)" />
+                          </mat-form-field>
+                          <mat-form-field>
+                            <mat-label>Visitante</mat-label>
+                            <input
+                              matInput
+                              type="number"
+                              min="0"
+                              [value]="getScoreDraft(leg.match.id).away"
+                              (input)="onScoreChange(leg.match.id, 'away', $event)" />
+                          </mat-form-field>
+                          <button
+                            matButton="outlined"
+                            type="button"
+                            [disabled]="!canSaveResult(leg.match)"
+                            (click)="onSaveResult(round, matchView, leg.match)">
+                            Guardar
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  @if(isAdmin() && !matchView.legs[0].match && round.round && matchView.homeTeam) {
+                    <button
+                      matButton="outlined"
+                      type="button"
+                      (click)="onCreateMatch(round, matchView)">
+                      {{ matchView.isTwoLegged ? 'Crear eliminatoria' : 'Crear partido' }}
+                    </button>
+                  }
+                </article>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>
