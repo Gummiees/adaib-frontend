@@ -1,4 +1,24 @@
 <section class="playoff-wrapper">
+  <ng-template #teamIdentity let-team let-placeholder="placeholder">
+    <span class="team-identity" [class.team-identity-empty]="!team">
+      @if(team?.imageUrl) {
+        <img
+          class="team-logo"
+          [src]="team.imageUrl"
+          [alt]="'Escudo de ' + team.name" />
+      } @else if(team) {
+        <mat-icon class="team-logo team-logo-fallback" aria-hidden="true">
+          groups
+        </mat-icon>
+      } @else {
+        <span class="team-logo team-logo-empty" aria-hidden="true"></span>
+      }
+      <span class="team-name">
+        {{ team?.shortName || team?.name || placeholder || 'Por definir' }}
+      </span>
+    </span>
+  </ng-template>
+
   @if(isBusy()) {
     <app-full-spinner></app-full-spinner>
   } @else if(playoffPhase()) {
@@ -43,7 +63,10 @@
           (cdkDropListDropped)="onAvailableTeamsDrop($event)">
           @for(team of availableTeams(); track team.id) {
             <div class="available-team" cdkDrag [cdkDragData]="team">
-              <span>{{ team.name }}</span>
+              <ng-container
+                [ngTemplateOutlet]="teamIdentity"
+                [ngTemplateOutletContext]="{ $implicit: team }">
+              </ng-container>
               <mat-icon class="text-gray-400" aria-hidden="true">
                 drag_indicator
               </mat-icon>
@@ -54,13 +77,20 @@
     }
 
     <div class="bracket-scroll">
-      <div class="bracket-grid" [style.--round-count]="bracketRounds().length">
+      <div class="bracket-grid" [style.--round-count]="bracketRounds().length + 1">
         @for(round of bracketRounds(); track round.index) {
-          <div class="round-column">
-            <h3 class="round-title">{{ round.name }}</h3>
+          <div
+            class="round-column"
+            [style.--match-count]="round.matches.length">
+            <div class="round-heading">
+              <span class="round-kicker">Ronda {{ round.index + 1 }}</span>
+              <h3 class="round-title">{{ round.name }}</h3>
+            </div>
             <div class="round-matches">
               @for(matchView of round.matches; track matchView.index) {
-                <article class="bracket-match">
+                <article
+                  class="bracket-match"
+                  [class.match-complete]="!!matchView.winner">
                   @if(matchView.isTwoLegged) {
                     <div class="tie-summary">
                       <span>Ida y vuelta</span>
@@ -91,13 +121,19 @@
                           [class.winner]="matchView.winner?.id === leg.homeTeam?.id">
                           @if(leg.homeTeam) {
                             <div class="slot-team" cdkDrag [cdkDragData]="leg.homeTeam">
-                              <span>{{ leg.homeTeam.name }}</span>
+                              <ng-container
+                                [ngTemplateOutlet]="teamIdentity"
+                                [ngTemplateOutletContext]="{ $implicit: leg.homeTeam }">
+                              </ng-container>
                               <mat-icon class="text-gray-400" aria-hidden="true">
                                 drag_indicator
                               </mat-icon>
                             </div>
                           } @else {
-                            <span class="text-gray-500 italic">Descanso</span>
+                            <ng-container
+                              [ngTemplateOutlet]="teamIdentity"
+                              [ngTemplateOutletContext]="{ $implicit: null, placeholder: 'Descanso' }">
+                            </ng-container>
                           }
                           @if(leg.match?.homeTeamScore !== null && leg.match?.homeTeamScore !== undefined) {
                             <strong>{{ leg.match?.homeTeamScore }}</strong>
@@ -112,13 +148,19 @@
                           [class.winner]="matchView.winner?.id === leg.awayTeam?.id">
                           @if(leg.awayTeam) {
                             <div class="slot-team" cdkDrag [cdkDragData]="leg.awayTeam">
-                              <span>{{ leg.awayTeam.name }}</span>
+                              <ng-container
+                                [ngTemplateOutlet]="teamIdentity"
+                                [ngTemplateOutletContext]="{ $implicit: leg.awayTeam }">
+                              </ng-container>
                               <mat-icon class="text-gray-400" aria-hidden="true">
                                 drag_indicator
                               </mat-icon>
                             </div>
                           } @else {
-                            <span class="text-gray-500 italic">Descanso</span>
+                            <ng-container
+                              [ngTemplateOutlet]="teamIdentity"
+                              [ngTemplateOutletContext]="{ $implicit: null, placeholder: 'Descanso' }">
+                            </ng-container>
                           }
                           @if(leg.match?.awayTeamScore !== null && leg.match?.awayTeamScore !== undefined) {
                             <strong>{{ leg.match?.awayTeamScore }}</strong>
@@ -128,7 +170,10 @@
                         <div
                           class="team-line"
                           [class.winner]="matchView.winner?.id === leg.homeTeam?.id">
-                          <span>{{ leg.homeTeam?.name || 'Por definir' }}</span>
+                          <ng-container
+                            [ngTemplateOutlet]="teamIdentity"
+                            [ngTemplateOutletContext]="{ $implicit: leg.homeTeam, placeholder: 'Por definir' }">
+                          </ng-container>
                           @if(leg.match?.homeTeamScore !== null && leg.match?.homeTeamScore !== undefined) {
                             <strong>{{ leg.match?.homeTeamScore }}</strong>
                           }
@@ -136,7 +181,10 @@
                         <div
                           class="team-line"
                           [class.winner]="matchView.winner?.id === leg.awayTeam?.id">
-                          <span>{{ leg.awayTeam?.name || 'Por definir' }}</span>
+                          <ng-container
+                            [ngTemplateOutlet]="teamIdentity"
+                            [ngTemplateOutletContext]="{ $implicit: leg.awayTeam, placeholder: 'Por definir' }">
+                          </ng-container>
                           @if(leg.match?.awayTeamScore !== null && leg.match?.awayTeamScore !== undefined) {
                             <strong>{{ leg.match?.awayTeamScore }}</strong>
                           }
@@ -238,6 +286,43 @@
                   }
                 </article>
               }
+            </div>
+          </div>
+        }
+
+        @if(bracketRounds().length > 0) {
+          @let finalMatch = bracketRounds()[bracketRounds().length - 1].matches[0];
+          <div class="round-column champion-column" style="--match-count: 1">
+            <div class="round-heading">
+              <span class="round-kicker">Destino</span>
+              <h3 class="round-title">Campeón</h3>
+            </div>
+            <div class="champion-stage">
+              <mat-icon class="champion-trophy" aria-hidden="true">
+                emoji_events
+              </mat-icon>
+              <article class="champion-card" [class.has-champion]="!!finalMatch?.winner">
+                @if(finalMatch?.winner) {
+                  <span class="champion-label">Ganador</span>
+                  <ng-container
+                    [ngTemplateOutlet]="teamIdentity"
+                    [ngTemplateOutletContext]="{ $implicit: finalMatch.winner }">
+                  </ng-container>
+                } @else {
+                  <div class="team-line">
+                    <ng-container
+                      [ngTemplateOutlet]="teamIdentity"
+                      [ngTemplateOutletContext]="{ $implicit: finalMatch?.homeTeam, placeholder: 'Ganador semifinal 1' }">
+                    </ng-container>
+                  </div>
+                  <div class="team-line">
+                    <ng-container
+                      [ngTemplateOutlet]="teamIdentity"
+                      [ngTemplateOutletContext]="{ $implicit: finalMatch?.awayTeam, placeholder: 'Ganador semifinal 2' }">
+                    </ng-container>
+                  </div>
+                }
+              </article>
             </div>
           </div>
         }
