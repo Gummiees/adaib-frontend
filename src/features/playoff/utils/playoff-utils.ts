@@ -1,4 +1,5 @@
 import { DetailedMatch, MatchStatus } from '@shared/models/match';
+import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
 import { Team } from '@shared/models/team';
 
@@ -27,6 +28,13 @@ export function getDashboardPhases(
 
 export function getPlayoffGroupName(sourceGroupName: string): string {
   return `${PLAYOFF_GROUP_NAME} - ${sourceGroupName}`;
+}
+
+export function getPlayoffSourceTeams(group: Group): Team[] {
+  return [...group.classification]
+    .sort((a, b) => a.position - b.position)
+    .slice(0, PLAYOFF_MAX_TEAM_COUNT)
+    .map((classification) => classification.team);
 }
 
 export function getNextPowerOfTwo(value: number): number {

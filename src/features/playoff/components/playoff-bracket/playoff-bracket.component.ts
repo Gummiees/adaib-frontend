@@ -46,8 +46,8 @@ import {
   getPlayoffLegCount,
   getPlayoffGroupName,
   getPlayoffRoundNames,
+  getPlayoffSourceTeams,
   isPlayoffPhase,
-  PLAYOFF_MAX_TEAM_COUNT,
   PLAYOFF_SOURCE_PHASE_NAME,
   sortPlayoffMatches,
 } from '../../utils/playoff-utils';
@@ -146,18 +146,13 @@ export class PlayoffBracketComponent {
   });
 
   public sourceTeams = computed<Team[]>(() => {
-    const competition = this.competitionStore.competition();
     const group = this.selectedLeagueGroup();
 
-    if (!competition || !group) {
+    if (!group) {
       return [];
     }
 
-    const teamsById = new Map(competition.teams.map((team) => [team.id, team]));
-    return group.teamIds
-      .slice(0, PLAYOFF_MAX_TEAM_COUNT)
-      .map((teamId) => teamsById.get(teamId))
-      .filter((team): team is Team => !!team);
+    return getPlayoffSourceTeams(group);
   });
 
   public isAdmin = computed(() => !!this.userStore.user());
@@ -195,6 +190,9 @@ export class PlayoffBracketComponent {
     const roundNames = getPlayoffRoundNames(this.teamCount());
     const roundCount = roundNames.length;
     let incomingTeams = slots.map((slot) => slot.team);
+    const playoffTeamIds = new Set(
+      this.sourceTeams().map((team) => team.id),
+    );
 
     return roundNames.map<PlayoffRoundView>((name, roundIndex) => {
       const round =
@@ -220,7 +218,7 @@ export class PlayoffBracketComponent {
         const tieMatches = savedMatches.slice(
           savedMatchOffset,
           savedMatchOffset + tieLegCount,
-        );
+        ).filter((match) => this.isPlayoffTeamMatch(match, playoffTeamIds));
         savedMatchOffset += tieLegCount;
 
         return this.buildMatchView({
@@ -1226,6 +1224,16 @@ export class PlayoffBracketComponent {
       this.competitionStore
         .competition()
         ?.teams.find((team) => team.id === teamId) ?? null
+    );
+  }
+
+  private isPlayoffTeamMatch(
+    match: DetailedMatch,
+    playoffTeamIds: Set<number>,
+  ): boolean {
+    return (
+      playoffTeamIds.has(match.homeTeam.id) &&
+      (!match.awayTeam || playoffTeamIds.has(match.awayTeam.id))
     );
   }
 
