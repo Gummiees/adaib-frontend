@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "prestart": "node -r dotenv/config scripts/env.js",
-    "start": "npm run prestart && ng serve --configuration development",
+    "start": "npm run prestart && ng serve --configuration development --proxy-config proxy.conf.json",
     "prebuild": "node -r dotenv/config scripts/env.js",
     "build": "npm run prebuild && ng build",
     "watch": "ng build --watch --configuration development",

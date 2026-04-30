@@ -5,6 +5,8 @@ import {
   computed,
   effect,
   inject,
+  OnDestroy,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +16,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TeamComponent } from '@features/competition/components/tabs/teams/team/team.component';
 import { TeamsComponent } from '@features/competition/components/tabs/teams/teams.component';
+import { PlayoffBracketComponent } from '@features/playoff/components/playoff-bracket/playoff-bracket.component';
+import {
+  getDashboardPhases,
+  isPlayoffPhase,
+} from '@features/playoff/utils/playoff-utils';
 import { UserStore } from '@features/user/store/user-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
@@ -38,6 +45,7 @@ import { SummaryComponent } from './tabs/summary/summary.component';
 @Component({
   selector: 'app-competition',
   templateUrl: './competition.component.html',
+  styleUrls: ['./competition.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [CompetitionStore],
@@ -54,9 +62,10 @@ import { SummaryComponent } from './tabs/summary/summary.component';
     MatButtonModule,
     SummaryComponent,
     ClassificationComponent,
+    PlayoffBracketComponent,
   ],
 })
-export class CompetitionComponent {
+export class CompetitionComponent implements OnDestroy {
   public competitionStore = inject(CompetitionStore);
   public userStore = inject(UserStore);
   private activatedRoute = inject(ActivatedRoute);
@@ -64,6 +73,9 @@ export class CompetitionComponent {
   private dispatcher = inject(Dispatcher);
   private titleService = inject(TitleService);
   private seoService = inject(SEOService);
+  private playoffFireTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  public showPlayoffFire = signal(false);
 
   constructor() {
     this.getCompetition();
@@ -108,6 +120,12 @@ export class CompetitionComponent {
     });
   }
 
+  ngOnDestroy(): void {
+    if (this.playoffFireTimeout) {
+      clearTimeout(this.playoffFireTimeout);
+    }
+  }
+
   private dispatchRoundChange(): void {
     const competition = this.competitionStore.competition();
     const initialPhase = this.initialPhase();
@@ -117,7 +135,7 @@ export class CompetitionComponent {
     } else if (initialPhase) {
       this.dispatchRoundChangeByPhase(initialPhase);
     } else if (competition) {
-      for (const phase of competition.phases) {
+      for (const phase of this.dashboardPhases()) {
         this.dispatchRoundChangeByPhase(phase);
       }
     }
@@ -156,6 +174,8 @@ export class CompetitionComponent {
             return 2;
           case 'equipos':
             return 3;
+          case 'playoff':
+            return 4;
           default:
             return 0; // Default to Resumen tab
         }
@@ -183,13 +203,24 @@ export class CompetitionComponent {
     return tab === 3 && teamId !== null && !isNaN(teamId);
   });
 
-  private initialPhase = computed<Phase | null>(() => {
-    const competition = this.competitionStore.competition();
-    if (!competition) {
-      return null;
-    }
+  public playoffPhase = computed<Phase | null>(() => {
     return (
-      competition.phases.find(
+      this.competitionStore
+        .competition()
+        ?.phases.find((phase) => isPlayoffPhase(phase)) ?? null
+    );
+  });
+
+  public dashboardPhases = computed<Phase[]>(() => {
+    return getDashboardPhases(
+      this.competitionStore.competition()?.phases ?? [],
+      !!this.userStore.user(),
+    );
+  });
+
+  private initialPhase = computed<Phase | null>(() => {
+    return (
+      this.dashboardPhases().find(
         (phase) => phase.groups.flatMap((group) => group.matches).length > 0,
       ) ?? null
     );
@@ -240,9 +271,26 @@ export class CompetitionComponent {
         }
         break;
       }
+      case 4:
+        queryParams = { tab: 'playoff' };
+        this.triggerPlayoffFire();
+        break;
     }
 
     this.router.navigate([baseUrl], { queryParams });
+  }
+
+  private triggerPlayoffFire(): void {
+    if (this.playoffFireTimeout) {
+      clearTimeout(this.playoffFireTimeout);
+    }
+
+    this.showPlayoffFire.set(false);
+    setTimeout(() => this.showPlayoffFire.set(true));
+    this.playoffFireTimeout = setTimeout(() => {
+      this.showPlayoffFire.set(false);
+      this.playoffFireTimeout = null;
+    }, 1400);
   }
 
   public onTeamSelect(teamId: number): void {

@@ -15,6 +15,7 @@ import { GroupFilterComponent } from '@features/competition/components/filters/g
 import { PhaseFilterComponent } from '@features/competition/components/filters/phase/phase-filter.component';
 import { RoundFilterComponent } from '@features/competition/components/filters/round/round-filter.component';
 import { competitionNavEvents } from '@features/competition/store/competition-nav-events';
+import { getDashboardPhases } from '@features/playoff/utils/playoff-utils';
 import { UserStore } from '@features/user/store/user-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { MatchComponent } from '@shared/components/match/match.component';
@@ -52,12 +53,16 @@ export class ResultsComponent {
   public dispatcher = inject(Dispatcher);
 
   public groupByRound = signal<boolean>(false);
+
+  public dashboardPhases = computed<Phase[]>(() => {
+    return getDashboardPhases(
+      this.competitionStore.filteredCompetition()?.phases ?? [],
+      !!this.userStore.user(),
+    );
+  });
+
   public allMatchesSorted = computed(() => {
-    const competition = this.competitionStore.filteredCompetition();
-    if (!competition) {
-      return [];
-    }
-    const allMatches = competition.phases
+    const allMatches = this.dashboardPhases()
       .flatMap((phase) => phase.groups)
       .flatMap((group) => group.matches);
 
@@ -65,11 +70,7 @@ export class ResultsComponent {
   });
 
   public filteredMatches = computed(() => {
-    const competition = this.competitionStore.filteredCompetition();
-    if (!competition) {
-      return [];
-    }
-    const allMatches = competition.phases
+    const allMatches = this.dashboardPhases()
       .flatMap((phase) => phase.groups)
       .flatMap((group) => group.matches);
 
@@ -77,11 +78,7 @@ export class ResultsComponent {
   });
 
   public filteredMatchesByRound = computed<RoundWithMatches[]>(() => {
-    const competition = this.competitionStore.filteredCompetition();
-    if (!competition) {
-      return [];
-    }
-    return competition.phases
+    return this.dashboardPhases()
       .flatMap<RoundWithMatches[]>((phase) =>
         phase.rounds.map((round) => ({
           ...round,
@@ -97,13 +94,7 @@ export class ResultsComponent {
   });
 
   public availablePhases = computed<Phase[]>(() => {
-    return [
-      ...new Set(
-        this.competitionStore
-          .competition()!
-          .phases.filter((phase) => phase.groups),
-      ),
-    ];
+    return [...new Set(this.dashboardPhases().filter((phase) => phase.groups))];
   });
 
   public availableGroups = computed<Group[]>(() => {

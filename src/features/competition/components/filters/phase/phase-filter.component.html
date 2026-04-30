@@ -3,7 +3,7 @@
     <mat-label>Fase</mat-label>
     <mat-select [value]="competitionStore.phase()" (selectionChange)="onPhaseFilterChange($event.value)">
       <mat-option value="all">Todas</mat-option>
-      @for (phase of competitionStore.competition()!.phases; track phase.id) {
+      @for (phase of availablePhases(); track phase.id) {
         <mat-option [value]="phase">{{ phase.name }}</mat-option>
       }
     </mat-select>

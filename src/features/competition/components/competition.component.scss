@@ -1,0 +1,95 @@
+.playoff-tab-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.playoff-tab-fire {
+  display: inline-block;
+  transform-origin: 50% 80%;
+  animation: playoff-tab-flame 1s ease-in-out infinite;
+  filter: drop-shadow(0 0.15rem 0.25rem rgb(239 68 68 / 45%));
+}
+
+.playoff-fire-burst {
+  position: fixed;
+  z-index: 1000;
+  top: 4.5rem;
+  left: 50%;
+  display: grid;
+  width: min(24rem, 90vw);
+  height: 8rem;
+  pointer-events: none;
+  transform: translateX(-50%);
+  place-items: center;
+}
+
+@keyframes playoff-tab-flame {
+  0%,
+  100% {
+    transform: translateY(0) scale(1) rotate(-4deg);
+  }
+
+  50% {
+    transform: translateY(-0.12rem) scale(1.12) rotate(5deg);
+  }
+}
+
+.playoff-fire-burst span {
+  --fire-x: 0;
+
+  position: absolute;
+  display: block;
+  font-size: 2.5rem;
+  filter: drop-shadow(0 0.5rem 0.75rem rgb(239 68 68 / 35%));
+  opacity: 0;
+  animation: playoff-fire-pop 1.35s ease-out forwards;
+}
+
+.playoff-fire-burst span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.playoff-fire-burst span:nth-child(2) {
+  animation-delay: 0.08s;
+
+  --fire-x: -4.5rem;
+}
+
+.playoff-fire-burst span:nth-child(3) {
+  animation-delay: 0.14s;
+
+  --fire-x: 4.5rem;
+}
+
+.playoff-fire-burst span:nth-child(4) {
+  animation-delay: 0.2s;
+
+  --fire-x: -8rem;
+}
+
+.playoff-fire-burst span:nth-child(5) {
+  animation-delay: 0.26s;
+
+  --fire-x: 8rem;
+}
+
+@keyframes playoff-fire-pop {
+  0% {
+    opacity: 0;
+    transform: translate(var(--fire-x), 2rem) scale(0.5) rotate(-8deg);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  65% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--fire-x), -3rem) scale(1.25) rotate(8deg);
+  }
+}

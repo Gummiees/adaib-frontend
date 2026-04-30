@@ -7,6 +7,8 @@ import {
   output,
 } from '@angular/core';
 import { CompetitionStore } from '@features/competition/store/competition-store';
+import { getDashboardPhases } from '@features/playoff/utils/playoff-utils';
+import { UserStore } from '@features/user/store/user-store';
 import { Classification } from '@shared/models/classification';
 import { Group } from '@shared/models/group';
 import { Phase } from '@shared/models/phase';
@@ -24,6 +26,7 @@ import { NotFoundComponent } from '../not-found/not-found.component';
 })
 export class ClassificationTableComponent {
   public competitionStore = inject(CompetitionStore);
+  public userStore = inject(UserStore);
 
   public teamClick = output<Team>();
 
@@ -37,13 +40,15 @@ export class ClassificationTableComponent {
     if (!competition) {
       return [];
     }
-    return competition.phases.map((phase) => ({
-      phase: phase,
-      info: phase.groups.map((group) => ({
-        group: group,
-        classifications: sortClassification(group.classification),
-      })),
-    }));
+    return getDashboardPhases(competition.phases, !!this.userStore.user()).map(
+      (phase) => ({
+        phase: phase,
+        info: phase.groups.map((group) => ({
+          group: group,
+          classifications: sortClassification(group.classification),
+        })),
+      }),
+    );
   });
 
   public showPhaseHeader = computed<boolean>(() => {

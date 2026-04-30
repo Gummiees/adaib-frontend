@@ -1,4 +1,13 @@
 <div class="relative">
+  @if(showPlayoffFire()) {
+    <div class="playoff-fire-burst" aria-hidden="true">
+      <span>🔥</span>
+      <span>🔥</span>
+      <span>🔥</span>
+      <span>🔥</span>
+      <span>🔥</span>
+    </div>
+  }
   @if(competitionStore.error()) {
     <app-not-found title="Hubo un error" subtitle="Lo sentimos, hubo un error al cargar la competición. Inténtelo más tarde." buttonText="Volver a cargar" (buttonClicked)="reloadCompetition()"></app-not-found>
   } @else if(competitionStore.isLoading()) {
@@ -76,6 +85,17 @@
             }
           </ng-template>
         </mat-tab>
+        @if(playoffPhase()) {
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="playoff-tab-label">
+                Play-Off
+                <span class="playoff-tab-fire" aria-hidden="true">🔥</span>
+              </span>
+            </ng-template>
+            <app-playoff-bracket></app-playoff-bracket>
+          </mat-tab>
+        }
       </mat-tab-group>
 
     </div>

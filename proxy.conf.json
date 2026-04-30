@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://adaib-api-production.up.railway.app",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

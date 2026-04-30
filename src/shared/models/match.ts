@@ -17,6 +17,7 @@ export interface ApiMatch {
   awayTeamId?: number;
   roundId?: number;
   date?: string | null;
+  location?: string | null;
   homeTeamScore?: number | null;
   awayTeamScore?: number | null;
   result?: MatchResult | null;
@@ -32,6 +33,7 @@ export interface Match {
   homeTeam: Team;
   awayTeam?: Team;
   date?: Date | null;
+  location?: string | null;
   homeTeamScore?: number | null;
   awayTeamScore?: number | null;
   result?: MatchResult | null;

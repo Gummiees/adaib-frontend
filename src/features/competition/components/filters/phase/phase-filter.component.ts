@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +16,7 @@ import {
 } from '@features/competition/store/competition-events';
 import { competitionNavEvents } from '@features/competition/store/competition-nav-events';
 import { CompetitionStore } from '@features/competition/store/competition-store';
+import { getDashboardPhases } from '@features/playoff/utils/playoff-utils';
 import { UserStore } from '@features/user/store/user-store';
 import { Dispatcher } from '@ngrx/signals/events';
 import { Phase } from '@shared/models/phase';
@@ -34,6 +40,13 @@ export class PhaseFilterComponent {
   public userStore = inject(UserStore);
   public dispatcher = inject(Dispatcher);
 
+  public availablePhases = computed<Phase[]>(() => {
+    return getDashboardPhases(
+      this.competitionStore.competition()?.phases ?? [],
+      !!this.userStore.user(),
+    );
+  });
+
   public onPhaseFilterChange(phase: Phase | 'all'): void {
     this.dispatcher.dispatch(competitionEvents.phaseChange(phase));
     this.dispatcher.dispatch(competitionEvents.groupChange('all'));
@@ -42,7 +55,7 @@ export class PhaseFilterComponent {
     if (phase !== 'all') {
       this.dispatchRoundChange(phase);
     } else if (competition) {
-      for (const phase of competition.phases) {
+      for (const phase of this.availablePhases()) {
         this.dispatchRoundChange(phase);
       }
     }
