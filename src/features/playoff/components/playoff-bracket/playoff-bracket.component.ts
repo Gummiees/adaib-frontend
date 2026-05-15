@@ -41,6 +41,8 @@ import {
 } from '../../models/playoff-bracket';
 import { PlayoffBracketAdminService } from '../../services/playoff-bracket-admin.service';
 import {
+  alignPlayoffMatchTeams,
+  getSavedMatchesForPlayoffTie,
   getMatchWinner,
   PLAYOFF_BRACKET_SIZE,
   getPlayoffLegCount,
@@ -202,10 +204,10 @@ export class PlayoffBracketComponent {
       const savedMatches = round && group
         ? sortPlayoffMatches(
             group.matches.filter((match) => match.round.id === round.id),
-          )
+          ).filter((match) => this.isPlayoffTeamMatch(match, playoffTeamIds))
         : [];
       const matchCount = Math.max(1, incomingTeams.length / 2);
-      let savedMatchOffset = 0;
+      const usedMatchIds = new Set<number>();
       const matches = Array.from({ length: matchCount }, (_, matchIndex) => {
         const homeTeam = incomingTeams[matchIndex * 2] ?? null;
         const awayTeam = incomingTeams[matchIndex * 2 + 1] ?? null;
@@ -215,11 +217,16 @@ export class PlayoffBracketComponent {
           homeTeam,
           awayTeam,
         });
-        const tieMatches = savedMatches.slice(
-          savedMatchOffset,
-          savedMatchOffset + tieLegCount,
-        ).filter((match) => this.isPlayoffTeamMatch(match, playoffTeamIds));
-        savedMatchOffset += tieLegCount;
+        const tieMatches = getSavedMatchesForPlayoffTie({
+          savedMatches,
+          usedMatchIds,
+          legCount: tieLegCount,
+          homeTeam,
+          awayTeam,
+        });
+        for (const match of tieMatches) {
+          usedMatchIds.add(match.id);
+        }
 
         return this.buildMatchView({
           savedMatches: tieMatches,
@@ -825,8 +832,8 @@ export class PlayoffBracketComponent {
     homeTeam: Team | null;
     awayTeam: Team | null;
   }): PlayoffMatchView {
-    const resolvedHomeTeam = savedMatches[0]?.homeTeam ?? homeTeam;
-    const resolvedAwayTeam = savedMatches[0]?.awayTeam ?? awayTeam;
+    const resolvedHomeTeam = homeTeam ?? savedMatches[0]?.homeTeam ?? null;
+    const resolvedAwayTeam = awayTeam ?? savedMatches[0]?.awayTeam ?? null;
     const shouldUseTwoLegs =
       this.getExpectedLegCount({
         roundIndex,
@@ -836,18 +843,22 @@ export class PlayoffBracketComponent {
       }) === 2;
     const legCount = shouldUseTwoLegs ? 2 : 1;
     const legs = Array.from({ length: legCount }, (_, legIndex) => {
-      const savedMatch = savedMatches[legIndex] ?? null;
       const isSecondLeg = legIndex === 1;
+      const plannedHomeTeam = isSecondLeg ? resolvedAwayTeam : resolvedHomeTeam;
+      const plannedAwayTeam = isSecondLeg ? resolvedHomeTeam : resolvedAwayTeam;
+      const savedMatch = savedMatches[legIndex]
+        ? alignPlayoffMatchTeams({
+            match: savedMatches[legIndex],
+            homeTeam: plannedHomeTeam,
+            awayTeam: plannedAwayTeam,
+          })
+        : null;
 
       return {
         index: legIndex,
         match: savedMatch,
-        homeTeam:
-          savedMatch?.homeTeam ??
-          (isSecondLeg ? resolvedAwayTeam : resolvedHomeTeam),
-        awayTeam:
-          savedMatch?.awayTeam ??
-          (isSecondLeg ? resolvedHomeTeam : resolvedAwayTeam),
+        homeTeam: savedMatch?.homeTeam ?? plannedHomeTeam,
+        awayTeam: savedMatch?.awayTeam ?? plannedAwayTeam,
         dateDraftKey: savedMatch
           ? `match:${savedMatch.id}`
           : `planned:${roundIndex}:${matchIndex}:${legIndex}`,
@@ -946,22 +957,20 @@ export class PlayoffBracketComponent {
         .map((leg) => leg.match)
         .filter((match): match is DetailedMatch => !!match) ?? [];
     const existingMatch = existingMatches[0];
+    const targetHomeTeamId = targetMatch?.homeTeam?.id;
+    const targetAwayTeamId = targetMatch?.awayTeam?.id;
     const homeTeamId =
       matchView.index % 2 === 0
         ? winner.id
-        : existingMatch?.homeTeam.id ?? targetMatch?.homeTeam?.id ?? winner.id;
+        : targetHomeTeamId ?? existingMatch?.homeTeam.id;
     const awayTeamId =
       matchView.index % 2 === 1
         ? winner.id
-        : existingMatch?.awayTeam?.id ??
-          this.getPendingAwayTeamId(existingMatch, winner) ??
-          targetMatch?.awayTeam?.id;
+        : targetAwayTeamId ??
+          existingMatch?.awayTeam?.id ??
+          this.getPendingAwayTeamId(existingMatch, winner);
 
-    if (!homeTeamId) {
-      return;
-    }
-
-    if (!awayTeamId) {
+    if (!homeTeamId || !awayTeamId || homeTeamId === awayTeamId) {
       return;
     }
 
