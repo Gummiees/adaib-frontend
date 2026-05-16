@@ -10,6 +10,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -91,9 +92,13 @@ export class PlayoffBracketComponent {
   private scoreDrafts = signal<Record<number, ScoreDraft>>({});
   private dateDrafts = signal<Record<string, string>>({});
   private locationDrafts = signal<Record<string, string>>({});
+  private savedLocationDrafts = signal<Record<number, string>>({});
   private isSaving = signal(false);
   private loadedSeedKey = signal<string | null>(null);
   public selectedLeagueGroupId = signal<number | null>(null);
+
+  private readonly savedLocationStoragePrefix =
+    'adaib.playoff.savedLocations';
 
   public playoffPhase = computed(
     () =>
@@ -258,6 +263,10 @@ export class PlayoffBracketComponent {
   );
 
   constructor() {
+    effect(() => {
+      this.syncSavedLocationDraftsFromStorage();
+    });
+
     effect(() => {
       this.syncSeedSlotsFromCompetition();
       this.syncScoreDraftsFromMatches();
@@ -459,7 +468,7 @@ export class PlayoffBracketComponent {
     match: DetailedMatch | null;
     homeTeam: Team | null;
   }): string | null {
-    return leg.match?.location ?? leg.homeTeam?.arena ?? null;
+    return this.getSavedMatchLocation(leg.match) ?? leg.homeTeam?.arena ?? null;
   }
 
   public async onSaveMatchDate(match: DetailedMatch, dateDraftKey: string): Promise<void> {
@@ -487,7 +496,10 @@ export class PlayoffBracketComponent {
             noShowTeamId: match.noShowTeam?.id ?? null,
             status: match.status,
             date,
-            location: match.location ?? match.homeTeam.arena ?? null,
+            location:
+              this.getSavedMatchLocation(match) ??
+              match.homeTeam.arena ??
+              null,
             homeTeamScore: match.homeTeamScore,
             awayTeamScore: match.awayTeamScore,
           },
@@ -542,6 +554,7 @@ export class PlayoffBracketComponent {
           },
         }),
       );
+      this.persistSavedMatchLocation(match, location);
       this.refreshCompetition();
       this.snackBar.open('Ubicación guardada correctamente', 'Cerrar', {
         duration: 3000,
@@ -585,10 +598,11 @@ export class PlayoffBracketComponent {
         homeTeamScore,
         awayTeamScore,
         date: this.getApiDateDraft(`match:${match.id}`),
-        location: this.getLocationDraftValue(
-          `match:${match.id}`,
-          match.homeTeam.arena,
-        ),
+        location:
+          this.getLocationDraftValue(`match:${match.id}`) ??
+          this.getSavedMatchLocation(match) ??
+          match.homeTeam.arena ??
+          null,
       });
       await this.createNextRoundMatchIfPossible({
         round,
@@ -775,45 +789,51 @@ export class PlayoffBracketComponent {
   }
 
   private syncDateDraftsFromMatches(): void {
-    this.dateDrafts.update((currentDrafts) => {
-      const drafts = { ...currentDrafts };
+    untracked(() => {
+      this.dateDrafts.update((currentDrafts) => {
+        const drafts = { ...currentDrafts };
 
-      for (const round of this.bracketRounds()) {
-        for (const matchView of round.matches) {
-          for (const leg of matchView.legs) {
-            if (!leg.match) {
-              drafts[leg.dateDraftKey] ??= '';
-              continue;
+        for (const round of this.bracketRounds()) {
+          for (const matchView of round.matches) {
+            for (const leg of matchView.legs) {
+              if (!leg.match) {
+                drafts[leg.dateDraftKey] ??= '';
+                continue;
+              }
+
+              drafts[leg.dateDraftKey] = this.toDateInputValue(leg.match.date);
             }
-
-            drafts[leg.dateDraftKey] = this.toDateInputValue(leg.match.date);
           }
         }
-      }
 
-      return drafts;
+        return drafts;
+      });
     });
   }
 
   private syncLocationDraftsFromMatches(): void {
-    this.locationDrafts.update((currentDrafts) => {
-      const drafts = { ...currentDrafts };
+    untracked(() => {
+      this.locationDrafts.update((currentDrafts) => {
+        const drafts = { ...currentDrafts };
 
-      for (const round of this.bracketRounds()) {
-        for (const matchView of round.matches) {
-          for (const leg of matchView.legs) {
-            if (!leg.match) {
-              drafts[leg.locationDraftKey] = leg.homeTeam?.arena ?? '';
-              continue;
+        for (const round of this.bracketRounds()) {
+          for (const matchView of round.matches) {
+            for (const leg of matchView.legs) {
+              if (!leg.match) {
+                drafts[leg.locationDraftKey] = leg.homeTeam?.arena ?? '';
+                continue;
             }
 
             drafts[leg.locationDraftKey] =
-              leg.match.location ?? leg.match.homeTeam.arena ?? '';
+              this.getSavedMatchLocation(leg.match) ??
+              leg.match.homeTeam.arena ??
+              '';
           }
         }
-      }
+        }
 
-      return drafts;
+        return drafts;
+      });
     });
   }
 
@@ -1163,6 +1183,102 @@ export class PlayoffBracketComponent {
   ): string | null {
     const location = this.getLocationDraft(key).trim();
     return location.length > 0 ? location : fallbackLocation?.trim() || null;
+  }
+
+  private getSavedMatchLocation(
+    match: DetailedMatch | null | undefined,
+  ): string | null {
+    if (!match) {
+      return null;
+    }
+
+    return this.savedLocationDrafts()[match.id] ?? match.location ?? null;
+  }
+
+  private persistSavedMatchLocation(
+    match: DetailedMatch,
+    location: string | null,
+  ): void {
+    const competitionId = this.competitionStore.competition()?.id;
+    if (!competitionId) {
+      return;
+    }
+
+    const trimmedLocation = location?.trim() ?? '';
+    const savedLocations = { ...this.savedLocationDrafts() };
+
+    if (
+      trimmedLocation &&
+      trimmedLocation !== (match.homeTeam.arena?.trim() ?? '')
+    ) {
+      savedLocations[match.id] = trimmedLocation;
+    } else {
+      delete savedLocations[match.id];
+    }
+
+    this.savedLocationDrafts.set(savedLocations);
+    this.writeSavedLocations(competitionId, savedLocations);
+  }
+
+  private syncSavedLocationDraftsFromStorage(): void {
+    const competitionId = this.competitionStore.competition()?.id;
+    this.savedLocationDrafts.set(
+      competitionId ? this.readSavedLocations(competitionId) : {},
+    );
+  }
+
+  private readSavedLocations(competitionId: number): Record<number, string> {
+    const storage = this.getSavedLocationStorage();
+    if (!storage) {
+      return {};
+    }
+
+    try {
+      const value = storage.getItem(this.getSavedLocationKey(competitionId));
+      const parsed = value ? JSON.parse(value) : {};
+
+      return Object.fromEntries(
+        Object.entries(parsed).filter(
+          ([matchId, location]) =>
+            Number.isFinite(Number(matchId)) &&
+            typeof location === 'string' &&
+            location.trim().length > 0 &&
+            location.length <= 100,
+        ),
+      ) as Record<number, string>;
+    } catch {
+      return {};
+    }
+  }
+
+  private writeSavedLocations(
+    competitionId: number,
+    savedLocations: Record<number, string>,
+  ): void {
+    const storage = this.getSavedLocationStorage();
+    if (!storage) {
+      return;
+    }
+
+    const key = this.getSavedLocationKey(competitionId);
+    if (Object.keys(savedLocations).length === 0) {
+      storage.removeItem(key);
+      return;
+    }
+
+    storage.setItem(key, JSON.stringify(savedLocations));
+  }
+
+  private getSavedLocationKey(competitionId: number): string {
+    return `${this.savedLocationStoragePrefix}:${competitionId}`;
+  }
+
+  private getSavedLocationStorage(): Storage | null {
+    try {
+      return typeof window === 'undefined' ? null : window.localStorage;
+    } catch {
+      return null;
+    }
   }
 
   private toDateInputValue(date: Date | null | undefined): string {
