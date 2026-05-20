@@ -99,6 +99,7 @@ export class PlayoffBracketComponent {
 
   private readonly savedLocationStoragePrefix =
     'adaib.playoff.savedLocations';
+  private readonly fixedPlayoffLocation = 'Es Pla de na Tesa';
 
   public playoffPhase = computed(
     () =>
@@ -464,14 +465,26 @@ export class PlayoffBracketComponent {
     );
   }
 
-  public getLegLocation(leg: {
+  public isFixedLocationRound(round: PlayoffRoundView): boolean {
+    return this.isFixedLocationRoundName(round.name);
+  }
+
+  public getLegLocation(round: PlayoffRoundView, leg: {
     match: DetailedMatch | null;
     homeTeam: Team | null;
   }): string | null {
+    if (this.isFixedLocationRound(round)) {
+      return this.fixedPlayoffLocation;
+    }
+
     return this.getSavedMatchLocation(leg.match) ?? leg.homeTeam?.arena ?? null;
   }
 
-  public async onSaveMatchDate(match: DetailedMatch, dateDraftKey: string): Promise<void> {
+  public async onSaveMatchDate(
+    round: PlayoffRoundView,
+    match: DetailedMatch,
+    dateDraftKey: string,
+  ): Promise<void> {
     const competition = this.competitionStore.competition();
     const phase = this.playoffPhase();
     const group = this.playoffGroup();
@@ -496,10 +509,7 @@ export class PlayoffBracketComponent {
             noShowTeamId: match.noShowTeam?.id ?? null,
             status: match.status,
             date,
-            location:
-              this.getSavedMatchLocation(match) ??
-              match.homeTeam.arena ??
-              null,
+            location: this.getMatchLocationForRound(round, match),
             homeTeamScore: match.homeTeamScore,
             awayTeamScore: match.awayTeamScore,
           },
@@ -598,11 +608,11 @@ export class PlayoffBracketComponent {
         homeTeamScore,
         awayTeamScore,
         date: this.getApiDateDraft(`match:${match.id}`),
-        location:
-          this.getLocationDraftValue(`match:${match.id}`) ??
-          this.getSavedMatchLocation(match) ??
-          match.homeTeam.arena ??
-          null,
+        location: this.getMatchLocationForRound(
+          round,
+          match,
+          `match:${match.id}`,
+        ),
       });
       await this.createNextRoundMatchIfPossible({
         round,
@@ -650,6 +660,7 @@ export class PlayoffBracketComponent {
         phaseId: phase.id,
         groupId: group.id,
         roundId: round.round.id,
+        round,
         matchView,
       });
       this.refreshCompetition();
@@ -719,12 +730,14 @@ export class PlayoffBracketComponent {
     phaseId,
     groupId,
     roundId,
+    round,
     matchView,
   }: {
     competitionId: number;
     phaseId: number;
     groupId: number;
     roundId: number;
+    round: PlayoffRoundView;
     matchView: PlayoffMatchView;
   }): Promise<void> {
     const firstLeg = matchView.legs[0];
@@ -740,7 +753,8 @@ export class PlayoffBracketComponent {
       homeTeamId: firstLeg.homeTeam.id,
       awayTeamId: firstLeg.awayTeam?.id,
       date: this.getApiDateDraft(firstLeg.dateDraftKey),
-      location: this.getLocationDraftValue(
+      location: this.getRoundLocationDraftValue(
+        round,
         firstLeg.locationDraftKey,
         firstLeg.homeTeam.arena,
       ),
@@ -759,7 +773,8 @@ export class PlayoffBracketComponent {
       homeTeamId: secondLeg.homeTeam.id,
       awayTeamId: secondLeg.awayTeam?.id,
       date: this.getApiDateDraft(secondLeg.dateDraftKey),
-      location: this.getLocationDraftValue(
+      location: this.getRoundLocationDraftValue(
+        round,
         secondLeg.locationDraftKey,
         secondLeg.homeTeam.arena,
       ),
@@ -819,6 +834,11 @@ export class PlayoffBracketComponent {
         for (const round of this.bracketRounds()) {
           for (const matchView of round.matches) {
             for (const leg of matchView.legs) {
+              if (this.isFixedLocationRound(round)) {
+                drafts[leg.locationDraftKey] = this.fixedPlayoffLocation;
+                continue;
+              }
+
               if (!leg.match) {
                 drafts[leg.locationDraftKey] = leg.homeTeam?.arena ?? '';
                 continue;
@@ -1007,8 +1027,9 @@ export class PlayoffBracketComponent {
         const legHomeTeamId = isSecondLeg && awayTeamId ? awayTeamId : homeTeamId;
         const legAwayTeamId = isSecondLeg ? homeTeamId : awayTeamId;
         const legHomeTeam = this.getTeamById(legHomeTeamId);
-        const location =
-          match.homeTeam.id === legHomeTeamId
+        const location = this.isFixedLocationRound(nextRound)
+          ? this.fixedPlayoffLocation
+          : match.homeTeam.id === legHomeTeamId
             ? match.location ?? legHomeTeam?.arena ?? null
             : legHomeTeam?.arena ?? null;
 
@@ -1044,7 +1065,8 @@ export class PlayoffBracketComponent {
         homeTeamId,
         awayTeamId,
         date: this.getApiDateDraft(targetMatch.legs[0].dateDraftKey),
-        location: this.getLocationDraftValue(
+        location: this.getRoundLocationDraftValue(
+          nextRound,
           targetMatch.legs[0].locationDraftKey,
           this.getTeamById(homeTeamId)?.arena,
         ),
@@ -1057,7 +1079,8 @@ export class PlayoffBracketComponent {
         homeTeamId: awayTeamId,
         awayTeamId: homeTeamId,
         date: this.getApiDateDraft(targetMatch.legs[1].dateDraftKey),
-        location: this.getLocationDraftValue(
+        location: this.getRoundLocationDraftValue(
+          nextRound,
           targetMatch.legs[1].locationDraftKey,
           this.getTeamById(awayTeamId)?.arena,
         ),
@@ -1076,7 +1099,8 @@ export class PlayoffBracketComponent {
         ? this.getApiDateDraft(targetMatch.legs[0].dateDraftKey)
         : null,
       location: targetMatch
-        ? this.getLocationDraftValue(
+        ? this.getRoundLocationDraftValue(
+            nextRound,
             targetMatch.legs[0].locationDraftKey,
             this.getTeamById(homeTeamId)?.arena,
           )
@@ -1183,6 +1207,43 @@ export class PlayoffBracketComponent {
   ): string | null {
     const location = this.getLocationDraft(key).trim();
     return location.length > 0 ? location : fallbackLocation?.trim() || null;
+  }
+
+  private getRoundLocationDraftValue(
+    round: PlayoffRoundView,
+    key: string,
+    fallbackLocation?: string | null,
+  ): string | null {
+    if (this.isFixedLocationRound(round)) {
+      return this.fixedPlayoffLocation;
+    }
+
+    return this.getLocationDraftValue(key, fallbackLocation);
+  }
+
+  private getMatchLocationForRound(
+    round: PlayoffRoundView,
+    match: DetailedMatch,
+    locationDraftKey?: string,
+  ): string | null {
+    if (this.isFixedLocationRound(round)) {
+      return this.fixedPlayoffLocation;
+    }
+
+    return (
+      (locationDraftKey ? this.getLocationDraftValue(locationDraftKey) : null) ??
+      this.getSavedMatchLocation(match) ??
+      match.homeTeam.arena ??
+      null
+    );
+  }
+
+  private isFixedLocationRoundName(roundName: string): boolean {
+    const normalizedRoundName = roundName.trim().toLowerCase();
+    return (
+      normalizedRoundName.includes('semifinal') ||
+      normalizedRoundName === 'final'
+    );
   }
 
   private getSavedMatchLocation(
