@@ -196,9 +196,9 @@
                           {{ leg.match!.date | date:'dd/MM/yyyy HH:mm' }}
                         </div>
                       }
-                      @if(getLegLocation(leg)) {
+                      @if(getLegLocation(round, leg)) {
                         <div class="match-location">
-                          {{ getLegLocation(leg) }}
+                          {{ getLegLocation(round, leg) }}
                         </div>
                       }
 
@@ -217,31 +217,33 @@
                               matButton="outlined"
                               type="button"
                               [disabled]="!canSaveDate(leg)"
-                              (click)="onSaveMatchDate(leg.match, leg.dateDraftKey)">
+                              (click)="onSaveMatchDate(round, leg.match, leg.dateDraftKey)">
                               Guardar fecha
                             </button>
                           }
                         </div>
-                        <div class="location-editor">
-                          <mat-form-field>
-                            <mat-label>Ubicación</mat-label>
-                            <input
-                              matInput
-                              type="text"
-                              maxlength="100"
-                              [value]="getLocationDraft(leg.locationDraftKey)"
-                              (input)="onLocationChange(leg.locationDraftKey, $event)" />
-                          </mat-form-field>
-                          @if(leg.match) {
-                            <button
-                              matButton="outlined"
-                              type="button"
-                              [disabled]="!canSaveLocation(leg)"
-                              (click)="onSaveMatchLocation(leg.match, leg.locationDraftKey)">
-                              Guardar ubicación
-                            </button>
-                          }
-                        </div>
+                        @if(!isFixedLocationRound(round)) {
+                          <div class="location-editor">
+                            <mat-form-field>
+                              <mat-label>Ubicación</mat-label>
+                              <input
+                                matInput
+                                type="text"
+                                maxlength="100"
+                                [value]="getLocationDraft(leg.locationDraftKey)"
+                                (input)="onLocationChange(leg.locationDraftKey, $event)" />
+                            </mat-form-field>
+                            @if(leg.match) {
+                              <button
+                                matButton="outlined"
+                                type="button"
+                                [disabled]="!canSaveLocation(leg)"
+                                (click)="onSaveMatchLocation(leg.match, leg.locationDraftKey)">
+                                Guardar ubicación
+                              </button>
+                            }
+                          </div>
+                        }
                       }
 
                       @if(isAdmin() && leg.match && leg.awayTeam) {
