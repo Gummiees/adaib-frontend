@@ -31,9 +31,37 @@ export function getPlayoffGroupName(sourceGroupName: string): string {
 }
 
 export function getPlayoffSourceTeams(group: Group): Team[] {
+  return getClassifiedTeams(group).slice(0, PLAYOFF_MAX_TEAM_COUNT);
+}
+
+export function getPlayoffEligibleTeams(
+  group: Group,
+  competitionTeams: Team[] = [],
+): Team[] {
+  const teamsById = new Map(competitionTeams.map((team) => [team.id, team]));
+  const seenTeamIds = new Set<number>();
+  const teams = getClassifiedTeams(group);
+
+  for (const team of teams) {
+    seenTeamIds.add(team.id);
+  }
+
+  for (const teamId of group.teamIds) {
+    const team = teamsById.get(teamId);
+    if (!team || seenTeamIds.has(team.id)) {
+      continue;
+    }
+
+    teams.push(team);
+    seenTeamIds.add(team.id);
+  }
+
+  return teams;
+}
+
+function getClassifiedTeams(group: Group): Team[] {
   return [...group.classification]
     .sort((a, b) => a.position - b.position)
-    .slice(0, PLAYOFF_MAX_TEAM_COUNT)
     .map((classification) => classification.team);
 }
 
