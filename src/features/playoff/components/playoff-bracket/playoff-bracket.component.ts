@@ -49,6 +49,7 @@ import {
   getPlayoffLegCount,
   getPlayoffGroupName,
   getPlayoffRoundNames,
+  getPlayoffEligibleTeams,
   getPlayoffSourceTeams,
   isPlayoffPhase,
   PLAYOFF_SOURCE_PHASE_NAME,
@@ -163,6 +164,17 @@ export class PlayoffBracketComponent {
     return getPlayoffSourceTeams(group);
   });
 
+  public eligibleTeams = computed<Team[]>(() => {
+    const competition = this.competitionStore.competition();
+    const group = this.selectedLeagueGroup();
+
+    if (!competition || !group) {
+      return [];
+    }
+
+    return getPlayoffEligibleTeams(group, competition.teams);
+  });
+
   public isAdmin = computed(() => !!this.userStore.user());
 
   public isBusy = computed(
@@ -178,7 +190,7 @@ export class PlayoffBracketComponent {
         .filter((teamId): teamId is number => !!teamId),
     );
 
-    return this.sourceTeams().filter((team) => !selectedTeamIds.has(team.id));
+    return this.eligibleTeams().filter((team) => !selectedTeamIds.has(team.id));
   });
 
   public seedDropListIds = computed<string[]>(() => [
@@ -198,9 +210,7 @@ export class PlayoffBracketComponent {
     const roundNames = getPlayoffRoundNames(this.teamCount());
     const roundCount = roundNames.length;
     let incomingTeams = slots.map((slot) => slot.team);
-    const playoffTeamIds = new Set(
-      this.sourceTeams().map((team) => team.id),
-    );
+    const playoffTeamIds = new Set(this.eligibleTeams().map((team) => team.id));
 
     return roundNames.map<PlayoffRoundView>((name, roundIndex) => {
       const round =
@@ -679,15 +689,22 @@ export class PlayoffBracketComponent {
     const competition = this.competitionStore.competition();
     const phase = this.playoffPhase();
     const sourceTeams = this.sourceTeams();
+    const eligibleTeams = this.eligibleTeams();
 
-    if (!competition || !phase || sourceTeams.length === 0) {
+    if (
+      !competition ||
+      !phase ||
+      sourceTeams.length === 0 ||
+      eligibleTeams.length === 0
+    ) {
       this.seedSlots.set([]);
       this.loadedSeedKey.set(null);
       return;
     }
 
-    const teamsById = new Map(sourceTeams.map((team) => [team.id, team]));
+    const teamsById = new Map(eligibleTeams.map((team) => [team.id, team]));
     const sourceTeamIds = sourceTeams.map((team) => team.id);
+    const eligibleTeamIds = new Set(eligibleTeams.map((team) => team.id));
     const bracketSize = PLAYOFF_BRACKET_SIZE;
     const openingRound = this.getOpeningRoundMatches(phase);
     const roundNames = getPlayoffRoundNames(this.teamCount());
@@ -698,12 +715,12 @@ export class PlayoffBracketComponent {
       match.awayTeam?.id ?? null,
     ]);
     const persistedTeamIds = persistedSeedIds.filter(
-      (teamId): teamId is number => !!teamId && sourceTeamIds.includes(teamId),
+      (teamId): teamId is number => !!teamId && eligibleTeamIds.has(teamId),
     );
     const missingPersistedTeamIds = sourceTeamIds
       .filter((teamId) => !persistedTeamIds.includes(teamId));
     const filteredPersistedSeedIds = persistedSeedIds.map((teamId) =>
-      teamId && sourceTeamIds.includes(teamId) ? teamId : null,
+      teamId && eligibleTeamIds.has(teamId) ? teamId : null,
     );
     const teamIds =
       filteredPersistedSeedIds.length > 0
