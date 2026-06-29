@@ -1,4 +1,98 @@
-<div class="pt-6 pb-4 flex flex-col items-center justify-center gap-6">
-  <h1 class="text-4xl font-bold text-center">Noticias</h1>
-  <app-card-group [cards]="cards"></app-card-group>
-</div>
+<section class="public-news-page">
+  <header class="public-news-hero">
+    <picture class="public-news-hero-media">
+      @if (isEventPage) {
+        <img
+          class="public-news-hero-background"
+          src="assets/bg-main/background_semana_deporte.png"
+          sizes="100vw"
+          alt=""
+          aria-hidden="true">
+      } @else {
+        <source
+          srcset="assets/bg-main/basketball-bg_640.webp 640w, assets/bg-main/basketball-bg_1280.webp 1280w, assets/bg-main/basketball-bg_1920.webp 1920w"
+          type="image/webp">
+        <img
+          class="public-news-hero-background"
+          src="assets/bg-main/basketball-bg_1280.webp"
+          sizes="100vw"
+          alt=""
+          aria-hidden="true">
+      }
+    </picture>
+    <div class="public-news-hero-overlay"></div>
+    <div class="public-news-hero-content">
+      <p>{{ pageKicker }}</p>
+      @if (pageLogo; as logo) {
+        <div class="public-news-hero-brand" [class.public-news-hero-brand-event]="isEventPage">
+          <img class="public-news-hero-logo" [src]="logo" alt="Semana del deporte de empresas" />
+        </div>
+      }
+      @if (isEventPage) {
+        <h1 class="sr-only">{{ pageTitle }}</h1>
+      } @else {
+        <h1>{{ pageTitle }}</h1>
+      }
+      @if (!isEventPage) {
+        <span>{{ pageDescription }}</span>
+      }
+    </div>
+  </header>
+
+  @if (!isEventPage) {
+    <div class="public-news-intro">
+      <div>
+        <p class="section-kicker">Últimas publicaciones</p>
+      </div>
+      <a matButton="filled" routerLink="/inicio">Volver al inicio</a>
+    </div>
+  }
+
+  @if (newsState$ | async; as state) {
+    @if (state.isLoading) {
+      <div class="public-news-status">
+        Cargando noticias...
+      </div>
+    } @else if (state.hasError) {
+      <div class="public-news-status public-news-status-error">
+        No se han podido cargar las noticias. Inténtalo de nuevo más tarde.
+      </div>
+    } @else if (state.news.length) {
+      <div class="public-news-feed">
+        @for (item of state.news; track item.id) {
+          <article class="public-news-item">
+            <div class="public-news-item-body">
+              <header>
+                @if (!isEventPage) {
+                  <p class="section-kicker">Noticia ADAIB</p>
+                }
+                <h2 class="public-news-item-title">{{ item.title }}</h2>
+                @if (item.subtitle) {
+                  <p class="public-news-item-subtitle">{{ item.subtitle }}</p>
+                }
+              </header>
+
+              <div class="public-news-content" [innerHTML]="item.safeContent"></div>
+
+              @if (!isEventPage) {
+                <a class="public-news-item-link" [routerLink]="['/noticias', item.id]">
+                  Abrir noticia
+                </a>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="public-news-empty">
+        <img
+          [src]="pageLogo ?? 'assets/logo/full/transparent/white-letters/640.webp'"
+          [alt]="isEventPage ? 'Semana del deporte de empresas' : 'ADAIB'">
+        <div>
+          <h2>{{ isEventPage ? 'Todavía no hay información de eventos publicada' : 'Todavía no hay noticias publicadas' }}</h2>
+          <p>{{ isEventPage ? 'Pronto compartiremos novedades sobre la Semana del Deporte de Empresas.' : 'Pronto compartiremos novedades de competiciones y equipos.' }}</p>
+        </div>
+      </div>
+    }
+  }
+</section>

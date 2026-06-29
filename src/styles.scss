@@ -61,19 +61,25 @@ body {
 
 // Override for landing page - make it full width and height
 .content-container:has(app-landing),
-.content-container app-landing {
+.content-container:has(app-articles),
+.content-container:has(app-article),
+.content-container app-landing,
+.content-container app-articles,
+.content-container app-article {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  height: 100% !important;
+  min-height: 100% !important;
 }
 
 // Also target the parent container when landing page is present
-.content-container:has(app-landing) {
+.content-container:has(app-landing),
+.content-container:has(app-articles),
+.content-container:has(app-article) {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  height: 100% !important;
+  min-height: 100% !important;
 }
 
 @media (width >= 640px) {
@@ -81,7 +87,9 @@ body {
     padding: 0 1.5rem;
   }
 
-  .content-container app-landing {
+  .content-container app-landing,
+  .content-container app-articles,
+  .content-container app-article {
     padding: 0 !important;
   }
 }
@@ -91,7 +99,9 @@ body {
     padding: 0 2rem;
   }
 
-  .content-container app-landing {
+  .content-container app-landing,
+  .content-container app-articles,
+  .content-container app-article {
     padding: 0 !important;
   }
 }

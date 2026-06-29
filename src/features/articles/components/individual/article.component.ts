@@ -3,19 +3,19 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  SecurityContext,
   ViewEncapsulation,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { articles } from '@features/articles/content/articles';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FullSpinnerComponent } from '@shared/components/full-spinner/full-spinner.component';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { SEOService } from '@shared/services/seo.service';
 import { TitleService } from '@shared/services/title.service';
-import { map, Observable, of, startWith, tap } from 'rxjs';
-import { Article } from '../../models/article';
+import { catchError, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
+import { News } from '../../models/news';
+import { NewsHtmlSanitizerService } from '../../services/news-html-sanitizer.service';
+import { NewsService } from '../../services/news.service';
 
 @Component({
   selector: 'app-article',
@@ -24,11 +24,13 @@ import { Article } from '../../models/article';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NotFoundComponent, FullSpinnerComponent],
+  imports: [CommonModule, RouterLink, NotFoundComponent, FullSpinnerComponent],
 })
 export class ArticleComponent {
   private activatedRoute = inject(ActivatedRoute);
   private sanitizer = inject(DomSanitizer);
+  private newsHtmlSanitizer = inject(NewsHtmlSanitizerService);
+  private newsService = inject(NewsService);
   private router = inject(Router);
   private titleService = inject(TitleService);
   private seoService = inject(SEOService);
@@ -39,40 +41,42 @@ export class ArticleComponent {
   }
 
   private getArticle(): Observable<{
-    article: Article | null;
+    article: News | null;
     safeContent: SafeHtml | null;
     isLoading: boolean;
   }> {
-    const id = this.activatedRoute.snapshot.params['id'];
-
-    if (!id) {
-      return of({ article: null, safeContent: null, isLoading: false });
-    }
-
-    const parsedId = Number(id);
-    if (isNaN(parsedId)) {
-      return of({ article: null, safeContent: null, isLoading: false });
-    }
-
-    // Simulate async loading for consistency with other components
-    return of(null).pipe(
+    return this.activatedRoute.paramMap.pipe(
       takeUntilDestroyed(),
-      map(() => {
-        const article =
-          articles.find((article) => article.id === parsedId) ?? null;
-        const safeContent = article
-          ? (this.sanitizer.sanitize(
-              SecurityContext.HTML,
+      switchMap((params) => {
+        const id = params.get('id');
+        const parsedId = Number(id);
+        if (!id || isNaN(parsedId)) {
+          return of({ article: null, safeContent: null, isLoading: false });
+        }
+
+        return this.newsService.getNews(parsedId).pipe(
+          map((article) => {
+            const sanitizedContent = this.newsHtmlSanitizer.sanitize(
               article.content,
-            ) as SafeHtml)
-          : null;
-        return { article, safeContent, isLoading: false };
+            );
+            return {
+              article,
+              // The app trusts only the allowlisted output produced above.
+              safeContent:
+                this.sanitizer.bypassSecurityTrustHtml(sanitizedContent),
+              isLoading: false,
+            };
+          }),
+          catchError(() =>
+            of({ article: null, safeContent: null, isLoading: false }),
+          ),
+          startWith({ article: null, safeContent: null, isLoading: true }),
+        );
       }),
       tap(({ article }) => {
         if (article) {
           this.titleService.setDynamicTitle(article.title);
 
-          // Update SEO for the article
           const description = this.seoService.extractDescription(
             article.content,
           );
@@ -80,17 +84,12 @@ export class ArticleComponent {
             title: article.title,
             description: description,
             keywords: `${article.title}, noticias, baloncesto, ADAIB, Illes Balears, deportes`,
-            image: article.imageUrl,
             type: 'article',
-            author: article.author,
-            publishedTime: article.publishDate.toISOString(),
             section: 'Deportes',
             tags: ['baloncesto', 'ADAIB', 'deportes'],
-            structuredData: this.seoService.generateArticleSchema(article),
           });
         }
       }),
-      startWith({ article: null, safeContent: null, isLoading: true }),
     );
   }
 }

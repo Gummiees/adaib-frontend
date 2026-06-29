@@ -1,0 +1,123 @@
+<div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
+  <div class="flex flex-row flex-wrap gap-3 items-center justify-center">
+    <h1 class="text-4xl font-bold text-center">{{ pageTitle }}</h1>
+    @if (isEditMode()) {
+      <a mat-mini-fab aria-label="Eliminar noticia" matTooltip="Eliminar noticia" matTooltipPosition="right" tabindex="0" [disabled]="isLoading()" (click)="onDelete()" (keyup)="onDelete()" (keypress)="onDelete()">
+        <mat-icon>delete</mat-icon>
+      </a>
+    }
+  </div>
+
+  @if (shouldShowNotFound()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 p-6 text-red-800">
+      No se ha encontrado la noticia solicitada.
+    </div>
+  } @else if (isLoading()) {
+    <app-full-spinner></app-full-spinner>
+  } @else {
+    <form [formGroup]="form" class="grid w-full max-w-6xl grid-cols-1 gap-6 lg:grid-cols-2" (ngSubmit)="onSubmit()">
+      <div class="flex flex-col gap-3">
+        <mat-form-field class="w-full">
+          <mat-label>Título</mat-label>
+          <input matInput type="text" formControlName="title" maxlength="200" />
+          @if (title.errors?.['required']) {
+            <mat-error>El título es requerido</mat-error>
+          }
+          @if (title.errors?.['maxlength']) {
+            <mat-error>El título no puede tener más de 200 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Subtítulo</mat-label>
+          <input matInput type="text" formControlName="subtitle" maxlength="300" />
+          @if (subtitle.errors?.['maxlength']) {
+            <mat-error>El subtítulo no puede tener más de 300 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+          <mat-slide-toggle formControlName="event">
+            Marcar como contenido de la Semana del Deporte de Empresas
+          </mat-slide-toggle>
+        </div>
+
+        <div class="editor-toolbar rounded-lg border border-gray-200 bg-white p-2">
+          <button matIconButton type="button" matTooltip="Negrita" aria-label="Negrita" (click)="wrapSelection('strong')">
+            <mat-icon>format_bold</mat-icon>
+          </button>
+          <button matIconButton type="button" matTooltip="Cursiva" aria-label="Cursiva" (click)="wrapSelection('em')">
+            <mat-icon>format_italic</mat-icon>
+          </button>
+          <button matIconButton type="button" matTooltip="Subrayado" aria-label="Subrayado" (click)="wrapSelection('u')">
+            <mat-icon>format_underlined</mat-icon>
+          </button>
+          <span class="toolbar-divider"></span>
+          <button matIconButton type="button" matTooltip="Título" aria-label="Título" (click)="wrapSelection('h2')">
+            <mat-icon>title</mat-icon>
+          </button>
+          <button matIconButton type="button" matTooltip="Subtítulo" aria-label="Subtítulo" (click)="wrapSelection('h3')">
+            <mat-icon>text_fields</mat-icon>
+          </button>
+          <button matIconButton type="button" matTooltip="Párrafo" aria-label="Párrafo" (click)="insertParagraph()">
+            <mat-icon>notes</mat-icon>
+          </button>
+          <span class="toolbar-divider"></span>
+          <button matIconButton type="button" matTooltip="Lista" aria-label="Lista" (click)="insertList('ul')">
+            <mat-icon>format_list_bulleted</mat-icon>
+          </button>
+          <button matIconButton type="button" matTooltip="Lista numerada" aria-label="Lista numerada" (click)="insertList('ol')">
+            <mat-icon>format_list_numbered</mat-icon>
+          </button>
+          <button matIconButton type="button" matTooltip="Cita" aria-label="Cita" (click)="wrapSelection('blockquote')">
+            <mat-icon>format_quote</mat-icon>
+          </button>
+          <button matIconButton type="button" matTooltip="Enlace con la URL del campo inferior" aria-label="Enlace" (click)="insertLink()">
+            <mat-icon>link</mat-icon>
+          </button>
+        </div>
+
+        <mat-form-field class="w-full">
+          <mat-label>Contenido HTML</mat-label>
+          <textarea #contentTextarea matInput formControlName="content" rows="16"></textarea>
+          @if (content.errors?.['required']) {
+            <mat-error>El contenido es requerido</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <mat-form-field class="w-full">
+            <mat-label>URL externa para enlace, imagen o vídeo</mat-label>
+            <input matInput type="url" formControlName="mediaUrl" />
+          </mat-form-field>
+          <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <button matButton="outlined" type="button" (click)="insertLink()">Insertar enlace</button>
+            <button matButton="outlined" type="button" (click)="insertImageUrl()">Insertar imagen</button>
+            <button matButton="outlined" type="button" (click)="insertVideoUrl()">Insertar vídeo YouTube</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <a matButton="outlined" routerLink="/admin/noticias">Volver</a>
+          <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+            @if (isEditMode() && form.pristine) {
+              <button matButton="outlined" type="button" [disabled]="isLoading()" (click)="onCreateNew()">Nueva noticia</button>
+            }
+            <button matButton="filled" type="submit" [disabled]="form.invalid || isLoading() || form.pristine">
+              {{ submitButtonText }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="preview-panel">
+        <p class="text-sm font-semibold uppercase tracking-wide text-sky-700">Vista previa</p>
+        <h2 class="text-2xl font-bold text-gray-950">{{ form.controls.title.value || 'Título de la noticia' }}</h2>
+        @if (form.controls.subtitle.value) {
+          <p class="text-base leading-7 text-gray-600">{{ form.controls.subtitle.value }}</p>
+        }
+        <div class="article-content" [innerHTML]="previewHtml()"></div>
+      </aside>
+    </form>
+  }
+</div>

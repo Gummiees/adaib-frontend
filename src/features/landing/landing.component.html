@@ -1,28 +1,136 @@
 <div class="landing-container">
-  <img
-    class="background-image blur-xs scale-105"
-    src="assets/bg-main/basketball-bg_1280.webp"
-    srcset="
-      assets/bg-main/basketball-bg_640.webp 640w,
-      assets/bg-main/basketball-bg_1280.webp 1280w,
-      assets/bg-main/basketball-bg_1920.webp 1920w,
-      assets/bg-main/basketball-bg_2400.webp 2400w
-    "
-    type="image/webp"
-    sizes="105vw"
-    alt="Fondo de la página de inicio"
-    fetchpriority="high">
-  <div class="content-overlay flex flex-col gap-y-8">
-    <img
-    src="assets/logo/full/transparent/white-letters/1280.webp"
-    srcset="
-    assets/logo/full/transparent/white-letters/640.webp 640w,
-    assets/logo/full/transparent/white-letters/1280.webp 1280w,
-      assets/logo/full/transparent/white-letters/1920.webp 1920w,
-      assets/logo/full/transparent/white-letters/3840.webp 3840w"
-    type="image/webp"
-    sizes="90vw"
-    alt="ADAIB - Asociación De Deportistas Aficionados De Les Illes Balears"
-    fetchpriority="high">
-  </div>
+  <section class="hero-section">
+    <picture>
+      <source
+        srcset="assets/bg-main/basketball-bg_640.webp 640w, assets/bg-main/basketball-bg_1280.webp 1280w, assets/bg-main/basketball-bg_1920.webp 1920w, assets/bg-main/basketball-bg_2400.webp 2400w"
+        type="image/webp">
+      <img
+        class="hero-image"
+        src="assets/bg-main/basketball-bg_1280.webp"
+        sizes="100vw"
+        alt="Actividad deportiva ADAIB"
+        fetchpriority="high">
+    </picture>
+    <div class="hero-scrim"></div>
+
+    <div class="hero-content">
+      <div class="hero-copy">
+        <img
+          class="hero-logo"
+          src="assets/logo/full/transparent/white-letters/1280.webp"
+          srcset="assets/logo/full/transparent/white-letters/640.webp 640w, assets/logo/full/transparent/white-letters/1280.webp 1280w, assets/logo/full/transparent/white-letters/1920.webp 1920w"
+          sizes="260px"
+          alt="ADAIB - Asociación De Deportistas Aficionados De Les Illes Balears"
+          fetchpriority="high">
+        <p class="section-kicker section-kicker-light">Deporte aficionado en las Illes Balears</p>
+        <h1>Competición, equipos y comunidad.</h1>
+        <p class="hero-description">
+          ADAIB reúne a deportistas aficionados, empresas y equipos para disfrutar del deporte con una organización cercana, clara y competitiva.
+        </p>
+      </div>
+
+      <div class="hero-actions">
+        <a matButton="filled" routerLink="/competiciones">Ver competiciones</a>
+        <a matButton="outlined" [href]="registrationFileUrl" download>Inscribir equipo</a>
+        <a matButton="text" routerLink="/contacto">Contactar</a>
+      </div>
+
+      <div class="hero-facts" aria-label="Datos destacados ADAIB">
+        <div>
+          <strong>Temporada</strong>
+          <span>Competiciones activas</span>
+        </div>
+        <div>
+          <strong>Equipos</strong>
+          <span>Inscripción abierta</span>
+        </div>
+        <div>
+          <strong>Illes Balears</strong>
+          <span>Comunidad deportiva</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="highlights-section">
+    <article class="highlight-card highlight-card-blue">
+      <span class="section-kicker">Competiciones</span>
+      <h2>Liga y torneos</h2>
+      <p>Calendarios, clasificación, resultados y equipos de cada competición ADAIB.</p>
+      <a routerLink="/competiciones">Explorar competiciones</a>
+    </article>
+    <article class="highlight-card highlight-card-orange">
+      <span class="section-kicker">Noticias</span>
+      <h2>Actualidad</h2>
+      <p>Novedades de temporada, avisos importantes y contenido publicado por la organización.</p>
+      <a routerLink="/noticias">Leer noticias</a>
+    </article>
+    <article class="highlight-card highlight-card-green">
+      <span class="section-kicker">Contacto</span>
+      <h2>Hablemos</h2>
+      <p>Dudas sobre inscripciones, equipos, competición o cualquier información práctica.</p>
+      <a routerLink="/contacto">Ir a contacto</a>
+    </article>
+  </section>
+
+  <section class="event-story">
+    <div class="event-story-media">
+      <img
+        src="assets/bg-main/basketball-bg_1280.webp"
+        srcset="assets/bg-main/basketball-bg_640.webp 640w, assets/bg-main/basketball-bg_1280.webp 1280w"
+        sizes="(min-width: 1024px) 45vw, 100vw"
+        alt="Competición deportiva organizada por ADAIB">
+    </div>
+    <div class="event-story-copy">
+      <p class="section-kicker">Organización y comunidad</p>
+      <h2>Un punto de encuentro para competir mejor.</h2>
+      <p>
+        La web concentra la información de equipos, jornadas, resultados y comunicados para que cada participante encuentre rápido lo que necesita.
+      </p>
+      <a matButton="outlined" routerLink="/competiciones">Consultar calendario</a>
+    </div>
+  </section>
+
+  <section class="registration-band">
+    <div>
+      <p class="section-kicker section-kicker-light">Inscripción de equipos</p>
+      <h2>Prepara tu equipo para la Semana del Deporte de Empresas.</h2>
+      <p class="registration-copy">
+        Descarga la hoja Excel de inscripción, completa los datos del equipo y contacta con ADAIB para confirmar la participación. Contáctanos en <a href="mailto:fran@adaib.com">fran@adaib.com.</a>
+      </p>
+    </div>
+    <a matButton="filled" [href]="registrationFileUrl" download>Inscribir equipo</a>
+  </section>
+
+  <section class="latest-news-section">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">Últimas noticias</p>
+        <h2>Lo último de ADAIB</h2>
+      </div>
+      <a matButton="outlined" routerLink="/noticias">Todas las noticias</a>
+    </div>
+
+    @if (latestNews$ | async; as latestNews) {
+      @if (latestNews.length) {
+        <div class="latest-news-list">
+          @for (item of latestNews; track item.id; let index = $index) {
+            <a class="news-preview" [routerLink]="['/noticias', item.id]">
+              <span>{{ (index + 1).toString().padStart(2, '0') }}</span>
+              <div>
+                <h3>{{ item.title }}</h3>
+                @if (item.subtitle) {
+                  <p>{{ item.subtitle }}</p>
+                }
+              </div>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="empty-news">
+          Próximamente publicaremos las novedades de competiciones, equipos y eventos.
+        </div>
+      }
+    }
+  </section>
 </div>

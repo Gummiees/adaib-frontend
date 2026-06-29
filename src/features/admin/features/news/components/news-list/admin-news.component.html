@@ -1,0 +1,43 @@
+<div class="w-full pt-6 pb-4 flex flex-col items-center justify-center gap-6">
+  <div class="w-full flex flex-row justify-center items-center gap-4">
+    <h1 class="text-4xl font-bold text-center">Admin noticias</h1>
+    <a matTooltip="Crear noticia" matTooltipPosition="right" matMiniFab aria-label="Crear noticia" tabindex="0" (click)="onAddNewsClick()" (keyup)="onAddNewsClick()" (keypress)="onAddNewsClick()">
+      <mat-icon>add</mat-icon>
+    </a>
+  </div>
+
+  @if (newsState$ | async; as state) {
+    @if (state.hasError) {
+      <div class="rounded-lg border border-red-200 bg-red-50 p-6 text-red-800">
+        Hubo un error al cargar las noticias. Inténtelo más tarde.
+      </div>
+    } @else if (state.isLoading) {
+      <div class="rounded-lg border border-gray-200 bg-white p-6 text-gray-600 shadow-sm">
+        Cargando noticias...
+      </div>
+    } @else if (state.news.length) {
+      <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (item of state.news; track item.id) {
+          <button
+            type="button"
+            class="flex min-h-40 cursor-pointer flex-col gap-2 rounded-lg border border-gray-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+            (click)="onEditNewsClick(item.id)">
+            <span class="inline-flex w-fit rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+              {{ item.event === 1 ? 'Evento' : 'Noticia' }}
+            </span>
+            <h2 class="text-xl font-bold text-gray-950">{{ item.title }}</h2>
+            @if (item.subtitle) {
+              <p class="line-clamp-3 text-sm leading-6 text-gray-600">{{ item.subtitle }}</p>
+            }
+            <span class="mt-auto text-sm font-semibold text-sky-700">Editar noticia</span>
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm">
+        <h2 class="text-2xl font-bold text-gray-950">No hay noticias</h2>
+        <p class="mt-2 text-gray-600">Crea la primera noticia para publicarla en la web.</p>
+      </div>
+    }
+  }
+</div>

@@ -42,6 +42,30 @@ export const adminRoutes: Routes = [
     data: { title: 'Editar Equipo' },
   },
   {
+    path: 'noticias',
+    loadComponent: () =>
+      import(
+        '@features/admin/features/news/components/news-list/admin-news.component'
+      ).then((m) => m.AdminNewsComponent),
+    data: { title: 'Gestión de Noticias' },
+  },
+  {
+    path: 'noticia',
+    loadComponent: () =>
+      import(
+        '@features/admin/features/news/components/news-form/news-form.component'
+      ).then((m) => m.NewsFormComponent),
+    data: { title: 'Crear Noticia' },
+  },
+  {
+    path: 'noticia/:id',
+    loadComponent: () =>
+      import(
+        '@features/admin/features/news/components/news-form/news-form.component'
+      ).then((m) => m.NewsFormComponent),
+    data: { title: 'Editar Noticia' },
+  },
+  {
     path: 'competicion',
     loadComponent: () =>
       import(
