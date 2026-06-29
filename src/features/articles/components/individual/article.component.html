@@ -2,12 +2,34 @@
   @if(articleWithLoading.isLoading) {
     <app-full-spinner></app-full-spinner>
   } @else if(articleWithLoading.article) {
-    <div class="p-4 sm:p-8 flex flex-col items-center justify-center gap-4">
-      <h1 class="text-3xl font-bold text-center">{{ articleWithLoading.article.title }}</h1>
-      <img class="rounded-md" [src]="articleWithLoading.article.imageUrl" [alt]="'Imagen para la noticia ' + articleWithLoading.article.title" />
-      <p class="text-lg">{{ articleWithLoading.article.subtitle }}</p>
-      <div class="max-w-4xl article-content" [innerHTML]="articleWithLoading.safeContent"></div>
-    </div>
+    <article class="article-page">
+      <header class="article-hero">
+        <img
+          src="assets/bg-main/basketball-bg_1280.webp"
+          srcset="assets/bg-main/basketball-bg_640.webp 640w, assets/bg-main/basketball-bg_1280.webp 1280w, assets/bg-main/basketball-bg_1920.webp 1920w"
+          sizes="100vw"
+          alt=""
+          aria-hidden="true">
+        <div class="article-hero-overlay"></div>
+        <div class="article-hero-content">
+          <a routerLink="/noticias">Noticias ADAIB</a>
+          <h1>{{ articleWithLoading.article.title }}</h1>
+          @if (articleWithLoading.article.subtitle) {
+            <p>{{ articleWithLoading.article.subtitle }}</p>
+          }
+        </div>
+      </header>
+
+      <div class="article-shell">
+        <aside class="article-aside">
+          <span>ADAIB</span>
+          <strong>Actualidad deportiva</strong>
+          <a routerLink="/noticias">Todas las noticias</a>
+        </aside>
+
+        <div class="article-content" [innerHTML]="articleWithLoading.safeContent"></div>
+      </div>
+    </article>
   } @else {
     <app-not-found title="Noticia no encontrada" subtitle="Lo sentimos, no se ha encontrado la noticia." buttonText="Ir a la página de noticias" (buttonClicked)="onNotFoundButtonClick()"></app-not-found>
   }

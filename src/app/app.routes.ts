@@ -49,11 +49,32 @@ export const routes: Routes = [
       ),
     data: {
       title: 'Noticias',
+      eventPage: false,
+      eventFlag: 0,
       seo: {
         description:
           'Últimas noticias del baloncesto en las Illes Balears. Mantente informado sobre competiciones, equipos y eventos de ADAIB.',
         keywords:
           'noticias, baloncesto, ADAIB, Illes Balears, actualidad, deportes',
+        type: 'website',
+      },
+    },
+  },
+  {
+    path: 'event-information',
+    loadComponent: () =>
+      import('@features/articles/components/all/articles.component').then(
+        (m) => m.ArticlesComponent,
+      ),
+    data: {
+      title: 'Semana del deporte de empresas',
+      eventPage: true,
+      eventFlag: 1,
+      seo: {
+        description:
+          'Semana del deporte de empresas de ADAIB. Consulta toda la información y novedades del evento.',
+        keywords:
+          'ADAIB, semana del deporte de empresas, eventos, deporte de empresa, Illes Balears',
         type: 'website',
       },
     },
